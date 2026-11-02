@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Movie poster for Neon Odyssey: Protocol 9">
+  <defs>
+    <linearGradient id="cyberBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#050811"/>
+      <stop offset="60%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="neonSun" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="50%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="600" fill="url(#cyberBg)"/>
+
+  <!-- Skyline Towers -->
+  <g fill="#090d16" stroke="#38bdf8" stroke-opacity="0.25" stroke-width="1">
+    <rect x="45" y="210" width="45" height="260"/>
+    <rect x="95" y="160" width="55" height="310"/>
+    <rect x="255" y="175" width="50" height="295"/>
+    <rect x="310" y="225" width="45" height="245"/>
+  </g>
+
+  <!-- Retro-Futuristic Sun -->
+  <circle cx="200" cy="275" r="72" fill="url(#neonSun)" opacity="0.9"/>
+
+  <!-- Perspective Grid -->
+  <g stroke="#f59e0b" stroke-opacity="0.35" stroke-width="1">
+    <line x1="0" y1="410" x2="400" y2="410"/>
+    <line x1="0" y1="435" x2="400" y2="435"/>
+    <line x1="0" y1="465" x2="400" y2="465"/>
+    <line x1="200" y1="385" x2="20" y2="485"/>
+    <line x1="200" y1="385" x2="110" y2="485"/>
+    <line x1="200" y1="385" x2="200" y2="485"/>
+    <line x1="200" y1="385" x2="290" y2="485"/>
+    <line x1="200" y1="385" x2="380" y2="485"/>
+  </g>
+
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#38bdf8" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Typography -->
+  <text x="200" y="60" text-anchor="middle" fill="#38bdf8" font-family="sans-serif" font-size="10" letter-spacing="5" font-weight="600">NEO-TOKYO ARCHIVE 2099</text>
+  <text x="200" y="515" text-anchor="middle" fill="#f8fafc" font-family="sans-serif" font-size="28" letter-spacing="6" font-weight="800">NEON ODYSSEY</text>
+  <text x="200" y="542" text-anchor="middle" fill="#fbbf24" font-family="sans-serif" font-size="13" letter-spacing="8" font-weight="600">PROTOCOL NINE</text>
+  <text x="200" y="566" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="9" letter-spacing="3">SCI-FI • THRILLER • 2026</text>
+</svg>

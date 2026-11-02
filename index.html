@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Movie Explorer Community — Discover, rate, review, and curate cinema classics and modern releases." />
+  <title>Movie Explorer Community — Discover, Rate &amp; Discuss Movies</title>
+  <link rel="stylesheet" href="./dist/output.css" />
+</head>
+<body class="min-h-screen bg-cinema-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
+
+  <!-- Skip Navigation Link for Keyboard Accessibility -->
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-amber-400 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-slate-950 focus:shadow-lg"
+  >
+    Skip to main content
+  </a>
+
+  <!-- ===================================================================== -->
+  <!-- SECTION A: NAVIGATION HEADER                                          -->
+  <!-- JS Integration Point: #main-header, navigation links, auth triggers   -->
+  <!-- ===================================================================== -->
+  <header id="main-header" class="sticky top-0 z-40 border-b border-slate-800/80 bg-cinema-950/90 backdrop-blur-md">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <!-- Brand Identity -->
+      <a
+        id="brand-logo"
+        href="#search-section"
+        class="group inline-flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+      >
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400/15 text-amber-400 ring-1 ring-amber-400/30 transition-colors group-hover:bg-amber-400 group-hover:text-slate-950">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M7 4v16M17 4v16M2 8h5M2 12h20M2 16h5M17 8h5M17 16h5" />
+          </svg>
+        </span>
+        <div>
+          <span class="block text-lg font-bold tracking-tight text-white">Movie Explorer</span>
+          <span class="block text-xs font-medium tracking-wider text-amber-400 uppercase">Community</span>
+        </div>
+      </a>
+
+      <!-- Primary Navigation Links -->
+      <nav aria-label="Main Navigation" class="order-3 flex w-full items-center justify-center gap-1 border-t border-slate-800/70 pt-3 sm:order-2 sm:w-auto sm:border-t-0 sm:pt-0 md:gap-2">
+        <a
+          id="nav-search"
+          href="#search-section"
+          class="rounded-lg px-3.5 py-2 text-sm font-medium text-amber-400 bg-amber-400/10 transition-colors hover:bg-slate-800/70 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+          aria-current="page"
+        >
+          Home &amp; Search
+        </a>
+        <a
+          id="nav-details"
+          href="#movie-details-section"
+          class="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+        >
+          Featured Details
+        </a>
+        <a
+          id="nav-community"
+          href="#community-section"
+          class="rounded-lg px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+        >
+          Community
+        </a>
+        <a
+          id="nav-favorites"
+          href="#favorites-section"
+          class="inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+        >
+          <span>Favorites</span>
+          <!-- JS Integration Point: #nav-favorites-count badge -->
+          <span id="nav-favorites-count" class="rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-semibold text-amber-300">2</span>
+        </a>
+      </nav>
+
+      <!-- Authentication Actions -->
+      <div class="order-2 flex items-center gap-2.5 sm:order-3">
+        <a
+          id="nav-signin-btn"
+          href="#signin-card"
+          class="rounded-xl border border-slate-700 bg-cinema-900 px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-slate-500 hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+        >
+          Sign In
+        </a>
+        <a
+          id="nav-register-btn"
+          href="#register-card"
+          class="rounded-xl bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cinema-950"
+        >
+          Create Account
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="mx-auto max-w-7xl space-y-20 px-4 py-10 sm:px-6 lg:px-8">
+
+    <!-- =================================================================== -->
+    <!-- SECTION B: HOME HERO & MOVIE SEARCH                                 -->
+    <!-- JS Integration Point: #search-form, #search-input, #search-results  -->
+    <!-- =================================================================== -->
+    <section id="search-section" aria-labelledby="hero-heading" class="space-y-10">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl border border-slate-800/90 bg-gradient-to-br from-cinema-900 via-cinema-850 to-cinema-950 p-6 sm:p-10 lg:p-12 shadow-2xl">
+        <div class="mx-auto max-w-3xl text-center space-y-5">
+          <div class="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1 text-xs font-semibold tracking-wide text-amber-300 uppercase">
+            <span class="h-2 w-2 rounded-full bg-amber-400" aria-hidden="true"></span>
+            <span>Open Cinema Database &amp; Film Club</span>
+          </div>
+
+          <h1 id="hero-heading" class="text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Discover, Rate &amp; <span class="text-amber-400">Discuss Movies</span>
+          </h1>
+
+          <p class="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            Explore curated cinema classics and new releases, track your personal favorites list, share thoughtful critiques, and collaborate with fellow cinephiles to keep our catalog accurate.
+          </p>
+
+          <!-- Search Form -->
+          <!-- JS Integration Point: Attach 'submit' listener to #search-form and read #search-input / #search-genre -->
+          <form id="search-form" action="#search-results-section" method="get" class="mt-8 text-left" novalidate>
+            <div class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-cinema-950/90 p-3 shadow-lg sm:grid-cols-12">
+              <div class="sm:col-span-7">
+                <label for="search-input" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Search by movie title, director, or keyword
+                </label>
+                <div class="relative">
+                  <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400" aria-hidden="true">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.3-4.3" />
+                    </svg>
+                  </span>
+                  <input
+                    id="search-input"
+                    name="query"
+                    type="search"
+                    placeholder="e.g., Chronicles of the Dune Horizon, Sci-Fi, 2025..."
+                    autocomplete="off"
+                    required
+                    class="w-full rounded-xl border border-slate-700 bg-cinema-900 py-2.5 pr-4 pl-10 text-sm text-white placeholder-slate-500 transition-colors focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/30"
+                  />
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="search-genre" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Filter by genre
+                </label>
+                <select
+                  id="search-genre"
+                  name="genre"
+                  class="w-full rounded-xl border border-slate-700 bg-cinema-900 px-3.5 py-2.5 text-sm text-white transition-colors focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/30"
+                >
+                  <option value="">All Genres</option>
+                  <option value="sci-fi">Science Fiction</option>
+                  <option value="drama">Drama</option>
+                  <option value="mystery">Mystery</option>
+                  <option value="thriller">Thriller</option>
+                  <option value="adventure">Adventure</option>
+                </select>
+              </div>
+
+              <div class="flex items-end sm:col-span-2">
+                <button
+                  id="search-submit-btn"
+                  type="submit"
+                  class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cinema-950 cursor-pointer"
+                >
+                  <span>Search</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Search Results Area -->
+      <div id="search-results-section" class="space-y-6">
+        <div class="flex flex-col justify-between gap-2 border-b border-slate-800 pb-4 sm:flex-row sm:items-end">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-white">Movie Catalog &amp; Search Results</h2>
+            <p id="search-results-summary" class="text-sm text-slate-400">
+              Showing featured demonstration titles. Search above to query the catalog.
+            </p>
+          </div>
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
+            <span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span>
+            <span>4 Demonstration Movies Loaded</span>
+          </span>
+        </div>
+
+        <!-- JS Integration Point: Loading Indicator (Toggle 'hidden' class during fetch requests) -->
+        <div
+          id="search-loading"
+          role="status"
+          aria-live="polite"
+          class="hidden rounded-2xl border border-slate-800 bg-cinema-900/80 p-8 text-center"
+        >
+          <div class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-amber-400/15 text-amber-400">
+            <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+          </div>
+          <p class="text-base font-semibold text-white">Searching movie database...</p>
+          <p class="mt-1 text-sm text-slate-400">Fetching matching titles, ratings, and poster metadata.</p>
+        </div>
+
+        <!-- JS Integration Point: Error Message Banner (Toggle 'hidden' class when API fetch fails) -->
+        <div
+          id="search-error"
+          role="alert"
+          class="hidden rounded-2xl border border-rose-500/40 bg-rose-950/30 p-5 text-rose-200"
+        >
+          <div class="flex items-start gap-3">
+            <svg class="mt-0.5 h-5 w-5 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <div>
+              <h3 class="text-sm font-semibold text-rose-200">Unable to load movie search results</h3>
+              <p id="search-error-message" class="mt-1 text-sm text-rose-300/90">
+                A network error occurred while communicating with the movie service. Please check your connection and try again.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- JS Integration Point: Empty / No-Results State (Toggle 'hidden' class when 0 movies match) -->
+        <div
+          id="search-no-results"
+          class="hidden rounded-2xl border border-slate-800 bg-cinema-900/60 p-10 text-center"
+        >
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 text-slate-400">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3M8 11h6" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-white">No matching movies found</h3>
+          <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">
+            We couldn't find any movies matching your search query. Try broadening your keywords or suggest a missing title in the Community section below.
+          </p>
+        </div>
+
+        <!-- JS Integration Point: Dynamic Search Results Container -->
+        <!-- Populate dynamically rendered movie cards inside #search-results via JavaScript -->
+        <div
+          id="search-results"
+          aria-live="polite"
+          class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        >
+          <!-- ============================================================= -->
+          <!-- STATIC DEMONSTRATION MOVIE CARDS (Replace or clear in JS)     -->
+          <!-- ============================================================= -->
+
+          <!-- Demo Card 1 -->
+          <article class="movie-card cinema-card group flex flex-col overflow-hidden transition-colors hover:border-amber-400/50">
+            <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+              <img
+                src="./assets/images/poster-dune-horizon.svg"
+                alt="Poster for Chronicles of the Dune Horizon showing twin moons over desert sand dunes"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-lg bg-cinema-950/90 px-2.5 py-1 text-xs font-bold text-amber-400 ring-1 ring-amber-400/30 backdrop-blur-sm">
+                <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span>8.9</span>
+                <span class="sr-only">out of 10</span>
+              </div>
+            </div>
+
+            <div class="flex flex-1 flex-col justify-between p-4">
+              <div>
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
+                  <span>2025</span>
+                  <span aria-hidden="true">•</span>
+                  <span class="rounded-md bg-slate-800 px-2 py-0.5 text-slate-300">Sci-Fi / Adventure</span>
+                </div>
+                <h3 class="mt-2 text-base font-bold text-white group-hover:text-amber-400 transition-colors">
+                  Chronicles of the Dune Horizon
+                </h3>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-800/80">
+                <a
+                  href="#movie-details-section"
+                  class="view-details-btn inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800/90 px-3.5 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                >
+                  <span>View Movie Details</span>
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Demo Card 2 -->
+          <article class="movie-card cinema-card group flex flex-col overflow-hidden transition-colors hover:border-amber-400/50">
+            <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+              <img
+                src="./assets/images/poster-midnight-sonata.svg"
+                alt="Poster for Midnight Sonata in Vienna featuring a golden moon and classical piano keys"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-lg bg-cinema-950/90 px-2.5 py-1 text-xs font-bold text-amber-400 ring-1 ring-amber-400/30 backdrop-blur-sm">
+                <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span>8.4</span>
+                <span class="sr-only">out of 10</span>
+              </div>
+            </div>
+
+            <div class="flex flex-1 flex-col justify-between p-4">
+              <div>
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
+                  <span>2024</span>
+                  <span aria-hidden="true">•</span>
+                  <span class="rounded-md bg-slate-800 px-2 py-0.5 text-slate-300">Mystery / Drama</span>
+                </div>
+                <h3 class="mt-2 text-base font-bold text-white group-hover:text-amber-400 transition-colors">
+                  Midnight Sonata in Vienna
+                </h3>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-800/80">
+                <a
+                  href="#movie-details-section"
+                  class="view-details-btn inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800/90 px-3.5 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                >
+                  <span>View Movie Details</span>
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Demo Card 3 -->
+          <article class="movie-card cinema-card group flex flex-col overflow-hidden transition-colors hover:border-amber-400/50">
+            <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+              <img
+                src="./assets/images/poster-neon-odyssey.svg"
+                alt="Poster for Neon Odyssey: Protocol Nine showing a futuristic skyline and neon sun"
+                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-lg bg-cinema-950/90 px-2.5 py-1 text-xs font-bold text-amber-400 ring-1 ring-amber-400/30 backdrop-blur-sm">
+                <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span>7.9</span>
+                <span class="sr-only">out of 10</span>
+              </div>
+            </div>
+
+            <div class="flex flex-1 flex-col justify-between p-4">
+              <div>
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
+                  <span>2026</span>
+                  <span aria-hidden="true">•</span>
+                  <span class="rounded-md bg-slate-800 px-2 py-0.5 text-slate-300">Sci-Fi / Thriller</span>
+                </div>
+                <h3 class="mt-2 text-base font-bold text-white group-hover:text-amber-400 transition-colors">
+                  Neon Odyssey: Protocol Nine
+                </h3>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-800/80">
+                <a
+                  href="#movie-details-section"
+                  class="view-details-btn inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800/90 px-3.5 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                >
+                  <span>View Movie Details</span>
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Demo Card 4: CSS-Styled Poster Placeholder Demonstration (For movies without poster URLs) -->
+          <article class="movie-card cinema-card group flex flex-col overflow-hidden transition-colors hover:border-amber-400/50">
+            <div
+              class="relative flex aspect-[2/3] w-full flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-cinema-900 to-cinema-950 p-6 text-center"
+              role="img"
+              aria-label="No poster image available for The Glass Labyrinth"
+            >
+              <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-700/80 bg-slate-800/60 text-amber-400/80">
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m10 9 5 3-5 3V9Z" />
+                </svg>
+              </div>
+              <span class="text-xs font-semibold tracking-widest text-slate-400 uppercase">Poster Pending</span>
+              <span class="mt-1 text-sm font-bold text-slate-200">The Glass Labyrinth</span>
+              <span class="mt-2 rounded-full bg-slate-800/90 px-2.5 py-0.5 text-[11px] text-slate-400">Archival Restoration</span>
+
+              <div class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-lg bg-cinema-950/90 px-2.5 py-1 text-xs font-bold text-amber-400 ring-1 ring-amber-400/30">
+                <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span>8.1</span>
+                <span class="sr-only">out of 10</span>
+              </div>
+            </div>
+
+            <div class="flex flex-1 flex-col justify-between p-4">
+              <div>
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
+                  <span>2022</span>
+                  <span aria-hidden="true">•</span>
+                  <span class="rounded-md bg-slate-800 px-2 py-0.5 text-slate-300">Drama / Thriller</span>
+                </div>
+                <h3 class="mt-2 text-base font-bold text-white group-hover:text-amber-400 transition-colors">
+                  The Glass Labyrinth
+                </h3>
+              </div>
+
+              <div class="mt-4 pt-3 border-t border-slate-800/80">
+                <a
+                  href="#movie-details-section"
+                  class="view-details-btn inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-800/90 px-3.5 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                >
+                  <span>View Movie Details</span>
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION C: MOVIE DETAILS PANEL                                      -->
+    <!-- JS Integration Point: #movie-details, #rating-form,                 -->
+    <!-- #details-favorite-btn                                               -->
+    <!-- =================================================================== -->
+    <section id="movie-details-section" aria-labelledby="movie-details-heading" class="space-y-6">
+      <div class="flex flex-col justify-between gap-2 border-b border-slate-800 pb-4 sm:flex-row sm:items-end">
+        <div>
+          <span class="text-xs font-semibold tracking-wider text-amber-400 uppercase">Selected Title Spotlight</span>
+          <h2 id="movie-details-heading" class="text-2xl font-bold tracking-tight text-white">Movie Details &amp; Rating</h2>
+        </div>
+        <p class="text-xs text-slate-400">Select any movie card above to inspect its full synopsis and rate it.</p>
+      </div>
+
+      <!-- JS Integration Point: Movie Details Loading & Error Containers -->
+      <div id="details-loading" role="status" class="hidden rounded-2xl border border-slate-800 bg-cinema-900 p-8 text-center">
+        <p class="text-sm font-medium text-slate-300">Loading movie details...</p>
+      </div>
+      <div id="details-error" role="alert" class="hidden rounded-2xl border border-rose-500/40 bg-rose-950/30 p-5 text-sm text-rose-200">
+        Could not load details for the selected movie. Please try again.
+      </div>
+
+      <!-- Movie Details Main Panel -->
+      <article id="movie-details" class="cinema-panel overflow-hidden p-6 sm:p-8 lg:p-10 shadow-xl">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <!-- Movie Poster Column -->
+          <div class="lg:col-span-4 xl:col-span-3">
+            <div class="mx-auto max-w-xs overflow-hidden rounded-2xl border border-slate-700/80 bg-cinema-950 shadow-lg">
+              <img
+                id="details-poster"
+                src="./assets/images/poster-dune-horizon.svg"
+                alt="Poster for Chronicles of the Dune Horizon"
+                class="aspect-[2/3] w-full object-cover"
+              />
+            </div>
+          </div>
+
+          <!-- Movie Metadata, Synopsis & Interactive Forms Column -->
+          <div class="flex flex-col justify-between space-y-6 lg:col-span-8 xl:col-span-9">
+            <div class="space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                  <span id="details-year" class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-amber-300 ring-1 ring-amber-400/30">2025</span>
+                  <span id="details-genre" class="rounded-lg bg-slate-800 px-2.5 py-1 text-slate-200">Sci-Fi • Adventure</span>
+                  <span id="details-runtime" class="rounded-lg bg-slate-800/70 px-2.5 py-1 text-slate-400">154 min</span>
+                </div>
+
+                <!-- Add to Favorites Button -->
+                <!-- JS Integration Point: #details-favorite-btn -->
+                <button
+                  id="details-favorite-btn"
+                  type="button"
+                  class="inline-flex items-center gap-2 rounded-xl border border-amber-400/50 bg-amber-400/10 px-4 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+                >
+                  <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                  <span>Add to Favorites</span>
+                </button>
+              </div>
+
+              <h3 id="details-title" class="text-2xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Chronicles of the Dune Horizon
+              </h3>
+
+              <!-- Rating Information Bar -->
+              <div id="details-rating" class="flex flex-wrap items-center gap-6 rounded-2xl border border-slate-800 bg-cinema-950/75 px-4 py-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400 text-slate-950 font-extrabold text-base">
+                    8.9
+                  </span>
+                  <div>
+                    <span class="block text-xs font-semibold text-white">Community Rating</span>
+                    <span id="details-vote-count" class="block text-xs text-slate-400">8.9 / 10 from 1,420 ratings</span>
+                  </div>
+                </div>
+
+                <div class="h-8 w-px bg-slate-800 hidden sm:block" aria-hidden="true"></div>
+
+                <div class="text-xs text-slate-300">
+                  <span class="block font-semibold text-white">Director</span>
+                  <span id="details-director" class="text-slate-400">Elena Vance-Kovacs</span>
+                </div>
+              </div>
+
+              <!-- Plot / Overview -->
+              <div class="space-y-2">
+                <h4 class="text-sm font-semibold tracking-wide text-slate-300 uppercase">Plot Overview</h4>
+                <p id="details-plot" class="text-sm leading-relaxed text-slate-300 sm:text-base">
+                  Across the scorched meridian of a tidally locked desert world, cartographer Cassian Vale discovers an ancient acoustic beacon buried beneath shifting silicate dunes. When rival orbital syndicates move to silence the transmission, Vale must unite nomadic horizon-striders to decode a planetary warning that predates human spaceflight.
+                </p>
+              </div>
+            </div>
+
+            <!-- User Rating Control (1–10 Scale) & Quick Review Shortcut -->
+            <div class="grid grid-cols-1 gap-6 border-t border-slate-800 pt-6 xl:grid-cols-12">
+              <!-- JS Integration Point: #rating-form -->
+              <form id="rating-form" action="#movie-details-section" method="post" class="space-y-3 xl:col-span-7" novalidate>
+                <fieldset>
+                  <legend class="text-sm font-semibold text-white">
+                    Rate This Movie <span class="text-xs font-normal text-slate-400">(Select 1 to 10 stars)</span>
+                  </legend>
+
+                  <div class="mt-2.5 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Movie rating from 1 to 10">
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="1" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">1</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="2" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">2</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="3" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">3</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="4" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">4</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="5" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">5</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="6" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">6</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="7" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">7</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="8" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">8</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="9" checked class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">9</span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="user-rating" value="10" class="peer sr-only" />
+                      <span class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 transition-colors hover:border-amber-400/60 peer-checked:border-amber-400 peer-checked:bg-amber-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400">10</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                  <button
+                    id="rating-submit-btn"
+                    type="submit"
+                    class="rounded-xl bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+                  >
+                    Submit Rating
+                  </button>
+                  <a
+                    href="#review-form"
+                    class="rounded-xl border border-slate-700 bg-cinema-950 px-4 py-2 text-xs font-medium text-slate-200 transition-colors hover:border-slate-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                  >
+                    Write a Full Review Below
+                  </a>
+                </div>
+
+                <!-- JS Integration Point: Rating Feedback Message -->
+                <p id="rating-feedback" role="status" class="hidden text-xs font-medium text-emerald-400">
+                  Thank you! Your rating has been recorded.
+                </p>
+              </form>
+
+              <!-- Quick Comment Box inside Movie Details -->
+              <div class="rounded-2xl border border-slate-800 bg-cinema-950/60 p-4 xl:col-span-5">
+                <h4 class="text-xs font-semibold tracking-wide text-amber-400 uppercase">Quick Reaction Note</h4>
+                <p class="mt-1 text-xs text-slate-400">
+                  Share a short reaction on this movie or jump to the full Reviews &amp; Comments section below.
+                </p>
+                <div class="mt-3 space-y-2.5">
+                  <label for="details-quick-comment" class="sr-only">Quick comment on selected movie</label>
+                  <textarea
+                    id="details-quick-comment"
+                    rows="2"
+                    placeholder="What stood out to you in Chronicles of the Dune Horizon?"
+                    class="cinema-input"
+                  ></textarea>
+                  <a
+                    href="#reviews-section"
+                    class="inline-flex w-full items-center justify-center rounded-xl bg-slate-800 px-3.5 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                  >
+                    Post to Discussion Thread
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION E: REVIEWS AND COMMENTS                                     -->
+    <!-- JS Integration Point: #review-form, #reviews-list                   -->
+    <!-- =================================================================== -->
+    <section id="reviews-section" aria-labelledby="reviews-heading" class="space-y-8">
+      <div class="flex flex-col justify-between gap-2 border-b border-slate-800 pb-4 sm:flex-row sm:items-end">
+        <div>
+          <span class="text-xs font-semibold tracking-wider text-amber-400 uppercase">Audience Critique</span>
+          <h2 id="reviews-heading" class="text-2xl font-bold tracking-tight text-white">Reviews &amp; Comments</h2>
+        </div>
+        <p class="text-sm text-slate-400">Read community reviews or publish your own thoughts on the featured film.</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <!-- Review / Comment Form Column -->
+        <div class="lg:col-span-5">
+          <!-- JS Integration Point: #review-form -->
+          <form id="review-form" action="#reviews-section" method="post" class="cinema-card space-y-4 p-6" novalidate>
+            <h3 class="text-lg font-bold text-white">Leave a Review or Comment</h3>
+            <p class="text-xs text-slate-400">
+              Reviewing: <strong id="review-target-movie" class="text-amber-300">Chronicles of the Dune Horizon (2025)</strong>
+            </p>
+
+            <div>
+              <label for="review-username" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Display Name <span class="text-amber-400">*</span>
+              </label>
+              <input
+                id="review-username"
+                name="username"
+                type="text"
+                required
+                placeholder="e.g., Alex Rivera"
+                class="cinema-input"
+              />
+            </div>
+
+            <div>
+              <label for="review-rating" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Your Rating <span class="text-amber-400">*</span>
+              </label>
+              <select id="review-rating" name="rating" required class="cinema-input">
+                <option value="">Select a rating (1–10)</option>
+                <option value="10">10 — Masterpiece</option>
+                <option value="9" selected>9 — Superb</option>
+                <option value="8">8 — Great</option>
+                <option value="7">7 — Good</option>
+                <option value="6">6 — Worth Watching</option>
+                <option value="5">5 — Mixed</option>
+                <option value="4">4 — Below Average</option>
+                <option value="3">3 — Poor</option>
+                <option value="2">2 — Very Poor</option>
+                <option value="1">1 — Avoid</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="review-text" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Your Review <span class="text-amber-400">*</span>
+              </label>
+              <textarea
+                id="review-text"
+                name="reviewText"
+                rows="4"
+                required
+                placeholder="Share your thoughts on cinematography, pacing, performances, and score..."
+                class="cinema-input"
+              ></textarea>
+            </div>
+
+            <!-- JS Integration Point: Review Form Error & Success Messages -->
+            <div id="review-error" role="alert" class="hidden rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs text-rose-200">
+              Please fill in your display name, rating, and review text before submitting.
+            </div>
+            <div id="review-success" role="status" class="hidden rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-xs text-emerald-200">
+              Your review has been added to the discussion!
+            </div>
+
+            <button
+              id="review-submit-btn"
+              type="submit"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+            >
+              <span>Submit Review</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Reviews List Column -->
+        <div class="space-y-4 lg:col-span-7">
+          <!-- JS Integration Point: Empty Reviews State -->
+          <div id="reviews-empty-state" class="hidden cinema-card p-8 text-center">
+            <p class="text-base font-semibold text-white">No reviews yet</p>
+            <p class="mt-1 text-sm text-slate-400">Be the first viewer to share a review for this movie.</p>
+          </div>
+
+          <!-- JS Integration Point: #reviews-list container for rendering review cards -->
+          <div id="reviews-list" class="space-y-4">
+            <!-- Static Demo Review 1 -->
+            <article class="review-item cinema-card p-5 space-y-3">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-300 ring-1 ring-amber-400/40" aria-hidden="true">
+                    MK
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Maya Kowalski</h4>
+                    <time datetime="2026-10-18" class="text-xs text-slate-400">October 18, 2026</time>
+                  </div>
+                </div>
+                <span class="inline-flex items-center gap-1 rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30">
+                  <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span>9 / 10</span>
+                </span>
+              </div>
+              <p class="text-sm leading-relaxed text-slate-300">
+                Stunning sound design and wide-angle desert compositions. The second-act acoustic canyon sequence builds tension without relying on cheap exposition. Easily one of the standout science-fiction releases of the year.
+              </p>
+            </article>
+
+            <!-- Static Demo Review 2 -->
+            <article class="review-item cinema-card p-5 space-y-3">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-400/20 text-sm font-bold text-sky-300 ring-1 ring-sky-400/40" aria-hidden="true">
+                    DL
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Devon Lindqvist</h4>
+                    <time datetime="2026-10-12" class="text-xs text-slate-400">October 12, 2026</time>
+                  </div>
+                </div>
+                <span class="inline-flex items-center gap-1 rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30">
+                  <svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <span>8 / 10</span>
+                </span>
+              </div>
+              <p class="text-sm leading-relaxed text-slate-300">
+                Though the opening twenty minutes take their time establishing the orbital politics, the payoff in the final third is deeply rewarding. The ensemble cast delivers grounded, believable performances throughout.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION D: COMMUNITY SECTION (SUGGEST A MOVIE & REPORT A PROBLEM)   -->
+    <!-- JS Integration Point: #community-suggestion-form,                   -->
+    <!-- #problem-report-form, #community-submissions-list                   -->
+    <!-- =================================================================== -->
+    <section id="community-section" aria-labelledby="community-heading" class="space-y-10">
+      <div class="flex flex-col justify-between gap-2 border-b border-slate-800 pb-4 sm:flex-row sm:items-end">
+        <div>
+          <span class="text-xs font-semibold tracking-wider text-amber-400 uppercase">Catalog Curation</span>
+          <h2 id="community-heading" class="text-2xl font-bold tracking-tight text-white">Community Contributions</h2>
+        </div>
+        <p class="text-sm text-slate-400">Help expand our cinema database by suggesting missing films or reporting metadata issues.</p>
+      </div>
+
+      <!-- Two Distinct Contribution Cards: Suggest a Movie & Report a Problem -->
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <!-- 1. Suggest a Movie Card -->
+        <div class="cinema-card p-6 sm:p-8 space-y-5">
+          <div class="flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400/15 text-amber-400 ring-1 ring-amber-400/30" aria-hidden="true">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </span>
+            <div>
+              <h3 class="text-lg font-bold text-white">Suggest a Movie</h3>
+              <p class="text-xs text-slate-400">Recommend an indie gem, international classic, or new release.</p>
+            </div>
+          </div>
+
+          <!-- JS Integration Point: #community-suggestion-form -->
+          <form id="community-suggestion-form" action="#community-section" method="post" class="space-y-4" novalidate>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div class="sm:col-span-2">
+                <label for="suggest-title" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Movie Title <span class="text-amber-400">*</span>
+                </label>
+                <input
+                  id="suggest-title"
+                  name="movieTitle"
+                  type="text"
+                  required
+                  placeholder="e.g., Afterglow of Sapporo"
+                  class="cinema-input"
+                />
+              </div>
+
+              <div>
+                <label for="suggest-year" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Release Year <span class="text-slate-500">(Optional)</span>
+                </label>
+                <input
+                  id="suggest-year"
+                  name="releaseYear"
+                  type="number"
+                  min="1888"
+                  max="2035"
+                  placeholder="2024"
+                  class="cinema-input"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="suggest-description" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Movie Description / Synopsis <span class="text-slate-500">(Optional)</span>
+              </label>
+              <textarea
+                id="suggest-description"
+                name="movieDescription"
+                rows="2"
+                placeholder="Brief overview of the plot, director, or genre..."
+                class="cinema-input"
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="suggest-reason" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Reason for Suggesting <span class="text-amber-400">*</span>
+              </label>
+              <textarea
+                id="suggest-reason"
+                name="reason"
+                rows="3"
+                required
+                placeholder="Why should this movie be added to the Movie Explorer Community catalog?"
+                class="cinema-input"
+              ></textarea>
+            </div>
+
+            <!-- JS Integration Point: Suggestion Form Feedback -->
+            <div id="suggestion-feedback" role="status" class="hidden rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-xs text-emerald-200">
+              Movie suggestion submitted! Our community moderators will review it shortly.
+            </div>
+
+            <button
+              id="suggest-submit-btn"
+              type="submit"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+            >
+              <span>Submit Suggestion</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- 2. Report a Problem Card -->
+        <div class="cinema-card p-6 sm:p-8 space-y-5">
+          <div class="flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/30" aria-hidden="true">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </span>
+            <div>
+              <h3 class="text-lg font-bold text-white">Report a Problem</h3>
+              <p class="text-xs text-slate-400">Flag inaccurate release years, broken posters, or duplicate entries.</p>
+            </div>
+          </div>
+
+          <!-- JS Integration Point: #problem-report-form -->
+          <form id="problem-report-form" action="#community-section" method="post" class="space-y-4" novalidate>
+            <div>
+              <label for="report-movie-title" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Movie Title or Reference ID <span class="text-amber-400">*</span>
+              </label>
+              <input
+                id="report-movie-title"
+                name="movieReference"
+                type="text"
+                required
+                placeholder="e.g., The Glass Labyrinth (2022)"
+                class="cinema-input"
+              />
+            </div>
+
+            <div>
+              <label for="report-problem-type" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Problem Type <span class="text-amber-400">*</span>
+              </label>
+              <select id="report-problem-type" name="problemType" required class="cinema-input">
+                <option value="">Select issue category...</option>
+                <option value="incorrect-metadata">Incorrect Release Year, Cast, or Genre</option>
+                <option value="missing-poster">Missing or Low-Resolution Poster</option>
+                <option value="plot-error">Inaccurate Plot Overview or Spoiler</option>
+                <option value="duplicate-entry">Duplicate Catalog Entry</option>
+                <option value="other">Other Data Issue</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="report-description" class="mb-1.5 block text-xs font-medium text-slate-300">
+                Issue Description &amp; Correction Details <span class="text-amber-400">*</span>
+              </label>
+              <textarea
+                id="report-description"
+                name="problemDescription"
+                rows="4"
+                required
+                placeholder="Describe what needs to be corrected and provide a verifiable source if available..."
+                class="cinema-input"
+              ></textarea>
+            </div>
+
+            <!-- JS Integration Point: Problem Report Feedback -->
+            <div id="report-feedback" role="status" class="hidden rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-xs text-emerald-200">
+              Problem report logged! Thank you for helping keep our catalog accurate.
+            </div>
+
+            <button
+              id="report-submit-btn"
+              type="submit"
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-amber-400 hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+            >
+              <span>Submit Report</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Community Submissions List -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white">Recent Community Submissions</h3>
+          <span class="text-xs text-slate-400">Showing latest suggestions &amp; data reports</span>
+        </div>
+
+        <!-- JS Integration Point: Empty state for community submissions -->
+        <div id="community-empty-state" class="hidden cinema-card p-8 text-center">
+          <p class="text-sm text-slate-400">No community submissions have been posted yet.</p>
+        </div>
+
+        <!-- JS Integration Point: #community-submissions-list -->
+        <div id="community-submissions-list" class="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <!-- Static Submission Example 1 -->
+          <article class="submission-card cinema-card flex flex-col justify-between p-5 space-y-4">
+            <div class="space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-md bg-amber-400/15 px-2.5 py-1 text-xs font-semibold text-amber-300">
+                  Movie Suggestion
+                </span>
+                <!-- Status Badge uses icon + text + border (does not rely on color alone) -->
+                <span class="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-950/40 px-2.5 py-0.5 text-xs font-medium text-amber-300">
+                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 6v6l4 2" />
+                  </svg>
+                  <span>Status: Pending</span>
+                </span>
+              </div>
+
+              <h4 class="text-base font-bold text-white">La Chimera (2023)</h4>
+              <p class="text-xs leading-relaxed text-slate-300">
+                Suggested by @cine_archivist — Alice Rohrwacher's lyrical archaeological drama deserves a spot in our international cinema spotlight.
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
+              <span>Submitted 2 days ago</span>
+              <span class="inline-flex items-center gap-1 font-medium text-slate-300">
+                <svg class="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>7 comments</span>
+              </span>
+            </div>
+          </article>
+
+          <!-- Static Submission Example 2 -->
+          <article class="submission-card cinema-card flex flex-col justify-between p-5 space-y-4">
+            <div class="space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-md bg-rose-500/15 px-2.5 py-1 text-xs font-semibold text-rose-300">
+                  Problem Report
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-950/40 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
+                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <span>Status: Reviewed</span>
+                </span>
+              </div>
+
+              <h4 class="text-base font-bold text-white">The Glass Labyrinth — Poster Missing</h4>
+              <p class="text-xs leading-relaxed text-slate-300">
+                Reported by @velvet_reel — The high-resolution theatrical poster is currently missing and displaying the fallback placeholder card.
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
+              <span>Submitted 5 days ago</span>
+              <span class="inline-flex items-center gap-1 font-medium text-slate-300">
+                <svg class="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>3 comments</span>
+              </span>
+            </div>
+          </article>
+
+          <!-- Static Submission Example 3 -->
+          <article class="submission-card cinema-card flex flex-col justify-between p-5 space-y-4">
+            <div class="space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-md bg-amber-400/15 px-2.5 py-1 text-xs font-semibold text-amber-300">
+                  Movie Suggestion
+                </span>
+                <span class="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-950/40 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
+                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  <span>Status: Reviewed</span>
+                </span>
+              </div>
+
+              <h4 class="text-base font-bold text-white">Echoes of the Silent Star (2023)</h4>
+              <p class="text-xs leading-relaxed text-slate-300">
+                Suggested by @solaris_fan — Deep-space chamber drama featuring an acclaimed orchestral score and practical miniature photography.
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
+              <span>Submitted 1 week ago</span>
+              <span class="inline-flex items-center gap-1 font-medium text-slate-300">
+                <svg class="h-3.5 w-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>12 comments</span>
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION F: FAVORITES                                                -->
+    <!-- JS Integration Point: #favorites-list, #favorites-empty-state       -->
+    <!-- =================================================================== -->
+    <section id="favorites-section" aria-labelledby="favorites-heading" class="space-y-6">
+      <div class="flex flex-col justify-between gap-2 border-b border-slate-800 pb-4 sm:flex-row sm:items-end">
+        <div>
+          <span class="text-xs font-semibold tracking-wider text-amber-400 uppercase">Personal Watchlist</span>
+          <h2 id="favorites-heading" class="text-2xl font-bold tracking-tight text-white">Your Saved Favorites</h2>
+        </div>
+        <p class="text-sm text-slate-400">Movies you have bookmarked for quick access and rewatch nights.</p>
+      </div>
+
+      <!-- JS Integration Point: Favorites Empty State (Hidden initially via 'hidden' class; reveal when #favorites-list is empty) -->
+      <div
+        id="favorites-empty-state"
+        class="hidden rounded-2xl border border-dashed border-slate-700 bg-cinema-900/50 p-10 text-center"
+      >
+        <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 text-amber-400">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-white">Your favorites list is currently empty</h3>
+        <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">
+          Explore the movie catalog above and click "Add to Favorites" on any title to build your personal collection.
+        </p>
+        <a
+          href="#search-section"
+          class="mt-4 inline-flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+        >
+          Browse Movie Catalog
+        </a>
+      </div>
+
+      <!-- JS Integration Point: #favorites-list container -->
+      <div id="favorites-list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Saved Favorite Card 1 -->
+        <article class="favorite-card cinema-card flex flex-col overflow-hidden">
+          <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+            <img
+              src="./assets/images/poster-dune-horizon.svg"
+              alt="Poster for Chronicles of the Dune Horizon"
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
+            <span class="absolute top-3 left-3 rounded-lg bg-cinema-950/90 px-2.5 py-1 text-xs font-semibold text-amber-300 ring-1 ring-amber-400/30">
+              Saved
+            </span>
+          </div>
+
+          <div class="flex flex-1 flex-col justify-between p-4">
+            <div>
+              <p class="text-xs text-slate-400">2025 • Sci-Fi / Adventure</p>
+              <h3 class="mt-1 text-base font-bold text-white">Chronicles of the Dune Horizon</h3>
+            </div>
+
+            <div class="mt-4 flex flex-col gap-2 pt-3 border-t border-slate-800">
+              <a
+                href="#movie-details-section"
+                class="inline-flex w-full items-center justify-center rounded-xl bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+              >
+                View Details
+              </a>
+              <button
+                type="button"
+                aria-label="Remove Chronicles of the Dune Horizon from favorites"
+                class="remove-favorite-btn inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-950/25 px-3 py-2 text-xs font-semibold text-rose-300 transition-colors hover:bg-rose-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 cursor-pointer"
+              >
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                <span>Remove from Favorites</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Saved Favorite Card 2 -->
+        <article class="favorite-card cinema-card flex flex-col overflow-hidden">
+          <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+            <img
+              src="./assets/images/poster-solaris-echo.svg"
+              alt="Poster for Echoes of the Silent Star showing an orbital eclipse"
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
+            <span class="absolute top-3 left-3 rounded-lg bg-cinema-950/90 px-2.5 py-1 text-xs font-semibold text-amber-300 ring-1 ring-amber-400/30">
+              Saved
+            </span>
+          </div>
+
+          <div class="flex flex-1 flex-col justify-between p-4">
+            <div>
+              <p class="text-xs text-slate-400">2023 • Drama / Sci-Fi</p>
+              <h3 class="mt-1 text-base font-bold text-white">Echoes of the Silent Star</h3>
+            </div>
+
+            <div class="mt-4 flex flex-col gap-2 pt-3 border-t border-slate-800">
+              <a
+                href="#movie-details-section"
+                class="inline-flex w-full items-center justify-center rounded-xl bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 transition-colors hover:bg-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+              >
+                View Details
+              </a>
+              <button
+                type="button"
+                aria-label="Remove Echoes of the Silent Star from favorites"
+                class="remove-favorite-btn inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-rose-500/40 bg-rose-950/25 px-3 py-2 text-xs font-semibold text-rose-300 transition-colors hover:bg-rose-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 cursor-pointer"
+              >
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                <span>Remove from Favorites</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION G: SIGN IN AND REGISTRATION                                 -->
+    <!-- JS Integration Point: #signin-form, #register-form                  -->
+    <!-- =================================================================== -->
+    <section id="auth-section" aria-labelledby="auth-heading" class="space-y-8">
+      <div class="flex flex-col justify-between gap-2 border-b border-slate-800 pb-4 sm:flex-row sm:items-end">
+        <div>
+          <span class="text-xs font-semibold tracking-wider text-amber-400 uppercase">Member Access</span>
+          <h2 id="auth-heading" class="text-2xl font-bold tracking-tight text-white">Sign In or Create an Account</h2>
+        </div>
+        <p class="text-xs text-slate-400">
+          Educational prototype forms — do not enter real personal passwords.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <!-- Sign In Card -->
+        <div id="signin-card" class="cinema-card flex flex-col justify-between p-6 sm:p-8">
+          <div class="space-y-5">
+            <div>
+              <h3 class="text-xl font-bold text-white">Welcome Back</h3>
+              <p class="mt-1 text-xs text-slate-400">
+                Sign in to sync your saved favorites, ratings, and community submissions.
+              </p>
+            </div>
+
+            <!-- JS Integration Point: #signin-form -->
+            <form id="signin-form" action="#auth-section" method="post" class="space-y-4" novalidate>
+              <div>
+                <label for="signin-email" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Email Address <span class="text-amber-400">*</span>
+                </label>
+                <input
+                  id="signin-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="you@example.com"
+                  class="cinema-input"
+                />
+              </div>
+
+              <div>
+                <label for="signin-password" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Password <span class="text-amber-400">*</span>
+                </label>
+                <input
+                  id="signin-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  minlength="8"
+                  placeholder="••••••••"
+                  class="cinema-input"
+                />
+              </div>
+
+              <!-- JS Integration Point: Sign-In Validation / Status Messages -->
+              <div id="signin-error" role="alert" class="hidden rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs text-rose-200">
+                Invalid email or password format. Please check your credentials and try again.
+              </div>
+              <div id="signin-success" role="status" class="hidden rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-xs text-emerald-200">
+                Signed in successfully! Welcome back to Movie Explorer Community.
+              </div>
+
+              <button
+                id="signin-submit-btn"
+                type="submit"
+                class="inline-flex w-full items-center justify-center rounded-xl bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+              >
+                Sign In
+              </button>
+            </form>
+          </div>
+
+          <p class="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-400">
+            New to Movie Explorer Community?
+            <a
+              id="go-to-register-link"
+              href="#register-card"
+              class="font-semibold text-amber-400 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded"
+            >
+              Create an account
+            </a>
+          </p>
+        </div>
+
+        <!-- Registration Card -->
+        <div id="register-card" class="cinema-card flex flex-col justify-between p-6 sm:p-8">
+          <div class="space-y-5">
+            <div>
+              <h3 class="text-xl font-bold text-white">Create Account</h3>
+              <p class="mt-1 text-xs text-slate-400">
+                Join our community of film enthusiasts to rate titles, write reviews, and curate lists.
+              </p>
+            </div>
+
+            <!-- JS Integration Point: #register-form -->
+            <form id="register-form" action="#auth-section" method="post" class="space-y-4" novalidate>
+              <div>
+                <label for="register-username" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Username <span class="text-amber-400">*</span>
+                </label>
+                <input
+                  id="register-username"
+                  name="username"
+                  type="text"
+                  autocomplete="username"
+                  required
+                  minlength="3"
+                  placeholder="cinephile_alex"
+                  class="cinema-input"
+                />
+              </div>
+
+              <div>
+                <label for="register-email" class="mb-1.5 block text-xs font-medium text-slate-300">
+                  Email Address <span class="text-amber-400">*</span>
+                </label>
+                <input
+                  id="register-email"
+                  name="email"
+                  type="email"
+                  autocomplete="email"
+                  required
+                  placeholder="alex@example.com"
+                  class="cinema-input"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label for="register-password" class="mb-1.5 block text-xs font-medium text-slate-300">
+                    Password <span class="text-amber-400">*</span>
+                  </label>
+                  <input
+                    id="register-password"
+                    name="password"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    placeholder="Min. 8 characters"
+                    class="cinema-input"
+                  />
+                </div>
+
+                <div>
+                  <label for="register-confirm-password" class="mb-1.5 block text-xs font-medium text-slate-300">
+                    Confirm Password <span class="text-amber-400">*</span>
+                  </label>
+                  <input
+                    id="register-confirm-password"
+                    name="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    placeholder="Re-enter password"
+                    class="cinema-input"
+                  />
+                </div>
+              </div>
+
+              <!-- JS Integration Point: Registration Validation / Status Messages -->
+              <div id="register-error" role="alert" class="hidden rounded-xl border border-rose-500/40 bg-rose-950/30 p-3 text-xs text-rose-200">
+                Please verify that all fields are filled out and both passwords match.
+              </div>
+              <div id="register-success" role="status" class="hidden rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3 text-xs text-emerald-200">
+                Account created! You can now sign in and start curating your movie list.
+              </div>
+
+              <button
+                id="register-submit-btn"
+                type="submit"
+                class="inline-flex w-full items-center justify-center rounded-xl border border-amber-400 bg-amber-400/15 px-4 py-2.5 text-sm font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+              >
+                Create Account
+              </button>
+            </form>
+          </div>
+
+          <p class="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-400">
+            Already have a member account?
+            <a
+              id="go-to-signin-link"
+              href="#signin-card"
+              class="font-semibold text-amber-400 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded"
+            >
+              Sign in here
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- SECTION H: FOOTER                                                     -->
+  <!-- ===================================================================== -->
+  <footer class="mt-20 border-t border-slate-800/80 bg-cinema-900/70">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-8 md:grid-cols-12">
+        <div class="space-y-3 md:col-span-6">
+          <div class="inline-flex items-center gap-2.5">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400 text-slate-950 font-bold">
+              M
+            </span>
+            <span class="text-base font-bold tracking-tight text-white">Movie Explorer Community</span>
+          </div>
+          <p class="max-w-md text-xs leading-relaxed text-slate-400">
+            A community-driven cinema discovery interface built with semantic HTML5 and Tailwind CSS. Designed for exploring films, sharing reviews, and practicing modern frontend architecture.
+          </p>
+        </div>
+
+        <nav aria-label="Footer Navigation" class="md:col-span-6 md:flex md:justify-end">
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-slate-300">
+            <li>
+              <a href="#search-section" class="hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">
+                Home &amp; Search
+              </a>
+            </li>
+            <li>
+              <a href="#movie-details-section" class="hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">
+                Movie Details
+              </a>
+            </li>
+            <li>
+              <a href="#reviews-section" class="hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">
+                Reviews
+              </a>
+            </li>
+            <li>
+              <a href="#community-section" class="hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">
+                Community
+              </a>
+            </li>
+            <li>
+              <a href="#favorites-section" class="hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">
+                Favorites
+              </a>
+            </li>
+            <li>
+              <a href="#auth-section" class="hover:text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded">
+                Sign In / Register
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="mt-8 border-t border-slate-800/80 pt-6 flex flex-col items-start justify-between gap-2 text-xs text-slate-400 sm:flex-row sm:items-center">
+        <p>
+          <strong>Educational Note:</strong> This interface is a static learning project prepared for practicing Vanilla JavaScript (OOP, ES6 classes, Fetch API, async/await, and DOM manipulation).
+        </p>
+        <p class="shrink-0 text-slate-500">HTML5 &amp; Tailwind CSS Foundation</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "movie-explorer-community",
+  "version": "1.0.0",
+  "description": "Static HTML5 and Tailwind CSS frontend foundation for the Movie Explorer Community platform.",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" role="img" aria-label="Movie poster for Chronicles of Arrakis: Horizon">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#090d16"/>
+      <stop offset="45%" stop-color="#1f1624"/>
+      <stop offset="75%" stop-color="#7c2d12"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="dune1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451a03"/>
+      <stop offset="100%" stop-color="#1c1917"/>
+    </linearGradient>
+    <linearGradient id="dune2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#0c0a09"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="50%" cy="48%" r="30%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="40%" stop-color="#f59e0b" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background Sky -->
+  <rect width="400" height="600" fill="url(#sky)"/>
+
+  <!-- Stars -->
+  <g fill="#fde68a" opacity="0.6">
+    <circle cx="60" cy="50" r="1.2"/>
+    <circle cx="140" cy="80" r="1"/>
+    <circle cx="290" cy="45" r="1.5"/>
+    <circle cx="340" cy="110" r="1"/>
+    <circle cx="210" cy="60" r="1.8"/>
+    <circle cx="95" cy="130" r="1"/>
+    <circle cx="310" cy="160" r="1.2"/>
+  </g>
+
+  <!-- Twin Moons & Giant Sun -->
+  <circle cx="200" cy="285" r="115" fill="url(#sun)"/>
+  <circle cx="200" cy="285" r="56" fill="#fef3c7" opacity="0.9"/>
+  <circle cx="295" cy="175" r="16" fill="#fde68a" opacity="0.5"/>
+  <circle cx="115" cy="205" r="9" fill="#fed7aa" opacity="0.4"/>
+
+  <!-- Sand Dunes -->
+  <path d="M0 390 Q120 340 250 385 T400 365 L400 600 L0 600 Z" fill="url(#dune2)"/>
+  <path d="M0 435 Q170 385 310 430 T400 415 L400 600 L0 600 Z" fill="url(#dune1)"/>
+  <path d="M0 490 Q140 460 280 500 T400 485 L400 600 L0 600 Z" fill="#090d16"/>
+
+  <!-- Lone Silhouette Figure -->
+  <circle cx="200" cy="396" r="3" fill="#fef3c7"/>
+  <path d="M196 400 L204 400 L206 418 L194 418 Z" fill="#090d16"/>
+
+  <!-- Poster Frame Border -->
+  <rect x="16" y="16" width="368" height="568" fill="none" stroke="#fbbf24" stroke-opacity="0.25" stroke-width="1"/>
+
+  <!-- Typography -->
+  <text x="200" y="65" text-anchor="middle" fill="#fcd34d" font-family="sans-serif" font-size="10" letter-spacing="5" font-weight="600">A DENIS V. ARCHIVE SELECTION</text>
+  <text x="200" y="515" text-anchor="middle" fill="#f8fafc" font-family="serif" font-size="28" letter-spacing="6" font-weight="700">CHRONICLES</text>
+  <text x="200" y="542" text-anchor="middle" fill="#f59e0b" font-family="sans-serif" font-size="13" letter-spacing="8" font-weight="600">OF THE DUNE HORIZON</text>
+  <text x="200" y="566" text-anchor="middle" fill="#94a3b8" font-family="sans-serif" font-size="9" letter-spacing="3">SCI-FI • ADVENTURE • IMAX 70MM</text>
+</svg>
