@@ -1,5 +1,7 @@
 "use strict";
 
+const authSection = document.getElementById("auth-section");
+
 const signinForm = document.getElementById("signin-form");
 const signinEmail = document.getElementById("signin-email");
 const signinPassword = document.getElementById("signin-password");
@@ -32,6 +34,12 @@ function hasEmptyField(values) {
   return values.some((value) => !value.trim());
 }
 
+function hideAuthSection() {
+  setTimeout(() => {
+    authSection.classList.add("hidden");
+  }, 1000);
+}
+
 signinForm.addEventListener("submit", (e) => {
   e.preventDefault();
   hideBanners(signinError, signinSuccess);
@@ -59,6 +67,7 @@ signinForm.addEventListener("submit", (e) => {
     "Signed in successfully! Welcome back to Movie Explorer Community.",
   );
   signinForm.reset();
+  hideAuthSection();
 });
 
 registerForm.addEventListener("submit", (e) => {
@@ -87,4 +96,5 @@ registerForm.addEventListener("submit", (e) => {
 
   showBanner(registerSuccess, "Thank U to trust us ! have a nice day");
   registerForm.reset();
+  hideAuthSection();
 });
