@@ -1,5 +1,6 @@
 "use strict";
 
+const navLinks = document.querySelectorAll(".cinema-nav-link");
 const authSection = document.getElementById("auth-section");
 
 const signinForm = document.getElementById("signin-form");
@@ -18,8 +19,23 @@ const registerConfirmPassword = document.getElementById(
 const registerError = document.getElementById("register-error");
 const registerSuccess = document.getElementById("register-success");
 
+const ACTIVE_NAV_CLASSES = ["bg-amber-400/10", "text-amber-400"];
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
+
+function setActiveNavLink(selectedLink) {
+  navLinks.forEach((link) => {
+    link.classList.remove(...ACTIVE_NAV_CLASSES);
+    link.removeAttribute("aria-current");
+  });
+
+  selectedLink.classList.add(...ACTIVE_NAV_CLASSES);
+  selectedLink.setAttribute("aria-current", "page");
+}
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => setActiveNavLink(link));
+});
 
 function showBanner(bannerElement, message) {
   bannerElement.textContent = message;
