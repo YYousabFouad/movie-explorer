@@ -20,8 +20,15 @@ const registerError = document.getElementById("register-error");
 const registerSuccess = document.getElementById("register-success");
 
 const ACTIVE_NAV_CLASSES = ["bg-amber-400/10", "text-amber-400"];
+const SECTION_OBSERVER_OPTIONS = {
+  root: null,
+  rootMargin: "-25% 0px -65% 0px",
+  threshold: 0,
+};
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
+
+const sectionToNavLinkMap = new Map();
 
 function setActiveNavLink(selectedLink) {
   navLinks.forEach((link) => {
@@ -33,8 +40,30 @@ function setActiveNavLink(selectedLink) {
   selectedLink.setAttribute("aria-current", "page");
 }
 
+function handleSectionIntersection(entries) {
+  entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+
+    const matchingLink = sectionToNavLinkMap.get(entry.target);
+    if (matchingLink) {
+      setActiveNavLink(matchingLink);
+    }
+  });
+}
+
+const sectionObserver = new IntersectionObserver(
+  handleSectionIntersection,
+  SECTION_OBSERVER_OPTIONS,
+);
+
 navLinks.forEach((link) => {
   link.addEventListener("click", () => setActiveNavLink(link));
+
+  const targetSection = document.querySelector(link.getAttribute("href"));
+  if (targetSection) {
+    sectionToNavLinkMap.set(targetSection, link);
+    sectionObserver.observe(targetSection);
+  }
 });
 
 function showBanner(bannerElement, message) {
