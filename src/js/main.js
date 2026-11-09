@@ -1,145 +1,245 @@
 "use strict";
 
-const navLinks = document.querySelectorAll(".cinema-nav-link");
-const authSection = document.getElementById("auth-section");
+/**
+ * Movie Explorer Community
+ * Modular Client-Side Architecture
+ *
+ * Implements:
+ * - Single Responsibility Principle (SRP): Decoupled validation, DOM manipulation, and controllers.
+ * - Open/Closed Principle (OCP): Extensible validation rules and navigation handlers.
+ * - Dependency Inversion Principle (DIP): Guarded, defensive DOM queries within initializers.
+ * - DRY & KISS: Parameterized form handler lifecycle and clear, single-purpose error messages.
+ * - Defensive Security: Validated CSS selector extraction avoiding unhandled DOMExceptions.
+ */
 
-const signinForm = document.getElementById("signin-form");
-const signinEmail = document.getElementById("signin-email");
-const signinPassword = document.getElementById("signin-password");
-const signinError = document.getElementById("signin-error");
-const signinSuccess = document.getElementById("signin-success");
+// ============================================================================
+// 1. CONFIGURATION & CONSTANTS (Single Source of Truth)
+// ============================================================================
+const CONFIG = Object.freeze({
+  activeNavClasses: Object.freeze(["bg-amber-400/10", "text-amber-400"]),
+  sectionObserverOptions: Object.freeze({
+    root: null,
+    rootMargin: "-25% 0px -65% 0px",
+    threshold: 0,
+  }),
+  emailPattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  minPasswordLength: 8,
+  minUsernameLength: 3,
+});
 
-const registerForm = document.getElementById("register-form");
-const registerUsername = document.getElementById("register-username");
-const registerEmail = document.getElementById("register-email");
-const registerPassword = document.getElementById("register-password");
-const registerConfirmPassword = document.getElementById(
-  "register-confirm-password",
-);
-const registerError = document.getElementById("register-error");
-const registerSuccess = document.getElementById("register-success");
+// ============================================================================
+// 2. DOM UTILITIES (Defensive, Pure UI Operations)
+// ============================================================================
+const DOM = {
+  showBanner(bannerElement, message) {
+    if (!bannerElement) return;
+    bannerElement.textContent = message;
+    bannerElement.classList.remove("hidden");
+  },
 
-const ACTIVE_NAV_CLASSES = ["bg-amber-400/10", "text-amber-400"];
-const SECTION_OBSERVER_OPTIONS = {
-  root: null,
-  rootMargin: "-25% 0px -65% 0px",
-  threshold: 0,
+  hideBanners(...bannerElements) {
+    bannerElements.forEach((banner) => {
+      if (banner) {
+        banner.classList.add("hidden");
+      }
+    });
+  },
 };
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 8;
 
-const sectionToNavLinkMap = new Map();
+// ============================================================================
+// 3. VALIDATION MODULE (SRP / OCP: Pure Validation Rules, Zero DOM Coupling)
+// ============================================================================
+const Validator = {
+  isNonEmptyString(value) {
+    return typeof value === "string" && value.trim().length > 0;
+  },
 
-function setActiveNavLink(selectedLink) {
+  isValidEmail(email) {
+    return typeof email === "string" && CONFIG.emailPattern.test(email.trim());
+  },
+
+  hasMinLength(value, minLength) {
+    return typeof value === "string" && value.length >= minLength;
+  },
+
+  validateSignIn({ email, password }) {
+    if (!this.isNonEmptyString(email) || !this.isNonEmptyString(password)) {
+      return { isValid: false, message: "Please complete all required fields." };
+    }
+
+    if (!this.isValidEmail(email)) {
+      return { isValid: false, message: "Please enter a valid email address." };
+    }
+
+    if (!this.hasMinLength(password, CONFIG.minPasswordLength)) {
+      return {
+        isValid: false,
+        message: `Password must be at least ${CONFIG.minPasswordLength} characters long.`,
+      };
+    }
+
+    return { isValid: true, message: "" };
+  },
+
+  validateRegister({ username, email, password, confirmPassword }) {
+    if (
+      !this.isNonEmptyString(username) ||
+      !this.isNonEmptyString(email) ||
+      !this.isNonEmptyString(password) ||
+      !this.isNonEmptyString(confirmPassword)
+    ) {
+      return { isValid: false, message: "Please complete all required fields." };
+    }
+
+    if (!this.hasMinLength(username.trim(), CONFIG.minUsernameLength)) {
+      return {
+        isValid: false,
+        message: `Username must be at least ${CONFIG.minUsernameLength} characters long.`,
+      };
+    }
+
+    if (!this.isValidEmail(email)) {
+      return { isValid: false, message: "Please enter a valid email address." };
+    }
+
+    if (!this.hasMinLength(password, CONFIG.minPasswordLength)) {
+      return {
+        isValid: false,
+        message: `Password must be at least ${CONFIG.minPasswordLength} characters long.`,
+      };
+    }
+
+    if (password !== confirmPassword) {
+      return {
+        isValid: false,
+        message: "Passwords do not match. Please verify both password entries.",
+      };
+    }
+
+    return { isValid: true, message: "" };
+  },
+};
+
+// ============================================================================
+// 4. NAVIGATION CONTROLLER (Defensive Selector Parsing & Scroll-Spy)
+// ============================================================================
+function initNavigation() {
+  const navLinks = document.querySelectorAll(".cinema-nav-link");
+  if (!navLinks.length) return;
+
+  const sectionToNavLinkMap = new Map();
+
+  function setActiveNavLink(selectedLink) {
+    navLinks.forEach((link) => {
+      link.classList.remove(...CONFIG.activeNavClasses);
+      link.removeAttribute("aria-current");
+    });
+
+    selectedLink.classList.add(...CONFIG.activeNavClasses);
+    selectedLink.setAttribute("aria-current", "page");
+  }
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+
+      const matchingLink = sectionToNavLinkMap.get(entry.target);
+      if (matchingLink) {
+        setActiveNavLink(matchingLink);
+      }
+    });
+  }, CONFIG.sectionObserverOptions);
+
   navLinks.forEach((link) => {
-    link.classList.remove(...ACTIVE_NAV_CLASSES);
-    link.removeAttribute("aria-current");
-  });
+    link.addEventListener("click", () => setActiveNavLink(link));
 
-  selectedLink.classList.add(...ACTIVE_NAV_CLASSES);
-  selectedLink.setAttribute("aria-current", "page");
-}
-
-function handleSectionIntersection(entries) {
-  entries.forEach((entry) => {
-    if (!entry.isIntersecting) return;
-
-    const matchingLink = sectionToNavLinkMap.get(entry.target);
-    if (matchingLink) {
-      setActiveNavLink(matchingLink);
+    const href = link.getAttribute("href");
+    // Defensive check: Only resolve valid ID hash references to avoid DOMException
+    if (href && href.startsWith("#") && href.length > 1) {
+      const targetSection = document.getElementById(href.slice(1));
+      if (targetSection) {
+        sectionToNavLinkMap.set(targetSection, link);
+        sectionObserver.observe(targetSection);
+      }
     }
   });
 }
 
-const sectionObserver = new IntersectionObserver(
-  handleSectionIntersection,
-  SECTION_OBSERVER_OPTIONS,
-);
+// ============================================================================
+// 5. AUTHENTICATION CONTROLLER (DRY / SRP / DIP: Parameterized Form Binder)
+// ============================================================================
+function bindAuthForm({
+  formId,
+  errorBannerId,
+  successBannerId,
+  extractPayload,
+  validator,
+  successMessage,
+}) {
+  const form = document.getElementById(formId);
+  const errorBanner = document.getElementById(errorBannerId);
+  const successBanner = document.getElementById(successBannerId);
 
-navLinks.forEach((link) => {
-  link.addEventListener("click", () => setActiveNavLink(link));
+  if (!form || !errorBanner || !successBanner) return;
 
-  const targetSection = document.querySelector(link.getAttribute("href"));
-  if (targetSection) {
-    sectionToNavLinkMap.set(targetSection, link);
-    sectionObserver.observe(targetSection);
-  }
-});
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    DOM.hideBanners(errorBanner, successBanner);
 
-function showBanner(bannerElement, message) {
-  bannerElement.textContent = message;
-  bannerElement.classList.remove("hidden");
+    const payload = extractPayload();
+    const result = validator(payload);
+
+    if (!result.isValid) {
+      DOM.showBanner(errorBanner, result.message);
+      return;
+    }
+
+    DOM.showBanner(successBanner, successMessage);
+    form.reset();
+  });
 }
 
-function hideBanners(...bannerElements) {
-  bannerElements.forEach((banner) => banner.classList.add("hidden"));
+function initAuth() {
+  bindAuthForm({
+    formId: "signin-form",
+    errorBannerId: "signin-error",
+    successBannerId: "signin-success",
+    extractPayload: () => ({
+      email: document.getElementById("signin-email")?.value ?? "",
+      password: document.getElementById("signin-password")?.value ?? "",
+    }),
+    validator: (payload) => Validator.validateSignIn(payload),
+    successMessage:
+      "Signed in successfully! Welcome back to Movie Explorer Community.",
+  });
+
+  bindAuthForm({
+    formId: "register-form",
+    errorBannerId: "register-error",
+    successBannerId: "register-success",
+    extractPayload: () => ({
+      username: document.getElementById("register-username")?.value ?? "",
+      email: document.getElementById("register-email")?.value ?? "",
+      password: document.getElementById("register-password")?.value ?? "",
+      confirmPassword:
+        document.getElementById("register-confirm-password")?.value ?? "",
+    }),
+    validator: (payload) => Validator.validateRegister(payload),
+    successMessage:
+      "Account created successfully! Welcome to Movie Explorer Community.",
+  });
 }
 
-function hasEmptyField(values) {
-  return values.some((value) => !value.trim());
+// ============================================================================
+// 6. APPLICATION BOOTSTRAP
+// ============================================================================
+function initApp() {
+  initNavigation();
+  initAuth();
 }
 
-function hideAuthSection() {
-  setTimeout(() => {
-    authSection.classList.add("hidden");
-  }, 1000);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
 }
-
-signinForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  hideBanners(signinError, signinSuccess);
-
-  const email = signinEmail.value.trim();
-  const password = signinPassword.value;
-
-  if (hasEmptyField([email, password])) {
-    return showBanner(signinError, "Complete all the fields please !");
-  }
-
-  if (!EMAIL_PATTERN.test(email)) {
-    return showBanner(signinError, "Please enter a valid email address !");
-  }
-
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    return showBanner(
-      signinError,
-      "Make sure the password is at least 8 characters !",
-    );
-  }
-
-  showBanner(
-    signinSuccess,
-    "Signed in successfully! Welcome back to Movie Explorer Community.",
-  );
-  signinForm.reset();
-  hideAuthSection();
-});
-
-registerForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  hideBanners(registerError, registerSuccess);
-
-  const username = registerUsername.value.trim();
-  const email = registerEmail.value.trim();
-  const password = registerPassword.value;
-  const confirmPassword = registerConfirmPassword.value;
-
-  if (hasEmptyField([username, email, password, confirmPassword])) {
-    return showBanner(registerError, "Complete all the fields please !");
-  }
-
-  if (!EMAIL_PATTERN.test(email)) {
-    return showBanner(registerError, "Please enter a valid email address !");
-  }
-
-  if (password.length < MIN_PASSWORD_LENGTH || confirmPassword !== password) {
-    return showBanner(
-      registerError,
-      "Make sure the password is 8 charachter or Make sure you enter the same password to confirm it",
-    );
-  }
-
-  showBanner(registerSuccess, "Thank U to trust us ! have a nice day");
-  registerForm.reset();
-  hideAuthSection();
-});

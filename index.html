@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Movie Explorer Community — Discover, rate, review, and curate cinema classics and modern releases." />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self';" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Movie Explorer Community — Discover, Rate &amp; Discuss Movies</title>
     <link rel="stylesheet" href="./dist/output.css" />
     <script src="./src/js/main.js" defer></script>
@@ -64,7 +66,7 @@
               Explore curated cinema classics and new releases, track your personal favorites list, share thoughtful critiques, and collaborate with fellow cinephiles.
             </p>
 
-            <form id="search-form" action="#search-results-section" method="get" class="mt-8 text-left" novalidate>
+            <form id="search-form" action="#search-results-section" method="get" class="mt-8 text-left">
               <div class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-cinema-950/90 p-3 shadow-lg sm:grid-cols-12">
                 <div class="sm:col-span-7">
                   <label for="search-input" class="cinema-label">Search by movie title, director, or keyword</label>
@@ -253,7 +255,7 @@
               </div>
 
               <div class="grid grid-cols-1 gap-6 border-t border-slate-800 pt-6 xl:grid-cols-12">
-                <form id="rating-form" action="#movie-details-section" method="post" class="space-y-3 xl:col-span-7" novalidate>
+                <form id="rating-form" action="#movie-details-section" method="post" class="space-y-3 xl:col-span-7">
                   <fieldset>
                     <legend class="text-sm font-semibold text-white">
                       Rate This Movie <span class="text-xs font-normal text-slate-400">(Select 1 to 10 stars)</span>
@@ -307,7 +309,7 @@
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div class="lg:col-span-5">
-            <form id="review-form" action="#reviews-section" method="post" class="cinema-card space-y-4 p-6" novalidate>
+            <form id="review-form" action="#reviews-section" method="post" class="cinema-card space-y-4 p-6">
               <h3 class="text-lg font-bold text-white">Leave a Review or Comment</h3>
               <p class="text-xs text-slate-400">Reviewing: <strong id="review-target-movie" class="text-amber-300">Chronicles of the Dune Horizon (2025)</strong></p>
 
@@ -405,7 +407,7 @@
               <p class="text-xs text-slate-400">Recommend an indie gem, international classic, or new release.</p>
             </div>
 
-            <form id="community-suggestion-form" action="#community-section" method="post" class="space-y-4" novalidate>
+            <form id="community-suggestion-form" action="#community-section" method="post" class="space-y-4">
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div class="sm:col-span-2">
                   <label for="suggest-title" class="cinema-label">Movie Title <span class="text-amber-400">*</span></label>
@@ -439,7 +441,7 @@
               <p class="text-xs text-slate-400">Flag inaccurate release years, broken posters, or duplicate entries.</p>
             </div>
 
-            <form id="problem-report-form" action="#community-section" method="post" class="space-y-4" novalidate>
+            <form id="problem-report-form" action="#community-section" method="post" class="space-y-4">
               <div>
                 <label for="report-movie-title" class="cinema-label">Movie Title or Reference ID <span class="text-amber-400">*</span></label>
                 <input id="report-movie-title" name="movieReference" type="text" required placeholder="e.g., The Glass Labyrinth (2022)" class="cinema-input" />
