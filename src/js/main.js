@@ -13,7 +13,6 @@ const EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
 
 const isFilled = (value) => typeof value === "string" && value.trim().length > 0;
 const isEmail = (value) => typeof value === "string" && EMAIL_PATTERN.test(value.trim());
-const hasLength = (min) => (value) => typeof value === "string" && value.length >= min;
 
 // A rule is [field, test(value, payload) => boolean, message]. The first failing rule wins.
 const EMAIL_RULES = [
@@ -28,11 +27,11 @@ const SIGN_IN_RULES = [
 
 const REGISTER_RULES = [
   ["username", isFilled, "Please enter a username."],
-  ["username", (v) => hasLength(MIN_USERNAME_LENGTH)(v.trim()),
+  ["username", (v) => v.trim().length >= MIN_USERNAME_LENGTH,
     `Username must be at least ${MIN_USERNAME_LENGTH} characters long.`],
   ...EMAIL_RULES,
   ["password", isFilled, "Please enter a password."],
-  ["password", hasLength(MIN_PASSWORD_LENGTH),
+  ["password", (v) => v.length >= MIN_PASSWORD_LENGTH,
     `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`],
   ["confirmPassword", isFilled, "Please confirm your password."],
   ["confirmPassword", (v, payload) => v === payload.password,
@@ -40,8 +39,9 @@ const REGISTER_RULES = [
 ];
 
 function validate(rules, payload) {
+  const input = payload && typeof payload === "object" ? payload : {};
   for (const [field, test, message] of rules) {
-    if (!test(payload[field], payload)) {
+    if (!test(input[field], input)) {
       return { isValid: false, message, field };
     }
   }
@@ -69,6 +69,23 @@ function setActiveNavLink(navLinks, selectedLink) {
   selectedLink.setAttribute("aria-current", "location");
 }
 
+function resolveHashSection(link) {
+  const href = link.getAttribute("href");
+  // Resolve #id links via getElementById so invalid CSS selectors cannot throw.
+  if (!href || !href.startsWith("#") || href.length <= 1) return null;
+  return document.getElementById(href.slice(1));
+}
+
+function createSectionObserver(navLinks, sectionToLink, isLocked) {
+  if (typeof IntersectionObserver !== "function") return null;
+
+  return new IntersectionObserver((entries) => {
+    if (isLocked()) return;
+    const hit = entries.find((entry) => entry.isIntersecting && sectionToLink.has(entry.target));
+    if (hit) setActiveNavLink(navLinks, sectionToLink.get(hit.target));
+  }, SCROLL_SPY_OPTIONS);
+}
+
 export function initNavigation() {
   const navLinks = document.querySelectorAll(".cinema-nav-link");
   if (!navLinks.length) return;
@@ -76,14 +93,7 @@ export function initNavigation() {
   const sectionToLink = new Map();
   let isClickScrolling = false;
   let scrollLockTimer = null;
-
-  const sectionObserver = new IntersectionObserver((entries) => {
-    if (isClickScrolling) return;
-    entries.forEach((entry) => {
-      const link = entry.isIntersecting ? sectionToLink.get(entry.target) : null;
-      if (link) setActiveNavLink(navLinks, link);
-    });
-  }, SCROLL_SPY_OPTIONS);
+  const sectionObserver = createSectionObserver(navLinks, sectionToLink, () => isClickScrolling);
 
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
@@ -96,14 +106,10 @@ export function initNavigation() {
       }, CLICK_SCROLL_LOCK_MS);
     });
 
-    const href = link.getAttribute("href");
-    // Resolve #id links via getElementById so invalid CSS selectors cannot throw.
-    if (href && href.startsWith("#") && href.length > 1) {
-      const section = document.getElementById(href.slice(1));
-      if (section) {
-        sectionToLink.set(section, link);
-        sectionObserver.observe(section);
-      }
+    const section = resolveHashSection(link);
+    if (section && sectionObserver) {
+      sectionToLink.set(section, link);
+      sectionObserver.observe(section);
     }
   });
 }
@@ -121,7 +127,6 @@ function markFieldInvalid(field, errorBannerId) {
 
 function clearFieldErrors(fields) {
   fields.forEach((field) => {
-    if (!field) return;
     field.removeAttribute("aria-invalid");
     field.removeAttribute("aria-describedby");
   });
@@ -132,38 +137,66 @@ function showBanner(banner, message) {
   banner.classList.remove("hidden");
 }
 
+function hideBanners(...banners) {
+  banners.forEach((banner) => banner.classList.add("hidden"));
+}
+
+function readPayload(fields) {
+  return Object.fromEntries(
+    Object.entries(fields).map(([key, input]) => [key, input.value ?? ""]),
+  );
+}
+
+function createAuthVisibilityController() {
+  let hideTimer = null;
+
+  function cancelHide() {
+    if (hideTimer === null) return;
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+
+  function scheduleHide() {
+    const authSection = document.getElementById("auth-section");
+    if (!authSection) return;
+    cancelHide();
+    hideTimer = setTimeout(() => {
+      authSection.classList.add("hidden");
+      hideTimer = null;
+    }, AUTH_HIDE_DELAY_MS);
+  }
+
+  return { scheduleHide, cancelHide };
+}
+
 /**
  * Wire one auth form. Element ids follow #<prefix>-form, #<prefix>-error, #<prefix>-success.
  * @param {string} prefix
- * @param {{ fieldIds: Record<string, string>, validate: Function, successMessage: string, onSuccess: () => void }} options
+ * @param {{ fieldIds: Record<string, string>, validate: Function, successMessage: string, onSuccess: () => void, onInvalid: () => void }} options
  */
-function bindAuthForm(prefix, { fieldIds, validate: validatePayload, successMessage, onSuccess }) {
+function bindAuthForm(prefix, { fieldIds, validate: validatePayload, successMessage, onSuccess, onInvalid }) {
   const errorBannerId = `${prefix}-error`;
   const form = document.getElementById(`${prefix}-form`);
   const errorBanner = document.getElementById(errorBannerId);
   const successBanner = document.getElementById(`${prefix}-success`);
-  if (!form || !errorBanner || !successBanner) return;
-
   const fields = Object.fromEntries(
     Object.entries(fieldIds).map(([key, id]) => [key, document.getElementById(id)]),
   );
 
+  if (!form || !errorBanner || !successBanner || Object.values(fields).some((el) => !el)) {
+    return;
+  }
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    errorBanner.classList.add("hidden");
-    successBanner.classList.add("hidden");
+    hideBanners(errorBanner, successBanner);
     clearFieldErrors(Object.values(fields));
 
-    const payload = Object.fromEntries(
-      Object.entries(fields).map(([key, input]) => [key, input?.value ?? ""]),
-    );
-    const result = validatePayload(payload);
-
+    const result = validatePayload(readPayload(fields));
     if (!result.isValid) {
+      onInvalid();
       showBanner(errorBanner, result.message);
-      if (result.field && fields[result.field]) {
-        markFieldInvalid(fields[result.field], errorBannerId);
-      }
+      if (result.field && fields[result.field]) markFieldInvalid(fields[result.field], errorBannerId);
       return;
     }
 
@@ -173,28 +206,15 @@ function bindAuthForm(prefix, { fieldIds, validate: validatePayload, successMess
   });
 }
 
-function createAuthSectionHider() {
-  let hideTimer = null;
-
-  return () => {
-    const authSection = document.getElementById("auth-section");
-    if (!authSection) return;
-    if (hideTimer !== null) clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => {
-      authSection.classList.add("hidden");
-      hideTimer = null;
-    }, AUTH_HIDE_DELAY_MS);
-  };
-}
-
 export function initAuth() {
-  const hideAuthSection = createAuthSectionHider();
+  const { scheduleHide, cancelHide } = createAuthVisibilityController();
 
   bindAuthForm("signin", {
     fieldIds: { email: "signin-email", password: "signin-password" },
     validate: validateSignIn,
     successMessage: "Demo sign-in validated locally (no data was sent). Welcome back to Movie Explorer Community.",
-    onSuccess: hideAuthSection,
+    onSuccess: scheduleHide,
+    onInvalid: cancelHide,
   });
 
   bindAuthForm("register", {
@@ -206,7 +226,8 @@ export function initAuth() {
     },
     validate: validateRegister,
     successMessage: "Demo account validated locally (no account was created or sent). Welcome to Movie Explorer Community.",
-    onSuccess: hideAuthSection,
+    onSuccess: scheduleHide,
+    onInvalid: cancelHide,
   });
 }
 

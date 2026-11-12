@@ -8,8 +8,6 @@ import {
   validateSignIn,
 } from "../src/js/main.js";
 
-const lookedUpIds = new Set();
-
 function createMockElement(id, { classes = [], value = "", attrs = {} } = {}) {
   const classSet = new Set(classes);
   const attributes = new Map(Object.entries(attrs));
@@ -49,15 +47,34 @@ function createMockElement(id, { classes = [], value = "", attrs = {} } = {}) {
   return el;
 }
 
-function createMockDocument(elementsById, navLinks = [], { recordIds = false } = {}) {
+function createMockDocument(elementsById, navLinks = [], recordedIds = null) {
   return {
     getElementById(id) {
-      if (recordIds) lookedUpIds.add(id);
+      recordedIds?.add(id);
       return elementsById[id] ?? null;
     },
     querySelectorAll(selector) {
       return selector === ".cinema-nav-link" ? navLinks : [];
     },
+  };
+}
+
+function createAuthDom(overrides = {}) {
+  return {
+    "auth-section": createMockElement("auth-section"),
+    "signin-form": createMockElement("signin-form"),
+    "signin-error": createMockElement("signin-error", { classes: ["hidden"] }),
+    "signin-success": createMockElement("signin-success", { classes: ["hidden"] }),
+    "signin-email": createMockElement("signin-email", { value: "invalid" }),
+    "signin-password": createMockElement("signin-password", { value: "123" }),
+    "register-form": createMockElement("register-form"),
+    "register-error": createMockElement("register-error", { classes: ["hidden"] }),
+    "register-success": createMockElement("register-success", { classes: ["hidden"] }),
+    "register-username": createMockElement("register-username", { value: "alex" }),
+    "register-email": createMockElement("register-email", { value: "alex@example.com" }),
+    "register-password": createMockElement("register-password", { value: "password123" }),
+    "register-confirm-password": createMockElement("register-confirm-password", { value: "password123" }),
+    ...overrides,
   };
 }
 
@@ -75,27 +92,23 @@ describe("validateSignIn", () => {
   });
 
   it("accepts passwords shorter than registration minimum at sign-in", () => {
-    assert.equal(
-      validateSignIn({ email: "user@example.com", password: "123" }).isValid,
-      true,
-    );
+    assert.equal(validateSignIn({ email: "user@example.com", password: "123" }).isValid, true);
   });
 
   it("trims surrounding whitespace on email", () => {
-    assert.equal(
-      validateSignIn({ email: "  user@example.com  ", password: "ok" }).isValid,
-      true,
-    );
+    assert.equal(validateSignIn({ email: "  user@example.com  ", password: "ok" }).isValid, true);
   });
 
-  it("rejects whitespace-only email with field 'email'", () => {
-    const result = validateSignIn({ email: "   ", password: "password123" });
-    assert.equal(result.isValid, false);
-    assert.equal(result.field, "email");
+  it("handles null or undefined payloads safely without throwing", () => {
+    for (const payload of [null, undefined]) {
+      const result = validateSignIn(payload);
+      assert.equal(result.isValid, false);
+      assert.equal(result.field, "email");
+    }
   });
 
-  it("rejects malformed emails with field 'email'", () => {
-    for (const email of ["invalid", "a@b", "a@b.c<script>"]) {
+  it("rejects whitespace-only email and malformed emails with field 'email'", () => {
+    for (const email of ["   ", "invalid", "a@b", "a@b.c<script>"]) {
       const result = validateSignIn({ email, password: "password123" });
       assert.equal(result.isValid, false);
       assert.equal(result.field, "email");
@@ -125,54 +138,27 @@ describe("validateRegister", () => {
     });
   });
 
-  it("rejects trimmed username shorter than 3 characters", () => {
-    const result = validateRegister({ ...validPayload, username: "ab " });
-    assert.equal(result.isValid, false);
-    assert.equal(result.field, "username");
+  it("handles null/undefined and missing required fields with matching field keys", () => {
+    assert.equal(validateRegister(null).field, "username");
+    assert.equal(validateRegister({ ...validPayload, username: "  " }).field, "username");
+    assert.equal(validateRegister({ ...validPayload, email: "" }).field, "email");
+    assert.equal(validateRegister({ ...validPayload, password: "   " }).field, "password");
+    assert.equal(validateRegister({ ...validPayload, confirmPassword: "" }).field, "confirmPassword");
   });
 
-  it("rejects invalid email with field 'email'", () => {
-    const result = validateRegister({ ...validPayload, email: "bad@" });
-    assert.equal(result.isValid, false);
-    assert.equal(result.field, "email");
-  });
-
-  it("rejects short password with field 'password'", () => {
-    const result = validateRegister({ ...validPayload, password: "short" });
-    assert.equal(result.isValid, false);
-    assert.equal(result.field, "password");
-  });
-
-  it("rejects mismatched confirmPassword with field 'confirmPassword'", () => {
-    const result = validateRegister({
-      ...validPayload,
-      confirmPassword: "different123",
-    });
-    assert.equal(result.isValid, false);
-    assert.equal(result.field, "confirmPassword");
+  it("rejects short username, invalid email, short password, and mismatched confirmation", () => {
+    assert.equal(validateRegister({ ...validPayload, username: "ab " }).field, "username");
+    assert.equal(validateRegister({ ...validPayload, email: "bad@" }).field, "email");
+    assert.equal(validateRegister({ ...validPayload, password: "short" }).field, "password");
+    assert.equal(validateRegister({ ...validPayload, confirmPassword: "other" }).field, "confirmPassword");
   });
 });
 
 describe("initAuth", () => {
   it("links field errors, resets on success, and hides #auth-section after 1000ms", (t) => {
     t.mock.timers.enable({ apis: ["setTimeout"] });
-
-    const elements = {
-      "auth-section": createMockElement("auth-section"),
-      "signin-form": createMockElement("signin-form"),
-      "signin-error": createMockElement("signin-error", { classes: ["hidden"] }),
-      "signin-success": createMockElement("signin-success", { classes: ["hidden"] }),
-      "signin-email": createMockElement("signin-email", { value: "invalid" }),
-      "signin-password": createMockElement("signin-password", { value: "123" }),
-      "register-form": createMockElement("register-form"),
-      "register-error": createMockElement("register-error", { classes: ["hidden"] }),
-      "register-success": createMockElement("register-success", { classes: ["hidden"] }),
-      "register-username": createMockElement("register-username"),
-      "register-email": createMockElement("register-email"),
-      "register-password": createMockElement("register-password"),
-      "register-confirm-password": createMockElement("register-confirm-password"),
-    };
-    globalThis.document = createMockDocument(elements, [], { recordIds: true });
+    const elements = createAuthDom();
+    globalThis.document = createMockDocument(elements);
 
     initAuth();
 
@@ -196,42 +182,90 @@ describe("initAuth", () => {
     t.mock.timers.tick(1000);
     assert.equal(elements["auth-section"].classList.contains("hidden"), true);
   });
+
+  it("cancels pending hide timer if sibling auth form fails validation before delay elapses", (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const elements = createAuthDom();
+    elements["signin-email"].value = "alex@example.com";
+    globalThis.document = createMockDocument(elements);
+
+    initAuth();
+    elements["signin-form"].dispatchEvent("submit");
+
+    t.mock.timers.tick(500);
+    elements["register-confirm-password"].value = "mismatch";
+    elements["register-form"].dispatchEvent("submit");
+    assert.equal(elements["register-error"].classList.contains("hidden"), false);
+
+    t.mock.timers.tick(1000);
+    assert.equal(elements["auth-section"].classList.contains("hidden"), false);
+  });
+
+  it("skips binding a form when any required field element is missing", () => {
+    const elements = createAuthDom({ "signin-password": null });
+    globalThis.document = createMockDocument(elements);
+
+    initAuth();
+    assert.equal(elements["signin-form"].dispatchEvent("submit").defaultPrevented, false);
+    assert.equal(elements["register-form"].dispatchEvent("submit").defaultPrevented, true);
+  });
 });
 
 describe("initNavigation", () => {
-  it("observes only valid #section targets and moves aria-current='location' on click", (t) => {
+  it("handles scroll-spy intersections and respects the 650ms click-scroll lock", (t) => {
     t.mock.timers.enable({ apis: ["setTimeout"] });
 
     const sectionA = createMockElement("section-a");
+    const sectionB = createMockElement("section-b");
     const linkA = createMockElement("nav-a", {
       attrs: { href: "#section-a", "aria-current": "location" },
       classes: ["bg-amber-400/10", "text-amber-400"],
     });
-    const linkMissing = createMockElement("nav-missing", {
-      attrs: { href: "#missing-section" },
-    });
-    const linkExternal = createMockElement("nav-ext", {
-      attrs: { href: "https://example.com" },
-    });
+    const linkB = createMockElement("nav-b", { attrs: { href: "#section-b" } });
+    const linkMissing = createMockElement("nav-missing", { attrs: { href: "#missing" } });
+    const linkExternal = createMockElement("nav-ext", { attrs: { href: "https://example.com" } });
 
     const observed = [];
+    let observerCallback = null;
     globalThis.IntersectionObserver = class {
+      constructor(cb) {
+        observerCallback = cb;
+      }
       observe(target) {
         observed.push(target);
       }
     };
     globalThis.document = createMockDocument(
-      { "section-a": sectionA },
-      [linkA, linkMissing, linkExternal],
+      { "section-a": sectionA, "section-b": sectionB },
+      [linkA, linkB, linkMissing, linkExternal],
     );
 
     initNavigation();
-    assert.deepEqual(observed, [sectionA]);
+    assert.deepEqual(observed, [sectionA, sectionB]);
 
-    linkMissing.dispatchEvent("click");
+    linkB.dispatchEvent("click");
     assert.equal(linkA.getAttribute("aria-current"), null);
-    assert.equal(linkMissing.getAttribute("aria-current"), "location");
-    assert.equal(linkMissing.classList.contains("text-amber-400"), true);
+    assert.equal(linkB.getAttribute("aria-current"), "location");
+
+    // Intermediate intersection during smooth scroll must be ignored until 650ms lock expires.
+    observerCallback([{ target: sectionA, isIntersecting: true }]);
+    assert.equal(linkB.getAttribute("aria-current"), "location");
+
+    t.mock.timers.tick(650);
+    observerCallback([{ target: sectionA, isIntersecting: true }]);
+    assert.equal(linkA.getAttribute("aria-current"), "location");
+    assert.equal(linkB.getAttribute("aria-current"), null);
+  });
+
+  it("still binds click highlighting when IntersectionObserver is unavailable", (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const linkA = createMockElement("nav-a", { attrs: { href: "#a", "aria-current": "location" } });
+    const linkB = createMockElement("nav-b", { attrs: { href: "#b" } });
+    globalThis.document = createMockDocument({}, [linkA, linkB]);
+
+    initNavigation();
+    linkB.dispatchEvent("click");
+    assert.equal(linkB.getAttribute("aria-current"), "location");
     t.mock.timers.tick(650);
   });
 });
@@ -249,10 +283,17 @@ describe("index.html contract", () => {
       .filter((target) => !idSet.has(target));
     assert.deepEqual(missingAnchors, []);
 
+    const lookedUpIds = new Set();
+    const elements = createAuthDom();
+    elements["signin-email"].value = "alex@example.com";
+    globalThis.document = createMockDocument(elements, [], lookedUpIds);
+
+    initAuth();
+    elements["signin-form"].dispatchEvent("submit");
+
     assert.ok(lookedUpIds.size > 0, "Expected recorded IDs from initAuth");
     for (const id of lookedUpIds) {
       assert.ok(idSet.has(id), `JS looked up missing HTML ID: #${id}`);
     }
   });
 });
-
