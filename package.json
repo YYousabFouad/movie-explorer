@@ -7,7 +7,7 @@
   "scripts": {
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
     "watch:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
-    "check:css": "tailwindcss -i ./src/input.css -o /tmp/movie-explorer-check.css --minify && cmp /tmp/movie-explorer-check.css dist/output.css",
+    "check:css": "tailwindcss -i ./src/input.css -o - --minify | node -e \"import fs from 'node:fs'; if (fs.readFileSync(0, 'utf8').trimEnd() !== fs.readFileSync('dist/output.css', 'utf8').trimEnd()) { console.error('dist/output.css is out of date. Run npm run build:css.'); process.exit(1); }\"",
     "check:js": "node --check src/js/main.js",
     "test": "node --test tests/main.test.js",
     "check": "npm run check:js && npm run check:css && npm test"
