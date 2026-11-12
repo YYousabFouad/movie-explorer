@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +8,7 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Movie Explorer Community — Discover, Rate &amp; Discuss Movies</title>
     <link rel="stylesheet" href="./dist/output.css" />
-    <script src="./src/js/main.js" defer></script>
+    <script type="module" src="./src/js/main.js"></script>
   </head>
   <body class="min-h-screen bg-cinema-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-amber-400 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold text-slate-950">
@@ -32,7 +32,7 @@
         </a>
 
         <nav aria-label="Main Navigation" class="order-3 flex w-full items-center justify-center gap-1 border-t border-slate-800/70 pt-3 sm:order-2 sm:w-auto sm:border-t-0 sm:pt-0 md:gap-2">
-          <a id="nav-search" href="#search-section" aria-current="page" class="cinema-nav-link bg-amber-400/10 text-amber-400">Home &amp; Search</a>
+          <a id="nav-search" href="#search-section" aria-current="location" class="cinema-nav-link bg-amber-400/10 text-amber-400">Home &amp; Search</a>
           <a id="nav-details" href="#movie-details-section" class="cinema-nav-link">Featured Details</a>
           <a id="nav-community" href="#community-section" class="cinema-nav-link">Community</a>
           <a id="nav-favorites" href="#favorites-section" class="cinema-nav-link inline-flex items-center gap-2">
@@ -66,7 +66,7 @@
               Explore curated cinema classics and new releases, track your personal favorites list, share thoughtful critiques, and collaborate with fellow cinephiles.
             </p>
 
-            <form id="search-form" action="#search-results-section" method="get" class="mt-8 text-left">
+            <form id="search-form" action="#search-results-section" method="get" class="mt-8 text-left" novalidate>
               <div class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-cinema-950/90 p-3 shadow-lg sm:grid-cols-12">
                 <div class="sm:col-span-7">
                   <label for="search-input" class="cinema-label">Search by movie title, director, or keyword</label>
@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="flex items-end sm:col-span-2">
-                  <button id="search-submit-btn" type="submit" class="cinema-btn-primary w-full">Search</button>
+                  <button id="search-submit-btn" type="submit" disabled title="Static preview — interactive search coming soon" class="cinema-btn-primary w-full">Search</button>
                 </div>
               </div>
             </form>
@@ -97,7 +97,7 @@
           <div class="cinema-section-header">
             <div>
               <h2 class="text-2xl font-bold tracking-tight text-white">Movie Catalog &amp; Search Results</h2>
-              <p id="search-results-summary" class="text-sm text-slate-400">Showing featured demonstration titles. Search above to query the catalog.</p>
+              <p id="search-results-summary" aria-live="polite" class="text-sm text-slate-400">Showing featured demonstration titles (static preview — interactive search coming soon).</p>
             </div>
             <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
               <span class="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true"></span>
@@ -120,7 +120,7 @@
             <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">We couldn't find any movies matching your search query. Try broadening your keywords or suggest a missing title below.</p>
           </div>
 
-          <div id="search-results" aria-live="polite" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div id="search-results" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <article class="movie-card cinema-card group flex flex-col overflow-hidden transition-colors hover:border-amber-400/50">
               <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
                 <img src="./assets/images/poster-dune-horizon.svg" alt="Poster for Chronicles of the Dune Horizon" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
@@ -255,12 +255,12 @@
               </div>
 
               <div class="grid grid-cols-1 gap-6 border-t border-slate-800 pt-6 xl:grid-cols-12">
-                <form id="rating-form" action="#movie-details-section" method="post" class="space-y-3 xl:col-span-7">
+                <form id="rating-form" action="#movie-details-section" method="post" class="space-y-3 xl:col-span-7" novalidate>
                   <fieldset>
                     <legend class="text-sm font-semibold text-white">
                       Rate This Movie <span class="text-xs font-normal text-slate-400">(Select 1 to 10 stars)</span>
                     </legend>
-                    <div class="mt-2.5 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Movie rating from 1 to 10">
+                    <div class="mt-2.5 flex flex-wrap gap-1.5">
                       <label class="cursor-pointer"><input type="radio" name="user-rating" value="1" class="peer sr-only" /><span class="cinema-rating-pill">1</span></label>
                       <label class="cursor-pointer"><input type="radio" name="user-rating" value="2" class="peer sr-only" /><span class="cinema-rating-pill">2</span></label>
                       <label class="cursor-pointer"><input type="radio" name="user-rating" value="3" class="peer sr-only" /><span class="cinema-rating-pill">3</span></label>
@@ -275,7 +275,7 @@
                   </fieldset>
 
                   <div class="flex flex-wrap items-center gap-3 pt-1">
-                    <button id="rating-submit-btn" type="submit" class="cinema-btn-primary py-2 text-xs">Submit Rating</button>
+                    <button id="rating-submit-btn" type="submit" disabled title="Static preview — rating submission coming soon" class="cinema-btn-primary py-2 text-xs">Submit Rating (Coming Soon)</button>
                     <a href="#review-form" class="rounded-xl border border-slate-700 bg-cinema-950 px-4 py-2 text-xs font-medium text-slate-200 transition-colors hover:border-slate-500 hover:text-white">Write a Full Review Below</a>
                   </div>
 
@@ -297,7 +297,7 @@
         </article>
       </section>
 
-      <!-- SECTION E: REVIEWS AND COMMENTS -->
+      <!-- SECTION D: REVIEWS AND COMMENTS -->
       <section id="reviews-section" aria-labelledby="reviews-heading" class="space-y-8">
         <div class="cinema-section-header">
           <div>
@@ -309,7 +309,7 @@
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div class="lg:col-span-5">
-            <form id="review-form" action="#reviews-section" method="post" class="cinema-card space-y-4 p-6">
+            <form id="review-form" action="#reviews-section" method="post" class="cinema-card space-y-4 p-6" novalidate>
               <h3 class="text-lg font-bold text-white">Leave a Review or Comment</h3>
               <p class="text-xs text-slate-400">Reviewing: <strong id="review-target-movie" class="text-amber-300">Chronicles of the Dune Horizon (2025)</strong></p>
 
@@ -343,7 +343,7 @@
               <div id="review-error" role="alert" class="cinema-alert-error hidden">Please fill in your display name, rating, and review text before submitting.</div>
               <div id="review-success" role="status" class="cinema-alert-success hidden">Your review has been added to the discussion!</div>
 
-              <button id="review-submit-btn" type="submit" class="cinema-btn-primary w-full">Submit Review</button>
+              <button id="review-submit-btn" type="submit" disabled title="Static preview — review submission coming soon" class="cinema-btn-primary w-full">Submit Review (Coming Soon)</button>
             </form>
           </div>
 
@@ -390,7 +390,7 @@
         </div>
       </section>
 
-      <!-- SECTION D: COMMUNITY SECTION -->
+      <!-- SECTION E: COMMUNITY SECTION -->
       <section id="community-section" aria-labelledby="community-heading" class="space-y-10">
         <div class="cinema-section-header">
           <div>
@@ -407,7 +407,7 @@
               <p class="text-xs text-slate-400">Recommend an indie gem, international classic, or new release.</p>
             </div>
 
-            <form id="community-suggestion-form" action="#community-section" method="post" class="space-y-4">
+            <form id="community-suggestion-form" action="#community-section" method="post" class="space-y-4" novalidate>
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div class="sm:col-span-2">
                   <label for="suggest-title" class="cinema-label">Movie Title <span class="text-amber-400">*</span></label>
@@ -431,7 +431,7 @@
 
               <div id="suggestion-feedback" role="status" class="cinema-alert-success hidden">Movie suggestion submitted! Our community moderators will review it shortly.</div>
 
-              <button id="suggest-submit-btn" type="submit" class="cinema-btn-primary w-full">Submit Suggestion</button>
+              <button id="suggest-submit-btn" type="submit" disabled title="Static preview — suggestion submission coming soon" class="cinema-btn-primary w-full">Submit Suggestion (Coming Soon)</button>
             </form>
           </div>
 
@@ -441,7 +441,7 @@
               <p class="text-xs text-slate-400">Flag inaccurate release years, broken posters, or duplicate entries.</p>
             </div>
 
-            <form id="problem-report-form" action="#community-section" method="post" class="space-y-4">
+            <form id="problem-report-form" action="#community-section" method="post" class="space-y-4" novalidate>
               <div>
                 <label for="report-movie-title" class="cinema-label">Movie Title or Reference ID <span class="text-amber-400">*</span></label>
                 <input id="report-movie-title" name="movieReference" type="text" required placeholder="e.g., The Glass Labyrinth (2022)" class="cinema-input" />
@@ -466,8 +466,8 @@
 
               <div id="report-feedback" role="status" class="cinema-alert-success hidden">Problem report logged! Thank you for helping keep our catalog accurate.</div>
 
-              <button id="report-submit-btn" type="submit" class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-amber-400 hover:bg-amber-400 hover:text-slate-950">
-                Submit Report
+              <button id="report-submit-btn" type="submit" disabled title="Static preview — report submission coming soon" class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-600 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-amber-400 hover:bg-amber-400 hover:text-slate-950 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-slate-600 disabled:hover:bg-slate-800 disabled:hover:text-white">
+                Submit Report (Coming Soon)
               </button>
             </form>
           </div>
@@ -616,11 +616,11 @@
 
                 <div>
                   <label for="signin-password" class="cinema-label">Password <span class="text-amber-400">*</span></label>
-                  <input id="signin-password" name="password" type="password" autocomplete="current-password" required minlength="8" placeholder="••••••••" class="cinema-input" />
+                  <input id="signin-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" class="cinema-input" />
                 </div>
 
-                <div id="signin-error" role="alert" class="cinema-alert-error hidden">Invalid email or password format. Please check your credentials and try again.</div>
-                <div id="signin-success" role="status" class="cinema-alert-success hidden">Signed in successfully! Welcome back to Movie Explorer Community.</div>
+                <div id="signin-error" role="alert" class="cinema-alert-error hidden"></div>
+                <div id="signin-success" role="status" class="cinema-alert-success hidden"></div>
 
                 <button id="signin-submit-btn" type="submit" class="cinema-btn-primary w-full">Sign In</button>
               </form>
@@ -643,7 +643,7 @@
               <form id="register-form" action="#auth-section" method="post" class="space-y-4" novalidate>
                 <div>
                   <label for="register-username" class="cinema-label">Username <span class="text-amber-400">*</span></label>
-                  <input id="register-username" name="username" type="text" autocomplete="username" required minlength="3" placeholder="cinephile_alex" class="cinema-input" />
+                  <input id="register-username" name="username" type="text" autocomplete="username" required placeholder="cinephile_alex" class="cinema-input" />
                 </div>
 
                 <div>
@@ -654,17 +654,17 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
                     <label for="register-password" class="cinema-label">Password <span class="text-amber-400">*</span></label>
-                    <input id="register-password" name="password" type="password" autocomplete="new-password" required minlength="8" placeholder="Min. 8 characters" class="cinema-input" />
+                    <input id="register-password" name="password" type="password" autocomplete="new-password" required placeholder="Min. 8 characters" class="cinema-input" />
                   </div>
 
                   <div>
                     <label for="register-confirm-password" class="cinema-label">Confirm Password <span class="text-amber-400">*</span></label>
-                    <input id="register-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required minlength="8" placeholder="Re-enter password" class="cinema-input" />
+                    <input id="register-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required placeholder="Re-enter password" class="cinema-input" />
                   </div>
                 </div>
 
-                <div id="register-error" role="alert" class="cinema-alert-error hidden">Please verify that all fields are filled out and both passwords match.</div>
-                <div id="register-success" role="status" class="cinema-alert-success hidden">Account created! You can now sign in and start curating your movie list.</div>
+                <div id="register-error" role="alert" class="cinema-alert-error hidden"></div>
+                <div id="register-success" role="status" class="cinema-alert-success hidden"></div>
 
                 <button id="register-submit-btn" type="submit" class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-amber-400 bg-amber-400/15 px-4 py-2.5 text-sm font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950">
                   Create Account

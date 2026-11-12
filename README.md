@@ -8,7 +8,7 @@
 A dark, cinema-inspired frontend platform foundation for **Movie Explorer Community**, engineered with semantic **HTML5**, **Tailwind CSS v4**, and a strict **DOM selector contract** designed for modular Vanilla JavaScript integration.
 
 > [!IMPORTANT]
-> **Architectural Scope:** This repository delivers the complete **Static Presentation Layer & DOM Contract** (`index.html`, `src/input.css`, `dist/output.css`) alongside an initialized JavaScript entry point (`src/js/main.js`). All interactive controls, form inputs, accessible rating fieldsets, and asynchronous feedback states (loading, error, and empty views) are pre-structured in the markup and ready to be wired to client-side controllers and external movie APIs.
+> **Architectural Scope:** This repository delivers the **Presentation Layer & DOM Contract** (`index.html`, `src/input.css`, `dist/output.css`) alongside modular client-side ES modules (`src/js/`). Navigation scroll-spy, demo authentication validation, and static-form submit guards are wired; search, rating, reviews, community submissions, and favorites remain static UI prototypes (disabled until their controllers and API layer are implemented).
 
 ---
 
@@ -26,14 +26,25 @@ A dark, cinema-inspired frontend platform foundation for **Movie Explorer Commun
 
 ## 1. System Overview
 
-**Movie Explorer Community** is a single-page film discovery, rating, and catalog curation interface built around six cohesive functional domains:
+**Movie Explorer Community** is a single-page film discovery, rating, and catalog curation interface organized around six functional domains:
 
-- **Catalog Search & Filtering:** Full-text query input paired with genre classification filters (`Sci-Fi`, `Drama`, `Mystery`, `Thriller`, `Adventure`, `Animation`) and responsive `2:3` poster grid rendering.
-- **Title Spotlight & Rating Engine:** Comprehensive metadata inspection view (release year, genre, runtime, director, plot synopsis, aggregate score, and vote count) with an interactive 1–10 rating submission workflow.
-- **Audience Reviews & Discussions:** Community review publishing interface with star rating selection, input validation states, and chronological review feed rendering.
-- **Community Curation & Quality Assurance:** Dedicated workflows for suggesting missing films to the catalog and reporting metadata inaccuracies (incorrect year, broken poster, synopsis errors, duplicate entries).
-- **Personal Watchlist (Favorites):** Saved movies collection with real-time navigation badge counters and one-click removal controls.
-- **Member Authentication Flows:** Accessible sign-in and account registration forms equipped with client-side validation feedback banners.
+- **Catalog Search & Filtering:** Query input paired with genre classification filters (`Sci-Fi`, `Drama`, `Mystery`, `Thriller`, `Adventure`) and responsive `2:3` poster grid markup.
+- **Title Spotlight & Rating UI:** Metadata inspection view (release year, genre, runtime, director, plot synopsis, score, and vote count) with an accessible 1–10 radio rating fieldset.
+- **Audience Reviews & Discussions:** Review form markup, validation feedback containers, and static sample review cards.
+- **Community Curation & Quality Assurance:** Markup for suggesting missing films and reporting metadata inaccuracies, plus static sample submission cards.
+- **Personal Watchlist (Favorites):** Saved movies grid markup, navigation badge (`#nav-favorites-count`), and removal buttons.
+- **Member Authentication Flows (Demo):** Accessible sign-in and account registration forms wired to pure client-side validation and accessible feedback banners.
+
+### Feature & Implementation Status
+
+| Domain | Status | Notes |
+| :--- | :--- | :--- |
+| **Navigation & Scroll-Spy** | Implemented | Click highlighting, `aria-current="location"`, and `IntersectionObserver` scroll-spy (`src/js/main.js`). |
+| **Authentication Forms** | Implemented (Demo) | Pure client-side validation, `aria-invalid` / `aria-describedby` focus linking, and auto-hide after success (`src/js/main.js`). No backend requests are sent. |
+| **Static Form Guards** | Implemented | Unwired prototype forms use `novalidate` with `disabled` submit buttons in `index.html`, with no JS involved. |
+| **Search & Genre Filter** | Static UI Prototype | Catalog cards are hard-coded; search button is disabled until controller/API integration. |
+| **Rating, Reviews & Community Forms** | Static UI Prototype | Form markup and feedback containers are ready; submit buttons are disabled until wired. |
+| **Favorites Watchlist** | Static UI Prototype | Static sample cards and badge count (`2`); add/remove interactions not yet wired. |
 
 ---
 
@@ -76,10 +87,12 @@ movie-explorer/
 ├── src/
 │   ├── input.css                      # Tailwind CSS v4 entry point, @theme tokens & components
 │   └── js/
-│       └── main.js                    # Client-side JavaScript application entry point
+│       └── main.js                    # ES module: validation, navigation scroll-spy, demo auth forms
+├── tests/
+│   └── main.test.js                   # Node test suite (node --test)
 ├── .gitignore                         # Git ignore rules (node_modules, OS/editor artifacts)
 ├── index.html                         # Single-page semantic HTML5 application interface
-├── package.json                       # Build scripts and Tailwind CSS v4 CLI dependencies
+├── package.json                       # Build, check, and test scripts
 ├── package-lock.json                  # Deterministic dependency lockfile
 └── README.md                          # Project architecture and engineering documentation
 ```
@@ -101,19 +114,26 @@ Clone the repository and install the development dependencies from the project r
 npm install
 ```
 
-### Build & Development Scripts
+### Build, Verification & Test Scripts
 
 | Script | Command | Description |
 | :--- | :--- | :--- |
 | **`npm run build:css`** | `tailwindcss -i ./src/input.css -o ./dist/output.css --minify` | Compiles and minifies `src/input.css` into `dist/output.css` for production. |
 | **`npm run watch:css`** | `tailwindcss -i ./src/input.css -o ./dist/output.css --watch` | Watches `index.html` and `src/` for changes and recompiles CSS incrementally. |
+| **`npm run check:css`** | `tailwindcss -i ./src/input.css -o /tmp/movie-explorer-check.css --minify && cmp /tmp/movie-explorer-check.css dist/output.css` | Rebuilds CSS to a temp file and `cmp`s it with `dist/output.css`. |
+| **`npm run check:js`** | `node --check src/js/main.js` | Syntax-checks `src/js/main.js`. |
+| **`npm test`** | `node --test tests/main.test.js` | Runs the unit and contract test suite using Node's built-in test runner. |
+| **`npm run check`** | `npm run check:js && npm run check:css && npm test` | Runs JS syntax check, CSS freshness check, and the full test suite. |
 
 ### Running the Application Locally
 
-Because `dist/output.css` is pre-compiled, the interface can be inspected immediately:
+Serve the repository over HTTP so the browser can load ES modules (`<script type="module">`; opening `index.html` via `file://` is blocked by browser CORS rules for module scripts):
 
-1. **Local Development Server (Recommended):** Serve the workspace over HTTP using VS Code **Live Server** or `npx serve .` to support ES modules and hot reloading.
-2. **Direct File Inspection:** Open `index.html` directly in any modern browser (Chrome, Firefox, Safari, Edge).
+```bash
+npx serve .
+# or
+python3 -m http.server
+```
 
 ---
 

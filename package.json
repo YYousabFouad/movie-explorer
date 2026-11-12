@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "Static HTML5 and Tailwind CSS frontend foundation for the Movie Explorer Community platform.",
   "private": true,
+  "type": "module",
   "scripts": {
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
-    "watch:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
+    "watch:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "check:css": "tailwindcss -i ./src/input.css -o /tmp/movie-explorer-check.css --minify && cmp /tmp/movie-explorer-check.css dist/output.css",
+    "check:js": "node --check src/js/main.js",
+    "test": "node --test tests/main.test.js",
+    "check": "npm run check:js && npm run check:css && npm test"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.0",
