@@ -5,9 +5,11 @@ import {
   createAppState,
   initAuth,
   initCatalog,
+  initCommunity,
   initFavorites,
   initMovieDetails,
   initNavigation,
+  initReviews,
   validateRegister,
   validateReport,
   validateReview,
@@ -412,6 +414,63 @@ describe("validateReview, validateSuggestion, and validateReport", () => {
     assert.equal(validateReport({ movieTitle: "Dune", problemType: "", description: "Detailed issue report." }).field, "problemType");
     assert.equal(validateReport({ movieTitle: "Dune", problemType: "other", description: "short" }).field, "description");
     assert.equal(validateReport({ movieTitle: "Dune", problemType: "missing-poster", description: "Poster SVG fails to load on card." }).isValid, true);
+  });
+});
+
+describe("review and community submissions", () => {
+  it("labels a new review with the currently selected movie", () => {
+    const state = createAppState();
+    state.activeMovieId = "midnight-sonata";
+    const reviewForm = createMockElement("review-form");
+    const reviewsList = createMockElement("reviews-list");
+    const elements = {
+      "review-form": reviewForm,
+      "review-error": createMockElement("review-error", { classes: ["hidden"] }),
+      "review-success": createMockElement("review-success", { classes: ["hidden"] }),
+      "review-username": createMockElement("review-username", { value: "Maya" }),
+      "review-rating": createMockElement("review-rating", { value: "8" }),
+      "review-text": createMockElement("review-text", { value: "Beautifully staged mystery." }),
+      "reviews-list": reviewsList,
+      "reviews-empty-state": createMockElement("reviews-empty-state"),
+    };
+    globalThis.document = createMockDocument(elements);
+
+    initReviews(state);
+    reviewForm.dispatchEvent("submit");
+
+    assert.equal(reviewsList.children.length, 1);
+    assert.equal(reviewsList.children[0].children[1].textContent, "Midnight Sonata in Vienna (2024)");
+    assert.equal(reviewsList.children[0].children[2].textContent, "Beautifully staged mystery.");
+  });
+
+  it("retains suggestion synopsis and report category in submission cards", () => {
+    const list = createMockElement("community-submissions-list");
+    const elements = {
+      "community-suggestion-form": createMockElement("community-suggestion-form"),
+      "suggestion-error": createMockElement("suggestion-error", { classes: ["hidden"] }),
+      "suggestion-feedback": createMockElement("suggestion-feedback", { classes: ["hidden"] }),
+      "suggest-title": createMockElement("suggest-title", { value: "Arrival" }),
+      "suggest-year": createMockElement("suggest-year", { value: "2016" }),
+      "suggest-description": createMockElement("suggest-description", { value: "A linguist deciphers an alien language." }),
+      "suggest-reason": createMockElement("suggest-reason", { value: "Its thoughtful take on communication deserves a place." }),
+      "problem-report-form": createMockElement("problem-report-form"),
+      "report-error": createMockElement("report-error", { classes: ["hidden"] }),
+      "report-feedback": createMockElement("report-feedback", { classes: ["hidden"] }),
+      "report-movie-title": createMockElement("report-movie-title", { value: "Dune" }),
+      "report-problem-type": createMockElement("report-problem-type", { value: "missing-poster" }),
+      "report-description": createMockElement("report-description", { value: "The poster image is missing from the details panel." }),
+      "community-submissions-list": list,
+      "community-empty-state": createMockElement("community-empty-state"),
+    };
+    globalThis.document = createMockDocument(elements);
+
+    initCommunity();
+    elements["community-suggestion-form"].dispatchEvent("submit");
+    elements["problem-report-form"].dispatchEvent("submit");
+
+    assert.equal(list.children[1].children[0].children[2].textContent, "Synopsis: A linguist deciphers an alien language.");
+    assert.equal(list.children[1].children[0].children[3].textContent, "Reason: Its thoughtful take on communication deserves a place.");
+    assert.equal(list.children[0].children[0].children[2].textContent, "Missing or Low-Resolution Poster");
   });
 });
 

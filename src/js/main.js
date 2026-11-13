@@ -639,7 +639,7 @@ function formatToday() {
   };
 }
 
-function createReviewCard({ username, rating, reviewText }) {
+function createReviewCard({ username, rating, reviewText, movieTitle }) {
   const article = el("article", "review-item cinema-card cinema-animate-in space-y-3 p-5");
   const header = el("div", "flex items-center justify-between gap-4");
   const authorWrap = el("div", "flex items-center gap-3");
@@ -665,11 +665,15 @@ function createReviewCard({ username, rating, reviewText }) {
   );
 
   header.append(authorWrap, badge);
-  article.append(header, el("p", "text-sm leading-relaxed text-slate-300", reviewText.trim()));
+  article.append(
+    header,
+    el("p", "text-xs font-semibold text-amber-300", movieTitle),
+    el("p", "text-sm leading-relaxed text-slate-300", reviewText.trim()),
+  );
   return article;
 }
 
-export function initReviews() {
+export function initReviews(state = createAppState()) {
   const reviewsList = document.getElementById("reviews-list");
   const emptyState = document.getElementById("reviews-empty-state");
 
@@ -681,18 +685,25 @@ export function initReviews() {
     validate: validateReview,
     successMessage: "Your review has been added to the discussion!",
     onSuccess: (payload) => {
-      reviewsList?.prepend(createReviewCard(payload));
+      const movie = state?.movies.get(state.activeMovieId);
+      if (!movie) return;
+      reviewsList?.prepend(createReviewCard({
+        ...payload,
+        movieTitle: `${movie.title} (${movie.year})`,
+      }));
       emptyState?.classList.add("hidden");
     },
   });
 }
 
-function createSubmissionCard({ kindLabel, kindClass, title, summaryText }) {
+function createSubmissionCard({ kindLabel, kindClass, title, summaryText, detailLabel = "" }) {
   const article = el("article", "submission-card cinema-card cinema-animate-in flex flex-col justify-between space-y-4 p-5");
   const top = el("div", "space-y-2.5");
   const statusRow = el("div", "flex flex-wrap items-center justify-between gap-2 text-xs");
   statusRow.append(el("span", kindClass, kindLabel), el("span", "font-medium text-amber-200", "Status: Pending"));
-  top.append(statusRow, el("h4", "text-base font-bold text-white", title), el("p", "text-xs leading-relaxed text-slate-300", summaryText));
+  top.append(statusRow, el("h4", "text-base font-bold text-white", title));
+  if (detailLabel) top.append(el("p", "text-xs font-semibold text-amber-200", detailLabel));
+  top.append(el("p", "text-xs leading-relaxed text-slate-300", summaryText));
 
   const footer = el("div", "cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400");
   footer.append(el("span", "", "Submitted just now"), el("span", "font-medium text-slate-300", "0 comments"));
@@ -711,13 +722,14 @@ export function initCommunity() {
     fieldIds: { title: "suggest-title", year: "suggest-year", description: "suggest-description", reason: "suggest-reason" },
     validate: validateSuggestion,
     successMessage: "Movie suggestion submitted! Our community moderators will review it shortly.",
-    onSuccess: ({ title, year, reason }) => {
+    onSuccess: ({ title, year, description, reason }) => {
       const heading = year.trim() ? `${title.trim()} (${year.trim()})` : title.trim();
       list?.prepend(createSubmissionCard({
         kindLabel: "Movie Suggestion",
         kindClass: "font-semibold text-amber-300",
         title: heading,
-        summaryText: reason.trim(),
+        detailLabel: description.trim() ? `Synopsis: ${description.trim()}` : "",
+        summaryText: `Reason: ${reason.trim()}`,
       }));
       emptyState?.classList.add("hidden");
     },
@@ -730,11 +742,19 @@ export function initCommunity() {
     fieldIds: { movieTitle: "report-movie-title", problemType: "report-problem-type", description: "report-description" },
     validate: validateReport,
     successMessage: "Problem report logged! Thank you for helping keep our catalog accurate.",
-    onSuccess: ({ movieTitle, description }) => {
+    onSuccess: ({ movieTitle, problemType, description }) => {
+      const problemLabels = {
+        "incorrect-metadata": "Incorrect Release Year, Cast, or Genre",
+        "missing-poster": "Missing or Low-Resolution Poster",
+        "plot-error": "Inaccurate Plot Overview or Spoiler",
+        "duplicate-entry": "Duplicate Catalog Entry",
+        other: "Other Data Issue",
+      };
       list?.prepend(createSubmissionCard({
         kindLabel: "Problem Report",
         kindClass: "font-semibold text-rose-300",
         title: movieTitle.trim(),
+        detailLabel: problemLabels[problemType] ?? "Other Data Issue",
         summaryText: description.trim(),
       }));
       emptyState?.classList.add("hidden");
@@ -824,7 +844,7 @@ if (typeof document !== "undefined") {
   favoritesApi = initFavorites(appState, {
     onSelectMovie: (movieId) => detailsApi.selectMovie(movieId),
   });
-  initReviews();
+  initReviews(appState);
   initCommunity();
   initAuth();
 }
