@@ -8,7 +8,7 @@
 A dark, cinema-inspired frontend platform foundation for **Movie Explorer Community**, engineered with semantic **HTML5**, **Tailwind CSS v4**, and a strict **DOM selector contract** designed for modular Vanilla JavaScript integration.
 
 > [!IMPORTANT]
-> **Architectural Scope:** This repository delivers the **Presentation Layer & DOM Contract** (`index.html`, `src/input.css`, `dist/output.css`) alongside its client-side ES module (`src/js/main.js`). Navigation scroll-spy and demo authentication validation are wired; search, rating, reviews, community submissions, and favorites remain static UI prototypes (disabled until their controllers and API layer are implemented).
+> **Architectural Scope:** This repository delivers the **Presentation Layer, DOM Contract, and Interactive Client Application** (`index.html`, `src/input.css`, `dist/output.css`, `src/js/main.js`). Catalog search/genre filtering, spotlight switching, live 1–10 rating, reviews, community submissions, favorites management, scroll-spy navigation, and demo authentication validation are all wired locally without a backend API.
 
 ---
 
@@ -28,11 +28,11 @@ A dark, cinema-inspired frontend platform foundation for **Movie Explorer Commun
 
 **Movie Explorer Community** is a single-page film discovery, rating, and catalog curation interface organized around six functional domains:
 
-- **Catalog Search & Filtering:** Query input paired with genre classification filters (`Sci-Fi`, `Drama`, `Mystery`, `Thriller`, `Adventure`) and responsive `2:3` poster grid markup.
-- **Title Spotlight & Rating UI:** Metadata inspection view (release year, genre, runtime, director, plot synopsis, score, and vote count) with an accessible 1–10 radio rating fieldset.
-- **Audience Reviews & Discussions:** Review form markup, validation feedback containers, and static sample review cards.
-- **Community Curation & Quality Assurance:** Markup for suggesting missing films and reporting metadata inaccuracies, plus static sample submission cards.
-- **Personal Watchlist (Favorites):** Saved movies grid markup, navigation badge (`#nav-favorites-count`), and removal buttons.
+- **Catalog Search & Filtering:** Live query input paired with genre classification filters (`Sci-Fi`, `Drama`, `Mystery`, `Thriller`, `Adventure`) and responsive `2:3` poster grid cards.
+- **Title Spotlight & Rating UI:** Interactive film inspector (release year, genre, runtime, director, plot synopsis, score badge, and vote count) with a live 1–10 radio rating fieldset and quick-reaction handoff.
+- **Audience Reviews & Discussions:** Validated review form with live submission rendering, accessible error/success banners, and initial sample review cards.
+- **Community Curation & Quality Assurance:** Validated forms for suggesting missing films and reporting metadata inaccuracies with live submission cards.
+- **Personal Watchlist (Favorites):** Synchronized favorites grid, animated navigation badge (`#nav-favorites-count`), spotlight toggle button (`#details-favorite-btn`), and per-card removal controls.
 - **Member Authentication Flows (Demo):** Accessible sign-in and account registration forms wired to pure client-side validation and accessible feedback banners.
 
 ### Feature & Implementation Status
@@ -40,11 +40,11 @@ A dark, cinema-inspired frontend platform foundation for **Movie Explorer Commun
 | Domain | Status | Notes |
 | :--- | :--- | :--- |
 | **Navigation & Scroll-Spy** | Implemented | Click highlighting, `aria-current="location"`, and `IntersectionObserver` scroll-spy (`src/js/main.js`). |
+| **Search & Genre Filter** | Implemented (Client) | Live keyword and genre filtering across catalog cards with empty-state and summary updates (`initCatalog`). |
+| **Title Spotlight & Rating** | Implemented (Client) | Card-to-spotlight switching, weighted score/vote recalculation, and quick-comment transfer (`initMovieDetails`). |
+| **Reviews & Community Forms** | Implemented (Client) | Pure validators (`validateReview`, `validateSuggestion`, `validateReport`), `aria-invalid` focus linking, and live DOM card prepending. |
+| **Favorites Watchlist** | Implemented (Client) | Add/remove synchronization between `#details-favorite-btn`, `#favorites-list`, `#favorites-empty-state`, and `#nav-favorites-count` (`initFavorites`). |
 | **Authentication Forms** | Implemented (Demo) | Pure client-side validation, `aria-invalid` / `aria-describedby` focus linking, and auto-hide after success (`src/js/main.js`). No backend requests are sent. |
-| **Static Form Guards** | Implemented | Unwired prototype forms use `novalidate` with `disabled` submit buttons in `index.html`, with no JS involved. |
-| **Search & Genre Filter** | Static UI Prototype | Catalog cards are hard-coded; search button is disabled until controller/API integration. |
-| **Rating, Reviews & Community Forms** | Static UI Prototype | Form markup and feedback containers are ready; submit buttons are disabled until wired. |
-| **Favorites Watchlist** | Static UI Prototype | Static sample cards and badge count (`2`); add/remove interactions not yet wired. |
 
 ---
 
@@ -55,20 +55,20 @@ A dark, cinema-inspired frontend platform foundation for **Movie Explorer Commun
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Markup & Semantics** | HTML5 | Semantic document landmarks, native form controls, and ARIA live regions |
-| **Styling & Tokens** | Tailwind CSS v4 (`@tailwindcss/cli`) | CSS-first `@theme` configuration, utility classes, and custom component primitives |
-| **Application Logic** | Vanilla JavaScript (ES Modules) | Single client entry module (`src/js/main.js`) handling navigation scroll-spy and demo auth validation |
-| **Visual Assets** | Custom SVG + CSS Fallbacks | Vector cinema posters (`2:3` aspect ratio) and pure CSS archival placeholder cards |
+| **Styling & Tokens** | Tailwind CSS v4 (`@tailwindcss/cli`) | CSS-first `@theme` configuration, utility classes, calibrated motion keyframes, and custom component primitives |
+| **Application Logic** | Vanilla JavaScript (ES Modules) | Single client entry module (`src/js/main.js`) handling navigation, catalog filtering, spotlight details, reviews, community, favorites, and auth |
+| **Visual Assets** | Custom SVG + Data URI Fallbacks | Vector cinema posters (`2:3` aspect ratio) and archival placeholder artwork |
 
 ### Design Tokens & Component Primitives (`src/input.css`)
 
 The visual system is defined using Tailwind CSS v4's CSS-first `@theme` directive and `@layer components` abstractions:
 
 - **Surface Palette (`cinema-*`):** Deep slate-navy surfaces (`--color-cinema-950: #070a12` through `--color-cinema-700: #263352`) engineered for high contrast and low eye strain.
-- **Accent Palette (`gold-*`):** Warm cinema gold highlights (`--color-gold-400: #fbbf24` through `--color-gold-600: #d97706`) used for ratings, primary calls-to-action, and keyboard focus rings.
+- **Accent Palette (`gold-*` & Motion):** Warm cinema gold highlights (`--color-gold-400: #fbbf24` through `--color-gold-600: #d97706`) paired with `--ease-cinema: cubic-bezier(0.22, 1, 0.36, 1)` and `@media (prefers-reduced-motion: reduce)` fallbacks.
 - **Reusable Component Classes:**
-  - `.cinema-card` / `.cinema-panel`: Standardized surfaces (`bg-cinema-900` with `border-slate-700/65` and `rounded-2xl`, or elevated `bg-cinema-850`).
-  - `.cinema-input` / `.cinema-label`: Unified form controls with `--color-gold-400` focus ring transitions.
-  - `.cinema-btn-primary`, `.cinema-btn-secondary`, `.cinema-btn-danger`, `.cinema-nav-link`, `.cinema-section-header`, `.cinema-alert-error`, `.cinema-alert-success`, `.cinema-badge`, `.cinema-rating-pill`: Interactive controls, section headers, status banners, and keyboard-accessible 1–10 rating pills.
+  - `.cinema-card` / `.cinema-panel`: Standardized surfaces (`bg-cinema-900/90` with `border-slate-800/90`, hover elevation on `.movie-card`/`.favorite-card`, active `[data-selected="true"]` outline, and spotlight `.cinema-panel` gradient).
+  - `.cinema-input` / `.cinema-label`: Unified form controls with `--color-gold-400` focus ring transitions and `[aria-invalid="true"]` error borders.
+  - `.cinema-btn-primary`, `.cinema-btn-secondary`, `.cinema-btn-danger`, `.cinema-nav-link`, `.cinema-section-header`, `.cinema-alert-error`, `.cinema-alert-success`, `.cinema-badge`, `.cinema-rating-pill`, `.cinema-tabular`, `.cinema-animate-in`, `.cinema-spotlight-swap`, `.cinema-badge-pop`: Interactive controls, tabular numeric alignment, status banners, rating pills, and calibrated entry transitions.
 
 ---
 
@@ -145,9 +145,9 @@ All dynamic regions in `index.html` expose stable, deterministic IDs and class h
 | :--- | :--- | :--- | :--- |
 | **Header & Navigation** | `#main-header`, `#brand-logo` | `#nav-search`, `#nav-details`, `#nav-community`, `#nav-favorites`, `#nav-signin-btn`, `#nav-register-btn` | `#nav-favorites-count` |
 | **Search & Discovery** | `#search-section`, `#search-form`, `#search-results-section`, `#search-results` | `#search-input`, `#search-genre`, `#search-submit-btn`, `.movie-card`, `.view-details-btn` | `#search-results-summary`, `#search-loading`, `#search-error`, `#search-error-message`, `#search-no-results` |
-| **Movie Details & Rating** | `#movie-details-section`, `#movie-details`, `#rating-form` | `#details-favorite-btn`, `#details-quick-comment`, `#rating-submit-btn`, `input[name="user-rating"]` | `#details-loading`, `#details-error`, `#details-poster`, `#details-title`, `#details-year`, `#details-genre`, `#details-runtime`, `#details-director`, `#details-plot`, `#details-rating`, `#details-vote-count`, `#rating-feedback` |
+| **Movie Details & Rating** | `#movie-details-section`, `#movie-details`, `#rating-form` | `#details-favorite-btn`, `#details-quick-comment`, `#quick-comment-link`, `#rating-submit-btn`, `input[name="user-rating"]` | `#details-loading`, `#details-error`, `#details-poster`, `#details-title`, `#details-year`, `#details-genre`, `#details-runtime`, `#details-director`, `#details-plot`, `#details-rating`, `#details-score-badge`, `#details-vote-count`, `#rating-feedback` |
 | **Audience Reviews** | `#reviews-section`, `#review-form`, `#reviews-list` | `#review-username`, `#review-rating`, `#review-text`, `#review-submit-btn`, `.review-item` | `#review-target-movie`, `#review-error`, `#review-success`, `#reviews-empty-state` |
-| **Community Curation** | `#community-section`, `#community-suggestion-form`, `#problem-report-form`, `#community-submissions-list` | `#suggest-title`, `#suggest-year`, `#suggest-description`, `#suggest-reason`, `#suggest-submit-btn`, `#report-movie-title`, `#report-problem-type`, `#report-description`, `#report-submit-btn`, `.submission-card` | `#suggestion-feedback`, `#report-feedback`, `#community-empty-state` |
+| **Community Curation** | `#community-section`, `#community-suggestion-form`, `#problem-report-form`, `#community-submissions-list` | `#suggest-title`, `#suggest-year`, `#suggest-description`, `#suggest-reason`, `#suggest-submit-btn`, `#report-movie-title`, `#report-problem-type`, `#report-description`, `#report-submit-btn`, `.submission-card` | `#suggestion-error`, `#suggestion-feedback`, `#report-error`, `#report-feedback`, `#community-empty-state` |
 | **Favorites (Watchlist)** | `#favorites-section`, `#favorites-list` | `.favorite-card`, `.remove-favorite-btn` | `#favorites-empty-state` |
 | **Authentication** | `#auth-section`, `#signin-card`, `#signin-form`, `#register-card`, `#register-form` | `#signin-email`, `#signin-password`, `#signin-submit-btn`, `#go-to-register-link`, `#register-username`, `#register-email`, `#register-password`, `#register-confirm-password`, `#register-submit-btn`, `#go-to-signin-link` | `#signin-error`, `#signin-success`, `#register-error`, `#register-success` |
 
@@ -155,18 +155,18 @@ All dynamic regions in `index.html` expose stable, deterministic IDs and class h
 
 ## 6. JavaScript Implementation Roadmap
 
-When building out the client-side application in `src/js/main.js`, adhere to a modular, layered architecture:
+When expanding the client-side application in `src/js/main.js`, adhere to a modular, layered architecture:
 
 1. **Domain Models & State Management (OOP / ES6 Classes):**
-   - Encapsulate entities (`Movie`, `Review`, `CommunitySubmission`) and stateful services (`FavoritesStore`, `AuthSession`) with `localStorage` persistence where appropriate.
+   - Persist `createAppState()` movies, favorites, and auth state cleanly to `localStorage` or a backend session store as API endpoints are introduced.
 2. **Asynchronous Data & API Service Layer:**
    - Implement a dedicated API client using `fetch` and `async`/`await` to query movie endpoints, normalize payload schemas, and surface typed network errors.
 3. **Deterministic UI State Transitions:**
    - Manage mutually exclusive view states (`loading` → `data` | `empty` | `error`) by toggling the Tailwind `hidden` utility class on `#search-loading`, `#search-error`, `#search-no-results`, and `#search-results`.
 4. **Event Delegation & Controller Binding:**
-   - Attach delegated listeners to parent containers (`#search-results`, `#favorites-list`, `#reviews-list`) to handle dynamically rendered `.view-details-btn` and `.remove-favorite-btn` actions without memory leaks.
+   - Maintain delegated listeners on parent containers (`#search-results`, `#favorites-list`, `#reviews-list`) to handle dynamically rendered `.view-details-btn` and `.remove-favorite-btn` actions without memory leaks.
 5. **Form Validation & Resilient Error Handling:**
-   - Auth forms (`#signin-form`, `#register-form`) already implement client-side validation and error linking (`#signin-error`, `#register-error`) in `src/js/main.js`; follow the same pattern for `#rating-form`, `#review-form`, `#community-suggestion-form`, and `#problem-report-form` once wired.
+   - `#signin-form`, `#register-form`, `#review-form`, `#community-suggestion-form`, and `#problem-report-form` share `bindValidatedForm` and pure validators in `src/js/main.js` with `aria-invalid` and `aria-describedby` linking; mirror server validation errors through the same banners once API endpoints exist.
 
 ---
 
