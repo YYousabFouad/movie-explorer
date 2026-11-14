@@ -22,15 +22,19 @@ function matchesSelector(el, selector) {
   if (selector.startsWith(".")) {
     const className = selector.slice(1).split("[")[0];
     if (!el.classList?.contains(className)) return false;
-    const attrMatch = selector.match(/\[([^\]=]+)="([^"]+)"\]/);
-    return !attrMatch || el.getAttribute(attrMatch[1]) === attrMatch[2];
+    const attr = selector.match(/\[([^\]=]+)="([^"]+)"\]/);
+    return !attr || el.getAttribute(attr[1]) === attr[2];
   }
-  const attrMatch = selector.match(/input\[name="([^"]+)"\]:checked/);
-  if (attrMatch) return el.getAttribute("name") === attrMatch[1] && Boolean(el.checked);
-  return false;
+  const radio = selector.match(/input\[name="([^"]+)"\]:checked/);
+  return radio
+    ? el.getAttribute("name") === radio[1] && Boolean(el.checked)
+    : false;
 }
 
-function createMockElement(id, { classes = [], value = "", attrs = {}, children = [] } = {}) {
+function createMockElement(
+  id,
+  { classes = [], value = "", attrs = {}, children = [] } = {},
+) {
   const classSet = new Set(classes);
   const attributes = new Map(Object.entries(attrs));
   const listeners = new Map();
@@ -52,21 +56,25 @@ function createMockElement(id, { classes = [], value = "", attrs = {}, children 
     },
     set className(val) {
       classSet.clear();
-      String(val).split(/\s+/).filter(Boolean).forEach((t) => classSet.add(t));
+      String(val)
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach((t) => classSet.add(t));
     },
     classList: {
       add: (...tokens) => tokens.forEach((t) => classSet.add(t)),
       remove: (...tokens) => tokens.forEach((t) => classSet.delete(t)),
       contains: (token) => classSet.has(token),
       toggle: (token, force) => {
-        const shouldAdd = force !== undefined ? Boolean(force) : !classSet.has(token);
-        if (shouldAdd) classSet.add(token);
+        const on = force !== undefined ? Boolean(force) : !classSet.has(token);
+        if (on) classSet.add(token);
         else classSet.delete(token);
-        return shouldAdd;
+        return on;
       },
     },
     setAttribute: (name, val) => attributes.set(name, String(val)),
-    getAttribute: (name) => (attributes.has(name) ? attributes.get(name) : null),
+    getAttribute: (name) =>
+      attributes.has(name) ? attributes.get(name) : null,
     removeAttribute: (name) => attributes.delete(name),
     focus: () => {
       el.focused = true;
@@ -81,91 +89,106 @@ function createMockElement(id, { classes = [], value = "", attrs = {}, children 
       return node;
     },
     append: (...nodes) => nodes.forEach((n) => el.appendChild(n)),
-    prepend: (...nodes) => nodes.reverse().forEach((n) => {
-      n.parentNode = el;
-      childNodes.unshift(n);
-    }),
+    prepend: (...nodes) =>
+      nodes.reverse().forEach((n) => {
+        n.parentNode = el;
+        childNodes.unshift(n);
+      }),
     remove: () => {
-      if (!el.parentNode) return;
-      const idx = el.parentNode.children.indexOf(el);
+      const idx = el.parentNode?.children.indexOf(el) ?? -1;
       if (idx >= 0) el.parentNode.children.splice(idx, 1);
       el.parentNode = null;
     },
     get children() {
       return childNodes;
     },
-    querySelector: (selector) => {
+    querySelector: (sel) => {
       for (const child of childNodes) {
-        if (matchesSelector(child, selector)) return child;
-        const nested = child.querySelector?.(selector);
-        if (nested) return nested;
+        const hit = matchesSelector(child, sel)
+          ? child
+          : child.querySelector?.(sel);
+        if (hit) return hit;
       }
       return null;
     },
-    querySelectorAll: (selector) => {
-      const hits = [];
-      for (const child of childNodes) {
-        if (matchesSelector(child, selector)) hits.push(child);
-        if (child.querySelectorAll) hits.push(...child.querySelectorAll(selector));
-      }
-      return hits;
-    },
-    closest: (selector) => (matchesSelector(el, selector) ? el : null),
+    querySelectorAll: (sel) =>
+      childNodes.flatMap((c) => [
+        ...(matchesSelector(c, sel) ? [c] : []),
+        ...(c.querySelectorAll ? c.querySelectorAll(sel) : []),
+      ]),
+    closest: (sel) => (matchesSelector(el, sel) ? el : null),
     addEventListener: (type, fn) => {
       if (!listeners.has(type)) listeners.set(type, []);
       listeners.get(type).push(fn);
     },
     dispatchEvent: (type, target = el) => {
       let defaultPrevented = false;
-      const event = { target, preventDefault: () => { defaultPrevented = true; } };
+      const event = {
+        target,
+        preventDefault: () => {
+          defaultPrevented = true;
+        },
+      };
       for (const fn of listeners.get(type) ?? []) fn(event);
       return { defaultPrevented };
     },
   };
-  childNodes.forEach((c) => { c.parentNode = el; });
+  childNodes.forEach((c) => {
+    c.parentNode = el;
+  });
   return el;
 }
 
 function createMockDocument(elementsById, navLinks = [], recordedIds = null) {
   return {
-    createElement(tag) {
-      return createMockElement(tag);
-    },
+    createElement: (tag) => createMockElement(tag),
     getElementById(id) {
       recordedIds?.add(id);
       return elementsById[id] ?? null;
     },
-    querySelector(selector) {
-      if (selector.startsWith("#search-results ")) {
-        return elementsById["search-results"]?.querySelector(selector.slice("#search-results ".length)) ?? null;
-      }
-      return null;
-    },
-    querySelectorAll(selector) {
-      if (selector === ".cinema-nav-link") return navLinks;
-      if (selector === "#search-results .movie-card") {
-        return elementsById["search-results"]?.querySelectorAll(".movie-card") ?? [];
-      }
+    querySelector: (sel) =>
+      sel.startsWith("#search-results ")
+        ? (elementsById["search-results"]?.querySelector(
+            sel.slice("#search-results ".length),
+          ) ?? null)
+        : null,
+    querySelectorAll(sel) {
+      if (sel === ".cinema-nav-link") return navLinks;
+      if (sel === "#search-results .movie-card")
+        return (
+          elementsById["search-results"]?.querySelectorAll(".movie-card") ?? []
+        );
       return [];
     },
   };
 }
 
+const el = (id, opts) => createMockElement(id, opts);
+const mockFields = (entries) =>
+  Object.fromEntries(
+    Object.entries(entries).map(([id, value]) => [
+      id,
+      el(id, typeof value === "string" ? { value } : value),
+    ]),
+  );
+
 function createAuthDom(overrides = {}) {
   return {
-    "auth-section": createMockElement("auth-section"),
-    "signin-form": createMockElement("signin-form"),
-    "signin-error": createMockElement("signin-error", { classes: ["hidden"] }),
-    "signin-success": createMockElement("signin-success", { classes: ["hidden"] }),
-    "signin-email": createMockElement("signin-email", { value: "invalid" }),
-    "signin-password": createMockElement("signin-password", { value: "123" }),
-    "register-form": createMockElement("register-form"),
-    "register-error": createMockElement("register-error", { classes: ["hidden"] }),
-    "register-success": createMockElement("register-success", { classes: ["hidden"] }),
-    "register-username": createMockElement("register-username", { value: "alex" }),
-    "register-email": createMockElement("register-email", { value: "alex@example.com" }),
-    "register-password": createMockElement("register-password", { value: "password123" }),
-    "register-confirm-password": createMockElement("register-confirm-password", { value: "password123" }),
+    ...mockFields({
+      "auth-section": {},
+      "signin-form": {},
+      "signin-error": { classes: ["hidden"] },
+      "signin-success": { classes: ["hidden"] },
+      "signin-email": "invalid",
+      "signin-password": "123",
+      "register-form": {},
+      "register-error": { classes: ["hidden"] },
+      "register-success": { classes: ["hidden"] },
+      "register-username": "alex",
+      "register-email": "alex@example.com",
+      "register-password": "password123",
+      "register-confirm-password": "password123",
+    }),
     ...overrides,
   };
 }
@@ -184,11 +207,17 @@ describe("validateSignIn", () => {
   });
 
   it("accepts passwords shorter than registration minimum at sign-in", () => {
-    assert.equal(validateSignIn({ email: "user@example.com", password: "123" }).isValid, true);
+    assert.equal(
+      validateSignIn({ email: "user@example.com", password: "123" }).isValid,
+      true,
+    );
   });
 
   it("trims surrounding whitespace on email", () => {
-    assert.equal(validateSignIn({ email: "  user@example.com  ", password: "ok" }).isValid, true);
+    assert.equal(
+      validateSignIn({ email: "  user@example.com  ", password: "ok" }).isValid,
+      true,
+    );
   });
 
   it("handles null or undefined payloads safely without throwing", () => {
@@ -208,7 +237,10 @@ describe("validateSignIn", () => {
   });
 
   it("rejects 8-space password with field 'password'", () => {
-    const result = validateSignIn({ email: "user@example.com", password: "        " });
+    const result = validateSignIn({
+      email: "user@example.com",
+      password: "        ",
+    });
     assert.equal(result.isValid, false);
     assert.equal(result.field, "password");
   });
@@ -232,17 +264,41 @@ describe("validateRegister", () => {
 
   it("handles null/undefined and missing required fields with matching field keys", () => {
     assert.equal(validateRegister(null).field, "username");
-    assert.equal(validateRegister({ ...validPayload, username: "  " }).field, "username");
-    assert.equal(validateRegister({ ...validPayload, email: "" }).field, "email");
-    assert.equal(validateRegister({ ...validPayload, password: "   " }).field, "password");
-    assert.equal(validateRegister({ ...validPayload, confirmPassword: "" }).field, "confirmPassword");
+    assert.equal(
+      validateRegister({ ...validPayload, username: "  " }).field,
+      "username",
+    );
+    assert.equal(
+      validateRegister({ ...validPayload, email: "" }).field,
+      "email",
+    );
+    assert.equal(
+      validateRegister({ ...validPayload, password: "   " }).field,
+      "password",
+    );
+    assert.equal(
+      validateRegister({ ...validPayload, confirmPassword: "" }).field,
+      "confirmPassword",
+    );
   });
 
   it("rejects short username, invalid email, short password, and mismatched confirmation", () => {
-    assert.equal(validateRegister({ ...validPayload, username: "ab " }).field, "username");
-    assert.equal(validateRegister({ ...validPayload, email: "bad@" }).field, "email");
-    assert.equal(validateRegister({ ...validPayload, password: "short" }).field, "password");
-    assert.equal(validateRegister({ ...validPayload, confirmPassword: "other" }).field, "confirmPassword");
+    assert.equal(
+      validateRegister({ ...validPayload, username: "ab " }).field,
+      "username",
+    );
+    assert.equal(
+      validateRegister({ ...validPayload, email: "bad@" }).field,
+      "email",
+    );
+    assert.equal(
+      validateRegister({ ...validPayload, password: "short" }).field,
+      "password",
+    );
+    assert.equal(
+      validateRegister({ ...validPayload, confirmPassword: "other" }).field,
+      "confirmPassword",
+    );
   });
 });
 
@@ -258,16 +314,28 @@ describe("initAuth", () => {
     assert.equal(invalid.defaultPrevented, true);
     assert.equal(elements["signin-error"].classList.contains("hidden"), false);
     assert.equal(elements["signin-email"].getAttribute("aria-invalid"), "true");
-    assert.equal(elements["signin-email"].getAttribute("aria-describedby"), "signin-error");
+    assert.equal(
+      elements["signin-email"].getAttribute("aria-describedby"),
+      "signin-error",
+    );
     assert.equal(elements["signin-email"].focused, true);
 
     elements["signin-email"].value = "alex@example.com";
     const valid = elements["signin-form"].dispatchEvent("submit");
     assert.equal(valid.defaultPrevented, true);
     assert.equal(elements["signin-email"].getAttribute("aria-invalid"), null);
-    assert.equal(elements["signin-email"].getAttribute("aria-describedby"), null);
-    assert.equal(elements["signin-success"].classList.contains("hidden"), false);
-    assert.match(elements["signin-success"].textContent, /Demo sign-in validated locally/);
+    assert.equal(
+      elements["signin-email"].getAttribute("aria-describedby"),
+      null,
+    );
+    assert.equal(
+      elements["signin-success"].classList.contains("hidden"),
+      false,
+    );
+    assert.match(
+      elements["signin-success"].textContent,
+      /Demo sign-in validated locally/,
+    );
     assert.equal(elements["signin-form"].resetCount, 1);
 
     assert.equal(elements["auth-section"].classList.contains("hidden"), false);
@@ -287,7 +355,10 @@ describe("initAuth", () => {
     t.mock.timers.tick(500);
     elements["register-confirm-password"].value = "mismatch";
     elements["register-form"].dispatchEvent("submit");
-    assert.equal(elements["register-error"].classList.contains("hidden"), false);
+    assert.equal(
+      elements["register-error"].classList.contains("hidden"),
+      false,
+    );
 
     t.mock.timers.tick(1000);
     assert.equal(elements["auth-section"].classList.contains("hidden"), false);
@@ -298,8 +369,14 @@ describe("initAuth", () => {
     globalThis.document = createMockDocument(elements);
 
     initAuth();
-    assert.equal(elements["signin-form"].dispatchEvent("submit").defaultPrevented, false);
-    assert.equal(elements["register-form"].dispatchEvent("submit").defaultPrevented, true);
+    assert.equal(
+      elements["signin-form"].dispatchEvent("submit").defaultPrevented,
+      false,
+    );
+    assert.equal(
+      elements["register-form"].dispatchEvent("submit").defaultPrevented,
+      true,
+    );
   });
 });
 
@@ -307,15 +384,19 @@ describe("initNavigation", () => {
   it("handles scroll-spy intersections and respects the 650ms click-scroll lock", (t) => {
     t.mock.timers.enable({ apis: ["setTimeout"] });
 
-    const sectionA = createMockElement("section-a");
-    const sectionB = createMockElement("section-b");
-    const linkA = createMockElement("nav-a", {
+    const sectionA = el("section-a");
+    const sectionB = el("section-b");
+    const linkA = el("nav-a", {
       attrs: { href: "#section-a", "aria-current": "location" },
       classes: ["bg-amber-400/10", "text-amber-400"],
     });
-    const linkB = createMockElement("nav-b", { attrs: { href: "#section-b" } });
-    const linkMissing = createMockElement("nav-missing", { attrs: { href: "#missing" } });
-    const linkExternal = createMockElement("nav-ext", { attrs: { href: "https://example.com" } });
+    const linkB = el("nav-b", { attrs: { href: "#section-b" } });
+    const navLinks = [
+      linkA,
+      linkB,
+      el("nav-missing", { attrs: { href: "#missing" } }),
+      el("nav-ext", { attrs: { href: "https://example.com" } }),
+    ];
 
     const observed = [];
     let observerCallback = null;
@@ -329,7 +410,7 @@ describe("initNavigation", () => {
     };
     globalThis.document = createMockDocument(
       { "section-a": sectionA, "section-b": sectionB },
-      [linkA, linkB, linkMissing, linkExternal],
+      navLinks,
     );
 
     initNavigation();
@@ -351,8 +432,10 @@ describe("initNavigation", () => {
 
   it("still binds click highlighting when IntersectionObserver is unavailable", (t) => {
     t.mock.timers.enable({ apis: ["setTimeout"] });
-    const linkA = createMockElement("nav-a", { attrs: { href: "#a", "aria-current": "location" } });
-    const linkB = createMockElement("nav-b", { attrs: { href: "#b" } });
+    const linkA = el("nav-a", {
+      attrs: { href: "#a", "aria-current": "location" },
+    });
+    const linkB = el("nav-b", { attrs: { href: "#b" } });
     globalThis.document = createMockDocument({}, [linkA, linkB]);
 
     initNavigation();
@@ -364,16 +447,20 @@ describe("initNavigation", () => {
 
 describe("index.html contract", () => {
   it("has unique IDs, valid internal anchors, and every JS-referenced ID", () => {
-    const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
+    const html = fs.readFileSync(
+      new URL("../index.html", import.meta.url),
+      "utf8",
+    );
     const ids = [...html.matchAll(/(?:^|\s)id="([^"]+)"/g)].map((m) => m[1]);
     const idSet = new Set(ids);
 
     assert.equal(ids.length, idSet.size, "Duplicate IDs found in index.html");
-
-    const missingAnchors = [...html.matchAll(/\bhref="#([^"]+)"/g)]
-      .map((m) => m[1])
-      .filter((target) => !idSet.has(target));
-    assert.deepEqual(missingAnchors, []);
+    assert.deepEqual(
+      [...html.matchAll(/\bhref="#([^"]+)"/g)]
+        .map((m) => m[1])
+        .filter((id) => !idSet.has(id)),
+      [],
+    );
 
     const lookedUpIds = new Set();
     const elements = createAuthDom();
@@ -384,36 +471,118 @@ describe("index.html contract", () => {
     elements["signin-form"].dispatchEvent("submit");
 
     assert.ok(lookedUpIds.size > 0, "Expected recorded IDs from initAuth");
-    for (const id of lookedUpIds) {
+    for (const id of lookedUpIds)
       assert.ok(idSet.has(id), `JS looked up missing HTML ID: #${id}`);
-    }
 
-    for (const id of ["dune-horizon", "midnight-sonata", "neon-odyssey", "glass-labyrinth"]) {
-      assert.ok(html.includes(`data-movie-id="${id}"`), `Missing catalog data-movie-id="${id}" in index.html`);
+    for (const id of [
+      "dune-horizon",
+      "midnight-sonata",
+      "neon-odyssey",
+      "glass-labyrinth",
+    ]) {
+      assert.ok(
+        html.includes(`data-movie-id="${id}"`),
+        `Missing catalog data-movie-id="${id}" in index.html`,
+      );
     }
   });
 });
 
 describe("validateReview, validateSuggestion, and validateReport", () => {
   it("validates audience review payloads cleanly", () => {
-    assert.equal(validateReview({ username: "", rating: "9", reviewText: "Great sound design." }).field, "username");
-    assert.equal(validateReview({ username: "Maya", rating: "0", reviewText: "Great sound design." }).field, "rating");
-    assert.equal(validateReview({ username: "Maya", rating: "9", reviewText: "Too short" }).field, "reviewText");
-    assert.equal(validateReview({ username: "Maya", rating: "9", reviewText: "Wide desert frames and stellar pacing." }).isValid, true);
+    assert.equal(
+      validateReview({
+        username: "",
+        rating: "9",
+        reviewText: "Great sound design.",
+      }).field,
+      "username",
+    );
+    assert.equal(
+      validateReview({
+        username: "Maya",
+        rating: "0",
+        reviewText: "Great sound design.",
+      }).field,
+      "rating",
+    );
+    assert.equal(
+      validateReview({ username: "Maya", rating: "9", reviewText: "Too short" })
+        .field,
+      "reviewText",
+    );
+    assert.equal(
+      validateReview({
+        username: "Maya",
+        rating: "9",
+        reviewText: "Wide desert frames and stellar pacing.",
+      }).isValid,
+      true,
+    );
   });
 
   it("validates community movie suggestions including optional release year bounds", () => {
-    assert.equal(validateSuggestion({ title: "", year: "", reason: "A seminal classic." }).field, "title");
-    assert.equal(validateSuggestion({ title: "Arrival", year: "1800", reason: "A seminal classic." }).field, "year");
-    assert.equal(validateSuggestion({ title: "Arrival", year: "2016", reason: "short" }).field, "reason");
-    assert.equal(validateSuggestion({ title: "Arrival", year: "", reason: "Thoughtful linguistic sci-fi film." }).isValid, true);
+    assert.equal(
+      validateSuggestion({ title: "", year: "", reason: "A seminal classic." })
+        .field,
+      "title",
+    );
+    assert.equal(
+      validateSuggestion({
+        title: "Arrival",
+        year: "1800",
+        reason: "A seminal classic.",
+      }).field,
+      "year",
+    );
+    assert.equal(
+      validateSuggestion({ title: "Arrival", year: "2016", reason: "short" })
+        .field,
+      "reason",
+    );
+    assert.equal(
+      validateSuggestion({
+        title: "Arrival",
+        year: "",
+        reason: "Thoughtful linguistic sci-fi film.",
+      }).isValid,
+      true,
+    );
   });
 
   it("validates problem reports", () => {
-    assert.equal(validateReport({ movieTitle: "", problemType: "other", description: "Detailed issue report." }).field, "movieTitle");
-    assert.equal(validateReport({ movieTitle: "Dune", problemType: "", description: "Detailed issue report." }).field, "problemType");
-    assert.equal(validateReport({ movieTitle: "Dune", problemType: "other", description: "short" }).field, "description");
-    assert.equal(validateReport({ movieTitle: "Dune", problemType: "missing-poster", description: "Poster SVG fails to load on card." }).isValid, true);
+    assert.equal(
+      validateReport({
+        movieTitle: "",
+        problemType: "other",
+        description: "Detailed issue report.",
+      }).field,
+      "movieTitle",
+    );
+    assert.equal(
+      validateReport({
+        movieTitle: "Dune",
+        problemType: "",
+        description: "Detailed issue report.",
+      }).field,
+      "problemType",
+    );
+    assert.equal(
+      validateReport({
+        movieTitle: "Dune",
+        problemType: "other",
+        description: "short",
+      }).field,
+      "description",
+    );
+    assert.equal(
+      validateReport({
+        movieTitle: "Dune",
+        problemType: "missing-poster",
+        description: "Poster SVG fails to load on card.",
+      }).isValid,
+      true,
+    );
   });
 });
 
@@ -421,176 +590,222 @@ describe("review and community submissions", () => {
   it("labels a new review with the currently selected movie", () => {
     const state = createAppState();
     state.activeMovieId = "midnight-sonata";
-    const reviewForm = createMockElement("review-form");
-    const reviewsList = createMockElement("reviews-list");
-    const elements = {
-      "review-form": reviewForm,
-      "review-error": createMockElement("review-error", { classes: ["hidden"] }),
-      "review-success": createMockElement("review-success", { classes: ["hidden"] }),
-      "review-username": createMockElement("review-username", { value: "Maya" }),
-      "review-rating": createMockElement("review-rating", { value: "8" }),
-      "review-text": createMockElement("review-text", { value: "Beautifully staged mystery." }),
-      "reviews-list": reviewsList,
-      "reviews-empty-state": createMockElement("reviews-empty-state"),
-    };
+    const elements = mockFields({
+      "review-form": {},
+      "review-error": { classes: ["hidden"] },
+      "review-success": { classes: ["hidden"] },
+      "review-username": "Maya",
+      "review-rating": "8",
+      "review-text": "Beautifully staged mystery.",
+      "reviews-list": {},
+      "reviews-empty-state": {},
+    });
     globalThis.document = createMockDocument(elements);
 
     initReviews(state);
-    reviewForm.dispatchEvent("submit");
+    elements["review-form"].dispatchEvent("submit");
 
-    assert.equal(reviewsList.children.length, 1);
-    assert.equal(reviewsList.children[0].children[1].textContent, "Midnight Sonata in Vienna (2024)");
-    assert.equal(reviewsList.children[0].children[2].textContent, "Beautifully staged mystery.");
+    const list = elements["reviews-list"];
+    assert.equal(list.children.length, 1);
+    assert.equal(
+      list.children[0].children[1].textContent,
+      "Midnight Sonata in Vienna (2024)",
+    );
+    assert.equal(
+      list.children[0].children[2].textContent,
+      "Beautifully staged mystery.",
+    );
   });
 
   it("retains suggestion synopsis and report category in submission cards", () => {
-    const list = createMockElement("community-submissions-list");
-    const elements = {
-      "community-suggestion-form": createMockElement("community-suggestion-form"),
-      "suggestion-error": createMockElement("suggestion-error", { classes: ["hidden"] }),
-      "suggestion-feedback": createMockElement("suggestion-feedback", { classes: ["hidden"] }),
-      "suggest-title": createMockElement("suggest-title", { value: "Arrival" }),
-      "suggest-year": createMockElement("suggest-year", { value: "2016" }),
-      "suggest-description": createMockElement("suggest-description", { value: "A linguist deciphers an alien language." }),
-      "suggest-reason": createMockElement("suggest-reason", { value: "Its thoughtful take on communication deserves a place." }),
-      "problem-report-form": createMockElement("problem-report-form"),
-      "report-error": createMockElement("report-error", { classes: ["hidden"] }),
-      "report-feedback": createMockElement("report-feedback", { classes: ["hidden"] }),
-      "report-movie-title": createMockElement("report-movie-title", { value: "Dune" }),
-      "report-problem-type": createMockElement("report-problem-type", { value: "missing-poster" }),
-      "report-description": createMockElement("report-description", { value: "The poster image is missing from the details panel." }),
-      "community-submissions-list": list,
-      "community-empty-state": createMockElement("community-empty-state"),
-    };
+    const elements = mockFields({
+      "community-suggestion-form": {},
+      "suggestion-error": { classes: ["hidden"] },
+      "suggestion-feedback": { classes: ["hidden"] },
+      "suggest-title": "Arrival",
+      "suggest-year": "2016",
+      "suggest-description": "A linguist deciphers an alien language.",
+      "suggest-reason":
+        "Its thoughtful take on communication deserves a place.",
+      "problem-report-form": {},
+      "report-error": { classes: ["hidden"] },
+      "report-feedback": { classes: ["hidden"] },
+      "report-movie-title": "Dune",
+      "report-problem-type": "missing-poster",
+      "report-description":
+        "The poster image is missing from the details panel.",
+      "community-submissions-list": {},
+      "community-empty-state": {},
+    });
     globalThis.document = createMockDocument(elements);
 
     initCommunity();
     elements["community-suggestion-form"].dispatchEvent("submit");
     elements["problem-report-form"].dispatchEvent("submit");
 
-    assert.equal(list.children[1].children[0].children[2].textContent, "Synopsis: A linguist deciphers an alien language.");
-    assert.equal(list.children[1].children[0].children[3].textContent, "Reason: Its thoughtful take on communication deserves a place.");
-    assert.equal(list.children[0].children[0].children[2].textContent, "Missing or Low-Resolution Poster");
+    const list = elements["community-submissions-list"];
+    assert.equal(
+      list.children[1].children[0].children[2].textContent,
+      "Synopsis: A linguist deciphers an alien language.",
+    );
+    assert.equal(
+      list.children[1].children[0].children[3].textContent,
+      "Reason: Its thoughtful take on communication deserves a place.",
+    );
+    assert.equal(
+      list.children[0].children[0].children[2].textContent,
+      "Missing or Low-Resolution Poster",
+    );
   });
 });
 
 describe("initCatalog", () => {
   it("filters movie cards by query and genre and toggles empty state", () => {
-    const state = createAppState();
-    const cardDune = createMockElement("card-dune", { classes: ["movie-card"], attrs: { "data-movie-id": "dune-horizon" } });
-    const cardVienna = createMockElement("card-vienna", { classes: ["movie-card"], attrs: { "data-movie-id": "midnight-sonata" } });
-    const results = createMockElement("search-results", { children: [cardDune, cardVienna] });
-    const form = createMockElement("search-form");
-    const input = createMockElement("search-input");
-    const genre = createMockElement("search-genre");
-    const summary = createMockElement("search-results-summary");
-    const empty = createMockElement("search-no-results", { classes: ["hidden"] });
-
-    globalThis.document = createMockDocument({
-      "search-form": form,
-      "search-input": input,
-      "search-genre": genre,
-      "search-results": results,
-      "search-results-summary": summary,
-      "search-no-results": empty,
+    const cardDune = el("card-dune", {
+      classes: ["movie-card"],
+      attrs: { "data-movie-id": "dune-horizon" },
     });
+    const cardVienna = el("card-vienna", {
+      classes: ["movie-card"],
+      attrs: { "data-movie-id": "midnight-sonata" },
+    });
+    const elements = mockFields({
+      "search-form": {},
+      "search-input": {},
+      "search-genre": {},
+      "search-results": { children: [cardDune, cardVienna] },
+      "search-results-summary": {},
+      "search-no-results": { classes: ["hidden"] },
+    });
+    globalThis.document = createMockDocument(elements);
 
-    initCatalog(state);
+    initCatalog(createAppState());
 
-    genre.value = "mystery";
-    genre.dispatchEvent("change");
+    elements["search-genre"].value = "mystery";
+    elements["search-genre"].dispatchEvent("change");
     assert.equal(cardDune.classList.contains("hidden"), true);
     assert.equal(cardVienna.classList.contains("hidden"), false);
-    assert.equal(empty.classList.contains("hidden"), true);
-    assert.equal(summary.textContent, "Showing 1 of 2 curated films.");
+    assert.equal(
+      elements["search-no-results"].classList.contains("hidden"),
+      true,
+    );
+    assert.equal(
+      elements["search-results-summary"].textContent,
+      "Showing 1 of 2 curated films.",
+    );
 
-    input.value = "nonexistent";
-    form.dispatchEvent("submit");
-    assert.equal(results.classList.contains("hidden"), true);
-    assert.equal(empty.classList.contains("hidden"), false);
-    assert.equal(summary.textContent, "Showing 0 of 2 curated films.");
+    elements["search-input"].value = "nonexistent";
+    elements["search-form"].dispatchEvent("submit");
+    assert.equal(elements["search-results"].classList.contains("hidden"), true);
+    assert.equal(
+      elements["search-no-results"].classList.contains("hidden"),
+      false,
+    );
+    assert.equal(
+      elements["search-results-summary"].textContent,
+      "Showing 0 of 2 curated films.",
+    );
   });
 });
 
 describe("initMovieDetails and initFavorites", () => {
   it("switches spotlight movie, updates rating count, and toggles favorites cleanly", () => {
     const state = createAppState();
-    const viewViennaBtn = createMockElement("vienna-btn", {
+    const viewViennaBtn = el("vienna-btn", {
       classes: ["view-details-btn"],
       attrs: { "data-movie-id": "midnight-sonata" },
     });
-    const cardDune = createMockElement("card-dune", {
+    const cardDune = el("card-dune", {
       classes: ["movie-card"],
       attrs: { "data-movie-id": "dune-horizon", "data-selected": "true" },
     });
-    const cardVienna = createMockElement("card-vienna", {
+    const cardVienna = el("card-vienna", {
       classes: ["movie-card"],
       attrs: { "data-movie-id": "midnight-sonata", "data-selected": "false" },
-      children: [createMockElement("vienna-badge", { classes: ["cinema-badge"] }), viewViennaBtn],
+      children: [
+        el("vienna-badge", { classes: ["cinema-badge"] }),
+        viewViennaBtn,
+      ],
     });
-    const radio10 = createMockElement("r10", { value: "10", attrs: { name: "user-rating" } });
+    const radio10 = el("r10", { value: "10", attrs: { name: "user-rating" } });
     radio10.checked = true;
 
-    const removeDuneBtn = createMockElement("rm-dune", {
+    const removeDuneBtn = el("rm-dune", {
       classes: ["remove-favorite-btn"],
       attrs: { "data-movie-id": "dune-horizon" },
     });
-    const favDune = createMockElement("fav-dune", {
+    const removeSolarisBtn = el("rm-solaris", {
+      classes: ["remove-favorite-btn"],
+      attrs: { "data-movie-id": "solaris-echo" },
+    });
+    const favDune = el("fav-dune", {
       classes: ["favorite-card"],
       attrs: { "data-movie-id": "dune-horizon" },
       children: [removeDuneBtn],
     });
-    const removeSolarisBtn = createMockElement("rm-solaris", {
-      classes: ["remove-favorite-btn"],
-      attrs: { "data-movie-id": "solaris-echo" },
-    });
-    const favSolaris = createMockElement("fav-solaris", {
+    const favSolaris = el("fav-solaris", {
       classes: ["favorite-card"],
       attrs: { "data-movie-id": "solaris-echo" },
       children: [removeSolarisBtn],
     });
 
-    const elements = {
-      "search-results": createMockElement("search-results", { children: [cardDune, cardVienna] }),
-      "movie-details": createMockElement("movie-details"),
-      "details-poster": createMockElement("details-poster"),
-      "details-title": createMockElement("details-title"),
-      "details-year": createMockElement("details-year"),
-      "details-genre": createMockElement("details-genre"),
-      "details-runtime": createMockElement("details-runtime"),
-      "details-director": createMockElement("details-director"),
-      "details-plot": createMockElement("details-plot"),
-      "details-score-badge": createMockElement("details-score-badge"),
-      "details-vote-count": createMockElement("details-vote-count"),
-      "rating-form": createMockElement("rating-form", { children: [radio10] }),
-      "rating-feedback": createMockElement("rating-feedback", { classes: ["hidden"] }),
-      "details-quick-comment": createMockElement("details-quick-comment", { value: "Masterful violin motif." }),
-      "quick-comment-link": createMockElement("quick-comment-link"),
-      "review-target-movie": createMockElement("review-target-movie"),
-      "review-username": createMockElement("review-username"),
-      "review-text": createMockElement("review-text"),
-      "details-favorite-btn": createMockElement("details-favorite-btn"),
-      "favorites-list": createMockElement("favorites-list", { children: [favDune, favSolaris] }),
-      "favorites-empty-state": createMockElement("favorites-empty-state", { classes: ["hidden"] }),
-      "nav-favorites-count": createMockElement("nav-favorites-count"),
-    };
+    const elements = mockFields({
+      "search-results": { children: [cardDune, cardVienna] },
+      "movie-details": {},
+      "details-poster": {},
+      "details-title": {},
+      "details-year": {},
+      "details-genre": {},
+      "details-runtime": {},
+      "details-director": {},
+      "details-plot": {},
+      "details-score-badge": {},
+      "details-vote-count": {},
+      "rating-form": { children: [radio10] },
+      "rating-feedback": { classes: ["hidden"] },
+      "details-quick-comment": "Masterful violin motif.",
+      "quick-comment-link": {},
+      "review-target-movie": {},
+      "review-username": {},
+      "review-text": {},
+      "details-favorite-btn": {},
+      "favorites-list": { children: [favDune, favSolaris] },
+      "favorites-empty-state": { classes: ["hidden"] },
+      "nav-favorites-count": {},
+    });
     globalThis.document = createMockDocument(elements);
 
     let favoritesApi = null;
-    const detailsApi = initMovieDetails(state, { syncFavoriteButton: () => favoritesApi.syncFavoriteButton() });
-    favoritesApi = initFavorites(state, { onSelectMovie: (id) => detailsApi.selectMovie(id) });
+    const detailsApi = initMovieDetails(state, {
+      syncFavoriteButton: () => favoritesApi.syncFavoriteButton(),
+    });
+    favoritesApi = initFavorites(state, {
+      onSelectMovie: (id) => detailsApi.selectMovie(id),
+    });
 
-    assert.equal(elements["details-favorite-btn"].getAttribute("aria-pressed"), "true");
+    assert.equal(
+      elements["details-favorite-btn"].getAttribute("aria-pressed"),
+      "true",
+    );
 
     elements["search-results"].dispatchEvent("click", viewViennaBtn);
     assert.equal(state.activeMovieId, "midnight-sonata");
-    assert.equal(elements["details-title"].textContent, "Midnight Sonata in Vienna");
+    assert.equal(
+      elements["details-title"].textContent,
+      "Midnight Sonata in Vienna",
+    );
     assert.equal(cardVienna.getAttribute("data-selected"), "true");
-    assert.equal(elements["details-favorite-btn"].getAttribute("aria-pressed"), "false");
+    assert.equal(
+      elements["details-favorite-btn"].getAttribute("aria-pressed"),
+      "false",
+    );
 
     elements["rating-form"].dispatchEvent("submit");
     assert.equal(state.movies.get("midnight-sonata").votes, 961);
-    assert.equal(elements["rating-feedback"].classList.contains("hidden"), false);
+    assert.equal(
+      elements["rating-feedback"].classList.contains("hidden"),
+      false,
+    );
 
     elements["quick-comment-link"].dispatchEvent("click");
     assert.equal(elements["review-text"].value, "Masterful violin motif.");
@@ -604,10 +819,15 @@ describe("initMovieDetails and initFavorites", () => {
     elements["favorites-list"].dispatchEvent("click", removeSolarisBtn);
     assert.equal(state.favorites.size, 1);
 
-    const viennaFavRemoveBtn = elements["favorites-list"].querySelector(".remove-favorite-btn");
+    const viennaFavRemoveBtn = elements["favorites-list"].querySelector(
+      ".remove-favorite-btn",
+    );
     elements["favorites-list"].dispatchEvent("click", viennaFavRemoveBtn);
     assert.equal(state.favorites.size, 0);
     assert.equal(elements["nav-favorites-count"].textContent, "0");
-    assert.equal(elements["favorites-empty-state"].classList.contains("hidden"), false);
+    assert.equal(
+      elements["favorites-empty-state"].classList.contains("hidden"),
+      false,
+    );
   });
 });

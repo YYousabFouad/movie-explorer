@@ -111,100 +111,57 @@ const MAX_RELEASE_YEAR = 2035;
 // Client-side format sanity check only; the server must re-validate.
 const EMAIL_PATTERN = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/;
 
-const isFilled = (value) =>
-  typeof value === "string" && value.trim().length > 0;
-const isEmail = (value) =>
-  typeof value === "string" && EMAIL_PATTERN.test(value.trim());
-const hasMinTrimmedLength = (min) => (value) =>
-  typeof value === "string" && value.trim().length >= min;
-const isValidRating = (value) => {
-  const num = Number(value);
+const isFilled = (v) => typeof v === "string" && v.trim().length > 0;
+const isEmail = (v) => typeof v === "string" && EMAIL_PATTERN.test(v.trim());
+const hasMinTrimmedLength = (min) => (v) => typeof v === "string" && v.trim().length >= min;
+const isValidRating = (v) => {
+  const num = Number(v);
   return Number.isInteger(num) && num >= 1 && num <= 10;
 };
-const isValidOptionalYear = (value) => {
-  if (!isFilled(value)) return true;
-  const num = Number(value.trim());
-  return (
-    Number.isInteger(num) && num >= MIN_RELEASE_YEAR && num <= MAX_RELEASE_YEAR
-  );
+const isValidOptionalYear = (v) => {
+  if (!isFilled(v)) return true;
+  const num = Number(v.trim());
+  return Number.isInteger(num) && num >= MIN_RELEASE_YEAR && num <= MAX_RELEASE_YEAR;
 };
+const requiredText = (field, emptyMsg, minLength = 0, minMsg = "") => [
+  [field, isFilled, emptyMsg],
+  ...(minLength > 0 ? [[field, hasMinTrimmedLength(minLength), minMsg]] : []),
+];
 
 // A rule is [field, test(value, payload) => boolean, message]. The first failing rule wins.
 const EMAIL_RULES = [
   ["email", isFilled, "Please enter your email address."],
   ["email", isEmail, "Please enter a valid email address."],
 ];
-
-const SIGN_IN_RULES = [
-  ...EMAIL_RULES,
-  ["password", isFilled, "Please enter your password."],
-];
-
+const SIGN_IN_RULES = [...EMAIL_RULES, ...requiredText("password", "Please enter your password.")];
 const REGISTER_RULES = [
-  ["username", isFilled, "Please enter a username."],
-  [
-    "username",
-    hasMinTrimmedLength(MIN_USERNAME_LENGTH),
-    `Username must be at least ${MIN_USERNAME_LENGTH} characters long.`,
-  ],
+  ...requiredText("username", "Please enter a username.", MIN_USERNAME_LENGTH, `Username must be at least ${MIN_USERNAME_LENGTH} characters long.`),
   ...EMAIL_RULES,
   ["password", isFilled, "Please enter a password."],
-  [
-    "password",
-    (v) => v.length >= MIN_PASSWORD_LENGTH,
-    `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`,
-  ],
+  ["password", (v) => v.length >= MIN_PASSWORD_LENGTH, `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`],
   ["confirmPassword", isFilled, "Please confirm your password."],
-  [
-    "confirmPassword",
-    (v, payload) => v === payload.password,
-    "Passwords do not match. Please verify both password entries.",
-  ],
+  ["confirmPassword", (v, payload) => v === payload.password, "Passwords do not match. Please verify both password entries."],
 ];
-
 const REVIEW_RULES = [
-  ["username", isFilled, "Please enter your display name."],
+  ...requiredText("username", "Please enter your display name."),
   ["rating", isValidRating, "Please select a rating between 1 and 10."],
-  ["reviewText", isFilled, "Please enter your review text."],
-  [
-    "reviewText",
-    hasMinTrimmedLength(MIN_PROSE_LENGTH),
-    `Review text must be at least ${MIN_PROSE_LENGTH} characters long.`,
-  ],
+  ...requiredText("reviewText", "Please enter your review text.", MIN_PROSE_LENGTH, `Review text must be at least ${MIN_PROSE_LENGTH} characters long.`),
 ];
-
 const SUGGESTION_RULES = [
-  ["title", isFilled, "Please enter a movie title."],
-  [
-    "year",
-    isValidOptionalYear,
-    `Release year must be between ${MIN_RELEASE_YEAR} and ${MAX_RELEASE_YEAR}.`,
-  ],
-  ["reason", isFilled, "Please explain why this movie should be added."],
-  [
-    "reason",
-    hasMinTrimmedLength(MIN_PROSE_LENGTH),
-    `Suggestion reason must be at least ${MIN_PROSE_LENGTH} characters long.`,
-  ],
+  ...requiredText("title", "Please enter a movie title."),
+  ["year", isValidOptionalYear, `Release year must be between ${MIN_RELEASE_YEAR} and ${MAX_RELEASE_YEAR}.`],
+  ...requiredText("reason", "Please explain why this movie should be added.", MIN_PROSE_LENGTH, `Suggestion reason must be at least ${MIN_PROSE_LENGTH} characters long.`),
 ];
-
 const REPORT_RULES = [
-  ["movieTitle", isFilled, "Please enter a movie title or reference ID."],
-  ["problemType", isFilled, "Please select a problem type."],
-  ["description", isFilled, "Please describe what needs to be corrected."],
-  [
-    "description",
-    hasMinTrimmedLength(MIN_PROSE_LENGTH),
-    `Issue description must be at least ${MIN_PROSE_LENGTH} characters long.`,
-  ],
+  ...requiredText("movieTitle", "Please enter a movie title or reference ID."),
+  ...requiredText("problemType", "Please select a problem type."),
+  ...requiredText("description", "Please describe what needs to be corrected.", MIN_PROSE_LENGTH, `Issue description must be at least ${MIN_PROSE_LENGTH} characters long.`),
 ];
 
 function validate(rules, payload) {
   const input = payload && typeof payload === "object" ? payload : {};
   for (const [field, test, message] of rules) {
-    if (!test(input[field], input)) {
-      return { isValid: false, message, field };
-    }
+    if (!test(input[field], input)) return { isValid: false, message, field };
   }
   return { isValid: true, message: "", field: null };
 }
@@ -216,32 +173,35 @@ export const validateRegister = (payload) => validate(REGISTER_RULES, payload);
 /** @param {{ username?: string, rating?: string | number, reviewText?: string }} payload */
 export const validateReview = (payload) => validate(REVIEW_RULES, payload);
 /** @param {{ title?: string, year?: string, reason?: string }} payload */
-export const validateSuggestion = (payload) =>
-  validate(SUGGESTION_RULES, payload);
+export const validateSuggestion = (payload) => validate(SUGGESTION_RULES, payload);
 /** @param {{ movieTitle?: string, problemType?: string, description?: string }} payload */
 export const validateReport = (payload) => validate(REPORT_RULES, payload);
 
 // ---------------------------------------------------------------------------
 // Shared DOM Helpers
 // ---------------------------------------------------------------------------
-function el(tag, className = "", text = "") {
+const getMovieId = (node) =>
+  node?.getAttribute?.("data-movie-id") ?? node?.dataset?.movieId ?? null;
+
+function el(tag, className = "", content = "", attrs = {}) {
   const node = document.createElement(tag);
   if (className) node.className = className;
-  if (text) node.textContent = text;
+  if (Array.isArray(content)) node.append(...content.filter(Boolean));
+  else if (content !== "" && content !== null && content !== undefined) node.textContent = String(content);
+  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
   return node;
 }
 
 function replayAnimation(target, className) {
   if (!target?.classList) return;
   target.classList.remove(className);
-  void target.offsetWidth;
+  if ("offsetWidth" in target) void target.offsetWidth;
   target.classList.add(className);
 }
 
-function markFieldInvalid(field, errorBannerId) {
-  field.setAttribute("aria-invalid", "true");
-  field.setAttribute("aria-describedby", errorBannerId);
-  field.focus();
+function showBanner(banner, message) {
+  if (message) banner.textContent = message;
+  banner.classList.remove("hidden");
 }
 
 function clearFieldErrors(fields) {
@@ -251,19 +211,10 @@ function clearFieldErrors(fields) {
   });
 }
 
-function showBanner(banner, message) {
-  if (message) banner.textContent = message;
-  banner.classList.remove("hidden");
-}
-
-function hideBanners(...banners) {
-  banners.forEach((banner) => banner.classList.add("hidden"));
-}
-
-function readPayload(fields) {
-  return Object.fromEntries(
-    Object.entries(fields).map(([key, input]) => [key, input.value ?? ""]),
-  );
+function markFieldInvalid(field, errorId) {
+  field.setAttribute("aria-invalid", "true");
+  field.setAttribute("aria-describedby", errorId);
+  field.focus();
 }
 
 /**
@@ -284,33 +235,25 @@ function bindValidatedForm({
   const errorBanner = document.getElementById(errorId);
   const successBanner = document.getElementById(successId);
   const fields = Object.fromEntries(
-    Object.entries(fieldIds).map(([key, id]) => [
-      key,
-      document.getElementById(id),
-    ]),
+    Object.entries(fieldIds).map(([k, id]) => [k, document.getElementById(id)]),
   );
 
-  if (
-    !form ||
-    !errorBanner ||
-    !successBanner ||
-    Object.values(fields).some((node) => !node)
-  ) {
-    return;
-  }
+  if (!form || !errorBanner || !successBanner || Object.values(fields).some((n) => !n)) return;
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    hideBanners(errorBanner, successBanner);
+    errorBanner.classList.add("hidden");
+    successBanner.classList.add("hidden");
     clearFieldErrors(Object.values(fields));
 
-    const payload = readPayload(fields);
+    const payload = Object.fromEntries(
+      Object.entries(fields).map(([k, input]) => [k, input.value ?? ""]),
+    );
     const result = validatePayload(payload);
     if (!result.isValid) {
       onInvalid(result, payload);
       showBanner(errorBanner, result.message);
-      if (result.field && fields[result.field])
-        markFieldInvalid(fields[result.field], errorId);
+      if (result.field && fields[result.field]) markFieldInvalid(fields[result.field], errorId);
       return;
     }
 
@@ -324,11 +267,7 @@ function bindValidatedForm({
 // Navigation (click highlight + scroll-spy)
 // ---------------------------------------------------------------------------
 const ACTIVE_NAV_CLASSES = ["bg-amber-400/10", "text-amber-400"];
-const SCROLL_SPY_OPTIONS = {
-  root: null,
-  rootMargin: "-25% 0px -65% 0px",
-  threshold: 0,
-};
+const SCROLL_SPY_OPTIONS = { root: null, rootMargin: "-25% 0px -65% 0px", threshold: 0 };
 // Ignore scroll-spy while a click-triggered smooth scroll passes intermediate sections.
 const CLICK_SCROLL_LOCK_MS = 650;
 
@@ -342,53 +281,36 @@ function setActiveNavLink(navLinks, selectedLink) {
   selectedLink.setAttribute("aria-current", "location");
 }
 
-function resolveHashSection(link) {
-  const href = link.getAttribute("href");
-  // Resolve #id links via getElementById so invalid CSS selectors cannot throw.
-  if (!href || !href.startsWith("#") || href.length <= 1) return null;
-  return document.getElementById(href.slice(1));
-}
-
-function createSectionObserver(navLinks, sectionToLink, isLocked) {
-  if (typeof IntersectionObserver !== "function") return null;
-
-  return new IntersectionObserver((entries) => {
-    if (isLocked()) return;
-    const hit = entries.find(
-      (entry) => entry.isIntersecting && sectionToLink.has(entry.target),
-    );
-    if (hit) setActiveNavLink(navLinks, sectionToLink.get(hit.target));
-  }, SCROLL_SPY_OPTIONS);
-}
-
 export function initNavigation() {
   const navLinks = document.querySelectorAll(".cinema-nav-link");
   if (!navLinks.length) return;
 
   const sectionToLink = new Map();
-  let isClickScrolling = false;
-  let scrollLockTimer = null;
-  const sectionObserver = createSectionObserver(
-    navLinks,
-    sectionToLink,
-    () => isClickScrolling,
-  );
+  let lockTimer = null;
+  const observer =
+    typeof IntersectionObserver === "function" ?
+      new IntersectionObserver((entries) => {
+        if (lockTimer !== null) return;
+        const hit = entries.find((e) => e.isIntersecting && sectionToLink.has(e.target));
+        if (hit) setActiveNavLink(navLinks, sectionToLink.get(hit.target));
+      }, SCROLL_SPY_OPTIONS)
+    : null;
 
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
       setActiveNavLink(navLinks, link);
-      isClickScrolling = true;
-      if (scrollLockTimer !== null) clearTimeout(scrollLockTimer);
-      scrollLockTimer = setTimeout(() => {
-        isClickScrolling = false;
-        scrollLockTimer = null;
+      if (lockTimer !== null) clearTimeout(lockTimer);
+      lockTimer = setTimeout(() => {
+        lockTimer = null;
       }, CLICK_SCROLL_LOCK_MS);
     });
 
-    const section = resolveHashSection(link);
-    if (section && sectionObserver) {
+    const href = link.getAttribute("href");
+    // Resolve #id via getElementById so invalid CSS selectors cannot throw.
+    const section = href?.startsWith("#") && href.length > 1 ? document.getElementById(href.slice(1)) : null;
+    if (section && observer) {
       sectionToLink.set(section, link);
-      sectionObserver.observe(section);
+      observer.observe(section);
     }
   });
 }
@@ -398,13 +320,9 @@ export function initNavigation() {
 // ---------------------------------------------------------------------------
 function matchesCatalogFilter(movie, query, genre) {
   if (!movie) return false;
-  const genreOk = !genre || movie.genres.includes(genre);
-  if (!genreOk) return false;
+  if (genre && !movie.genres.includes(genre)) return false;
   if (!query) return true;
-
-  const haystack =
-    `${movie.title} ${movie.director} ${movie.genreLabel} ${movie.year}`.toLowerCase();
-  return haystack.includes(query);
+  return `${movie.title} ${movie.director} ${movie.genreLabel} ${movie.year}`.toLowerCase().includes(query);
 }
 
 /** @param {ReturnType<typeof createAppState>} state */
@@ -427,13 +345,7 @@ export function initCatalog(state) {
     let visibleCount = 0;
 
     cards.forEach((card) => {
-      const movieId =
-        card.dataset?.movieId ?? card.getAttribute("data-movie-id");
-      const visible = matchesCatalogFilter(
-        state.movies.get(movieId),
-        query,
-        genre,
-      );
+      const visible = matchesCatalogFilter(state.movies.get(getMovieId(card)), query, genre);
       card.classList.toggle("hidden", !visible);
       if (visible) visibleCount += 1;
     });
@@ -459,23 +371,25 @@ export function initCatalog(state) {
 // ---------------------------------------------------------------------------
 // Movie Details & Live Rating (#movie-details-section)
 // ---------------------------------------------------------------------------
-function formatVoteSummary(movie) {
-  return `${movie.rating.toFixed(1)} / 10 from ${movie.votes.toLocaleString("en-US")} ratings`;
-}
+const formatVoteSummary = (movie) =>
+  `${movie.rating.toFixed(1)} / 10 from ${movie.votes.toLocaleString("en-US")} ratings`;
+
+const DETAIL_TEXT_BINDINGS = {
+  "details-title": (m) => m.title,
+  "details-year": (m) => String(m.year),
+  "details-genre": (m) => m.genreLabel,
+  "details-runtime": (m) => m.runtime,
+  "details-director": (m) => m.director,
+  "details-plot": (m) => m.plot,
+  "details-score-badge": (m) => m.rating.toFixed(1),
+  "details-vote-count": formatVoteSummary,
+  "review-target-movie": (m) => `${m.title} (${m.year})`,
+};
 
 function syncCardSelection(activeId) {
   document.querySelectorAll("#search-results .movie-card").forEach((card) => {
-    const id = card.dataset?.movieId ?? card.getAttribute("data-movie-id");
-    card.setAttribute("data-selected", id === activeId ? "true" : "false");
+    card.setAttribute("data-selected", String(getMovieId(card) === activeId));
   });
-}
-
-function updateCardRatingBadge(movieId, rating) {
-  const card = document.querySelector(
-    `#search-results .movie-card[data-movie-id="${movieId}"]`,
-  );
-  const badge = card?.querySelector(".cinema-badge");
-  if (badge) badge.textContent = `★ ${rating.toFixed(1)}`;
 }
 
 /**
@@ -486,19 +400,14 @@ function updateCardRatingBadge(movieId, rating) {
 export function initMovieDetails(state, hooks = {}) {
   const detailsPanel = document.getElementById("movie-details");
   const poster = document.getElementById("details-poster");
-  const title = document.getElementById("details-title");
-  const year = document.getElementById("details-year");
-  const genre = document.getElementById("details-genre");
-  const runtime = document.getElementById("details-runtime");
-  const director = document.getElementById("details-director");
-  const plot = document.getElementById("details-plot");
   const scoreBadge = document.getElementById("details-score-badge");
   const voteCount = document.getElementById("details-vote-count");
   const ratingForm = document.getElementById("rating-form");
   const ratingFeedback = document.getElementById("rating-feedback");
   const quickComment = document.getElementById("details-quick-comment");
-  const quickCommentLink = document.getElementById("quick-comment-link");
-  const reviewTarget = document.getElementById("review-target-movie");
+  const detailNodes = Object.entries(DETAIL_TEXT_BINDINGS).map(
+    ([id, format]) => [document.getElementById(id), format],
+  );
 
   function renderMovie(movieId) {
     const movie = state.movies.get(movieId);
@@ -509,18 +418,10 @@ export function initMovieDetails(state, hooks = {}) {
       poster.src = movie.poster;
       poster.alt = `Poster for ${movie.title}`;
     }
-    if (title) title.textContent = movie.title;
-    if (year) year.textContent = String(movie.year);
-    if (genre) genre.textContent = movie.genreLabel;
-    if (runtime) runtime.textContent = movie.runtime;
-    if (director) director.textContent = movie.director;
-    if (plot) plot.textContent = movie.plot;
-    if (scoreBadge) scoreBadge.textContent = movie.rating.toFixed(1);
-    if (voteCount) voteCount.textContent = formatVoteSummary(movie);
-    if (reviewTarget)
-      reviewTarget.textContent = `${movie.title} (${movie.year})`;
-    if (quickComment)
-      quickComment.placeholder = `What stood out to you in ${movie.title}?`;
+    for (const [node, format] of detailNodes) {
+      if (node) node.textContent = format(movie);
+    }
+    if (quickComment) quickComment.placeholder = `What stood out to you in ${movie.title}?`;
 
     ratingFeedback?.classList.add("hidden");
     syncCardSelection(movieId);
@@ -528,41 +429,28 @@ export function initMovieDetails(state, hooks = {}) {
     replayAnimation(detailsPanel, "cinema-spotlight-swap");
   }
 
-  document
-    .getElementById("search-results")
-    ?.addEventListener("click", (event) => {
-      const btn = event.target?.closest?.(".view-details-btn");
-      const movieId =
-        btn?.dataset?.movieId ?? btn?.getAttribute("data-movie-id");
-      if (movieId) renderMovie(movieId);
-    });
+  document.getElementById("search-results")?.addEventListener("click", (event) => {
+    const movieId = getMovieId(event.target?.closest?.(".view-details-btn"));
+    if (movieId) renderMovie(movieId);
+  });
 
   ratingForm?.addEventListener("submit", (event) => {
     event.preventDefault();
-    const checked = ratingForm.querySelector?.(
-      'input[name="user-rating"]:checked',
-    );
-    const score = Number(checked?.value);
+    const score = Number(ratingForm.querySelector?.('input[name="user-rating"]:checked')?.value);
     const movie = state.movies.get(state.activeMovieId);
     if (!movie || !Number.isInteger(score) || score < 1 || score > 10) return;
 
-    movie.rating = Number(
-      ((movie.rating * movie.votes + score) / (movie.votes + 1)).toFixed(1),
-    );
+    movie.rating = Number(((movie.rating * movie.votes + score) / (movie.votes + 1)).toFixed(1));
     movie.votes += 1;
 
     if (scoreBadge) scoreBadge.textContent = movie.rating.toFixed(1);
     if (voteCount) voteCount.textContent = formatVoteSummary(movie);
-    updateCardRatingBadge(movie.id, movie.rating);
-    if (ratingFeedback) {
-      showBanner(
-        ratingFeedback,
-        `Recorded your ${score}/10 rating for ${movie.title}.`,
-      );
-    }
+    const badge = document.querySelector(`#search-results .movie-card[data-movie-id="${movie.id}"] .cinema-badge`);
+    if (badge) badge.textContent = `★ ${movie.rating.toFixed(1)}`;
+    if (ratingFeedback) showBanner(ratingFeedback, `Recorded your ${score}/10 rating for ${movie.title}.`);
   });
 
-  quickCommentLink?.addEventListener("click", () => {
+  document.getElementById("quick-comment-link")?.addEventListener("click", () => {
     const draft = (quickComment?.value ?? "").trim();
     const reviewText = document.getElementById("review-text");
     const reviewUser = document.getElementById("review-username");
@@ -570,11 +458,8 @@ export function initMovieDetails(state, hooks = {}) {
       reviewText.value = draft;
       if (quickComment) quickComment.value = "";
     }
-    if (reviewUser && !(reviewUser.value ?? "").trim()) {
-      reviewUser.focus();
-    } else {
-      reviewText?.focus();
-    }
+    if (reviewUser && !(reviewUser.value ?? "").trim()) reviewUser.focus();
+    else reviewText?.focus();
   });
 
   return { selectMovie: renderMovie };
@@ -583,70 +468,36 @@ export function initMovieDetails(state, hooks = {}) {
 // ---------------------------------------------------------------------------
 // Favorites Watchlist (#favorites-section)
 // ---------------------------------------------------------------------------
-const FAVORITE_BTN_SAVED =
-  "inline-flex cursor-pointer items-center gap-2 rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors duration-150 hover:bg-amber-300 active:translate-y-px focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none";
-const FAVORITE_BTN_UNSAVED =
-  "inline-flex cursor-pointer items-center gap-2 rounded-xl border border-amber-400/50 bg-amber-400/10 px-4 py-2 text-xs font-semibold text-amber-300 transition-colors duration-150 hover:bg-amber-400 hover:text-slate-950 active:translate-y-px focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none";
-
 function createFavoriteCard(movie) {
-  const card = el(
+  const media = el("div", "relative aspect-[2/3] w-full overflow-hidden bg-cinema-950", [
+    el("img", "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105", "", {
+      src: movie.poster,
+      alt: `Poster for ${movie.title}`,
+      loading: "lazy",
+    }),
+    el("span", "cinema-badge absolute top-3 left-3 text-amber-300", "Saved"),
+  ]);
+  const meta = el("div", "", [
+    el("p", "cinema-tabular text-xs text-slate-400", `${movie.year} • ${movie.genreLabel}`),
+    el("h3", "mt-1 text-base font-bold text-white", movie.title),
+  ]);
+  const actions = el("div", "mt-4 flex flex-col gap-2 border-t border-slate-800 pt-3", [
+    el("a", "view-details-btn cinema-btn-secondary w-full text-slate-200", "View Details", {
+      href: "#movie-details-section",
+      "data-movie-id": movie.id,
+    }),
+    el("button", "remove-favorite-btn cinema-btn-danger", "Remove from Favorites", {
+      type: "button",
+      "data-movie-id": movie.id,
+      "aria-label": `Remove ${movie.title} from favorites`,
+    }),
+  ]);
+  return el(
     "article",
     "favorite-card cinema-card cinema-animate-in group flex flex-col overflow-hidden",
+    [media, el("div", "flex flex-1 flex-col justify-between p-4", [meta, actions])],
+    { "data-movie-id": movie.id },
   );
-  card.setAttribute("data-movie-id", movie.id);
-
-  const media = el(
-    "div",
-    "relative aspect-[2/3] w-full overflow-hidden bg-cinema-950",
-  );
-  const img = el(
-    "img",
-    "h-full w-full object-cover transition-transform duration-300 group-hover:scale-105",
-  );
-  img.setAttribute("src", movie.poster);
-  img.setAttribute("alt", `Poster for ${movie.title}`);
-  img.setAttribute("loading", "lazy");
-  media.append(
-    img,
-    el("span", "cinema-badge absolute top-3 left-3 text-amber-300", "Saved"),
-  );
-
-  const body = el("div", "flex flex-1 flex-col justify-between p-4");
-  const meta = el("div");
-  meta.append(
-    el(
-      "p",
-      "cinema-tabular text-xs text-slate-400",
-      `${movie.year} • ${movie.genreLabel}`,
-    ),
-    el("h3", "mt-1 text-base font-bold text-white", movie.title),
-  );
-
-  const actions = el(
-    "div",
-    "mt-4 flex flex-col gap-2 border-t border-slate-800 pt-3",
-  );
-  const detailsLink = el(
-    "a",
-    "view-details-btn cinema-btn-secondary w-full text-slate-200",
-    "View Details",
-  );
-  detailsLink.setAttribute("href", "#movie-details-section");
-  detailsLink.setAttribute("data-movie-id", movie.id);
-
-  const removeBtn = el(
-    "button",
-    "remove-favorite-btn cinema-btn-danger",
-    "Remove from Favorites",
-  );
-  removeBtn.setAttribute("type", "button");
-  removeBtn.setAttribute("data-movie-id", movie.id);
-  removeBtn.setAttribute("aria-label", `Remove ${movie.title} from favorites`);
-
-  actions.append(detailsLink, removeBtn);
-  body.append(meta, actions);
-  card.append(media, body);
-  return card;
 }
 
 /**
@@ -664,9 +515,7 @@ export function initFavorites(state, hooks = {}) {
     if (!favoriteBtn) return;
     const isSaved = state.favorites.has(state.activeMovieId);
     favoriteBtn.setAttribute("aria-pressed", String(isSaved));
-    favoriteBtn.className = isSaved ? FAVORITE_BTN_SAVED : FAVORITE_BTN_UNSAVED;
-    favoriteBtn.textContent =
-      isSaved ? "♥ Saved in Favorites" : "♥ Add to Favorites";
+    favoriteBtn.textContent = isSaved ? "♥ Saved in Favorites" : "♥ Add to Favorites";
   }
 
   function syncFavoritesMeta() {
@@ -681,40 +530,30 @@ export function initFavorites(state, hooks = {}) {
   function removeFavorite(movieId) {
     if (!state.favorites.has(movieId)) return;
     state.favorites.delete(movieId);
-    const card = favoritesList?.querySelector?.(
-      `.favorite-card[data-movie-id="${movieId}"]`,
-    );
-    card?.remove();
+    favoritesList?.querySelector?.(`.favorite-card[data-movie-id="${movieId}"]`)?.remove();
     syncFavoritesMeta();
   }
 
   favoriteBtn?.addEventListener("click", () => {
     const movie = state.movies.get(state.activeMovieId);
     if (!movie) return;
-
     if (state.favorites.has(movie.id)) {
       removeFavorite(movie.id);
       return;
     }
-
     state.favorites.add(movie.id);
     favoritesList?.appendChild(createFavoriteCard(movie));
     syncFavoritesMeta();
   });
 
   favoritesList?.addEventListener("click", (event) => {
-    const removeBtn = event.target?.closest?.(".remove-favorite-btn");
-    if (removeBtn) {
-      const movieId =
-        removeBtn.dataset?.movieId ?? removeBtn.getAttribute("data-movie-id");
-      if (movieId) removeFavorite(movieId);
+    const removeId = getMovieId(event.target?.closest?.(".remove-favorite-btn"));
+    if (removeId) {
+      removeFavorite(removeId);
       return;
     }
-
-    const detailsBtn = event.target?.closest?.(".view-details-btn");
-    const movieId =
-      detailsBtn?.dataset?.movieId ?? detailsBtn?.getAttribute("data-movie-id");
-    if (movieId) hooks.onSelectMovie?.(movieId);
+    const detailsId = getMovieId(event.target?.closest?.(".view-details-btn"));
+    if (detailsId) hooks.onSelectMovie?.(detailsId);
   });
 
   syncFavoriteButton();
@@ -724,67 +563,44 @@ export function initFavorites(state, hooks = {}) {
 // ---------------------------------------------------------------------------
 // Reviews & Community Submissions (#reviews-section, #community-section)
 // ---------------------------------------------------------------------------
-function getInitials(name) {
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? "")
-      .join("") || "ME"
-  );
-}
+const PROBLEM_LABELS = {
+  "incorrect-metadata": "Incorrect Release Year, Cast, or Genre",
+  "missing-poster": "Missing or Low-Resolution Poster",
+  "plot-error": "Inaccurate Plot Overview or Spoiler",
+  "duplicate-entry": "Duplicate Catalog Entry",
+  other: "Other Data Issue",
+};
 
-function formatToday() {
-  const now = new Date();
-  return {
-    iso: now.toISOString().slice(0, 10),
-    label: now.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
-  };
-}
+const getInitials = (name) =>
+  name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || "ME";
 
 function createReviewCard({ username, rating, reviewText, movieTitle }) {
-  const article = el(
-    "article",
-    "review-item cinema-card cinema-animate-in space-y-3 p-5",
-  );
-  const header = el("div", "flex items-center justify-between gap-4");
-  const authorWrap = el("div", "flex items-center gap-3");
-
-  const avatar = el(
-    "div",
-    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-300 ring-1 ring-amber-400/40",
-    getInitials(username),
-  );
-  avatar.setAttribute("aria-hidden", "true");
-
-  const date = formatToday();
-  const meta = el("div");
-  const timeEl = el("time", "text-xs text-slate-400", date.label);
-  timeEl.setAttribute("datetime", date.iso);
-  meta.append(
-    el("h4", "text-sm font-bold text-white", username.trim()),
-    timeEl,
-  );
-
-  authorWrap.append(avatar, meta);
-  const badge = el(
-    "span",
-    "cinema-tabular rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30",
-    `★ ${Number(rating)} / 10`,
-  );
-
-  header.append(authorWrap, badge);
-  article.append(
+  const now = new Date();
+  const dateLabel = now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const header = el("div", "flex items-center justify-between gap-4", [
+    el("div", "flex items-center gap-3", [
+      el(
+        "div",
+        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-300 ring-1 ring-amber-400/40",
+        getInitials(username),
+        { "aria-hidden": "true" },
+      ),
+      el("div", "", [
+        el("h4", "text-sm font-bold text-white", username.trim()),
+        el("time", "text-xs text-slate-400", dateLabel, { datetime: now.toISOString().slice(0, 10) }),
+      ]),
+    ]),
+    el(
+      "span",
+      "cinema-tabular rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30",
+      `★ ${Number(rating)} / 10`,
+    ),
+  ]);
+  return el("article", "review-item cinema-card cinema-animate-in space-y-3 p-5", [
     header,
     el("p", "text-xs font-semibold text-amber-300", movieTitle),
     el("p", "text-sm leading-relaxed text-slate-300", reviewText.trim()),
-  );
-  return article;
+  ]);
 }
 
 export function initReviews(state = createAppState()) {
@@ -795,129 +611,77 @@ export function initReviews(state = createAppState()) {
     formId: "review-form",
     errorId: "review-error",
     successId: "review-success",
-    fieldIds: {
-      username: "review-username",
-      rating: "review-rating",
-      reviewText: "review-text",
-    },
+    fieldIds: { username: "review-username", rating: "review-rating", reviewText: "review-text" },
     validate: validateReview,
     successMessage: "Your review has been added to the discussion!",
     onSuccess: (payload) => {
       const movie = state?.movies.get(state.activeMovieId);
       if (!movie) return;
-      reviewsList?.prepend(
-        createReviewCard({
-          ...payload,
-          movieTitle: `${movie.title} (${movie.year})`,
-        }),
-      );
+      reviewsList?.prepend(createReviewCard({ ...payload, movieTitle: `${movie.title} (${movie.year})` }));
       emptyState?.classList.add("hidden");
     },
   });
 }
 
-function createSubmissionCard({
-  kindLabel,
-  kindClass,
-  title,
-  summaryText,
-  detailLabel = "",
-}) {
-  const article = el(
-    "article",
-    "submission-card cinema-card cinema-animate-in flex flex-col justify-between space-y-4 p-5",
-  );
-  const top = el("div", "space-y-2.5");
-  const statusRow = el(
-    "div",
-    "flex flex-wrap items-center justify-between gap-2 text-xs",
-  );
-  statusRow.append(
+function createSubmissionCard({ kindLabel, kindClass, title, summaryText, detailLabel = "" }) {
+  const statusRow = el("div", "flex flex-wrap items-center justify-between gap-2 text-xs", [
     el("span", kindClass, kindLabel),
     el("span", "font-medium text-amber-200", "Status: Pending"),
-  );
-  top.append(statusRow, el("h4", "text-base font-bold text-white", title));
-  if (detailLabel)
-    top.append(el("p", "text-xs font-semibold text-amber-200", detailLabel));
-  top.append(el("p", "text-xs leading-relaxed text-slate-300", summaryText));
-
-  const footer = el(
-    "div",
-    "cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400",
-  );
-  footer.append(
+  ]);
+  const top = el("div", "space-y-2.5", [
+    statusRow,
+    el("h4", "text-base font-bold text-white", title),
+    detailLabel ? el("p", "text-xs font-semibold text-amber-200", detailLabel) : null,
+    el("p", "text-xs leading-relaxed text-slate-300", summaryText),
+  ]);
+  const footer = el("div", "cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400", [
     el("span", "", "Submitted just now"),
     el("span", "font-medium text-slate-300", "0 comments"),
-  );
-  article.append(top, footer);
-  return article;
+  ]);
+  return el("article", "submission-card cinema-card cinema-animate-in flex flex-col justify-between space-y-4 p-5", [
+    top,
+    footer,
+  ]);
 }
 
 export function initCommunity() {
   const list = document.getElementById("community-submissions-list");
   const emptyState = document.getElementById("community-empty-state");
+  const addSubmission = (cardProps) => {
+    list?.prepend(createSubmissionCard(cardProps));
+    emptyState?.classList.add("hidden");
+  };
 
   bindValidatedForm({
     formId: "community-suggestion-form",
     errorId: "suggestion-error",
     successId: "suggestion-feedback",
-    fieldIds: {
-      title: "suggest-title",
-      year: "suggest-year",
-      description: "suggest-description",
-      reason: "suggest-reason",
-    },
+    fieldIds: { title: "suggest-title", year: "suggest-year", description: "suggest-description", reason: "suggest-reason" },
     validate: validateSuggestion,
-    successMessage:
-      "Movie suggestion submitted! Our community moderators will review it shortly.",
-    onSuccess: ({ title, year, description, reason }) => {
-      const heading =
-        year.trim() ? `${title.trim()} (${year.trim()})` : title.trim();
-      list?.prepend(
-        createSubmissionCard({
-          kindLabel: "Movie Suggestion",
-          kindClass: "font-semibold text-amber-300",
-          title: heading,
-          detailLabel:
-            description.trim() ? `Synopsis: ${description.trim()}` : "",
-          summaryText: `Reason: ${reason.trim()}`,
-        }),
-      );
-      emptyState?.classList.add("hidden");
-    },
+    successMessage: "Movie suggestion submitted! Our community moderators will review it shortly.",
+    onSuccess: ({ title, year, description, reason }) => addSubmission({
+      kindLabel: "Movie Suggestion",
+      kindClass: "font-semibold text-amber-300",
+      title: year.trim() ? `${title.trim()} (${year.trim()})` : title.trim(),
+      detailLabel: description.trim() ? `Synopsis: ${description.trim()}` : "",
+      summaryText: `Reason: ${reason.trim()}`,
+    }),
   });
 
   bindValidatedForm({
     formId: "problem-report-form",
     errorId: "report-error",
     successId: "report-feedback",
-    fieldIds: {
-      movieTitle: "report-movie-title",
-      problemType: "report-problem-type",
-      description: "report-description",
-    },
+    fieldIds: { movieTitle: "report-movie-title", problemType: "report-problem-type", description: "report-description" },
     validate: validateReport,
-    successMessage:
-      "Problem report logged! Thank you for helping keep our catalog accurate.",
-    onSuccess: ({ movieTitle, problemType, description }) => {
-      const problemLabels = {
-        "incorrect-metadata": "Incorrect Release Year, Cast, or Genre",
-        "missing-poster": "Missing or Low-Resolution Poster",
-        "plot-error": "Inaccurate Plot Overview or Spoiler",
-        "duplicate-entry": "Duplicate Catalog Entry",
-        other: "Other Data Issue",
-      };
-      list?.prepend(
-        createSubmissionCard({
-          kindLabel: "Problem Report",
-          kindClass: "font-semibold text-rose-300",
-          title: movieTitle.trim(),
-          detailLabel: problemLabels[problemType] ?? "Other Data Issue",
-          summaryText: description.trim(),
-        }),
-      );
-      emptyState?.classList.add("hidden");
-    },
+    successMessage: "Problem report logged! Thank you for helping keep our catalog accurate.",
+    onSuccess: ({ movieTitle, problemType, description }) => addSubmission({
+      kindLabel: "Problem Report",
+      kindClass: "font-semibold text-rose-300",
+      title: movieTitle.trim(),
+      detailLabel: PROBLEM_LABELS[problemType] ?? "Other Data Issue",
+      summaryText: description.trim(),
+    }),
   });
 }
 
@@ -926,21 +690,18 @@ export function initCommunity() {
 // ---------------------------------------------------------------------------
 const AUTH_HIDE_DELAY_MS = 1000;
 
-function createAuthVisibilityController() {
+export function initAuth() {
   let hideTimer = null;
-
-  function cancelHide() {
+  const cancelHide = () => {
     if (hideTimer === null) return;
     clearTimeout(hideTimer);
     hideTimer = null;
-  }
-
-  function showAuth() {
+  };
+  const showAuth = () => {
     cancelHide();
     document.getElementById("auth-section")?.classList.remove("hidden");
-  }
-
-  function scheduleHide() {
+  };
+  const scheduleHide = () => {
     const authSection = document.getElementById("auth-section");
     if (!authSection) return;
     cancelHide();
@@ -948,21 +709,9 @@ function createAuthVisibilityController() {
       authSection.classList.add("hidden");
       hideTimer = null;
     }, AUTH_HIDE_DELAY_MS);
-  }
+  };
 
-  return { scheduleHide, cancelHide, showAuth };
-}
-
-export function initAuth() {
-  const { scheduleHide, cancelHide, showAuth } =
-    createAuthVisibilityController();
-
-  [
-    "nav-signin-btn",
-    "nav-register-btn",
-    "go-to-register-link",
-    "go-to-signin-link",
-  ].forEach((id) => {
+  ["nav-signin-btn", "nav-register-btn", "go-to-register-link", "go-to-signin-link"].forEach((id) => {
     document.getElementById(id)?.addEventListener("click", showAuth);
   });
 
@@ -972,8 +721,7 @@ export function initAuth() {
     successId: "signin-success",
     fieldIds: { email: "signin-email", password: "signin-password" },
     validate: validateSignIn,
-    successMessage:
-      "Demo sign-in validated locally (no data was sent). Welcome back to Movie Explorer Community.",
+    successMessage: "Demo sign-in validated locally (no data was sent). Welcome back to Movie Explorer Community.",
     onSuccess: scheduleHide,
     onInvalid: cancelHide,
   });
@@ -989,8 +737,7 @@ export function initAuth() {
       confirmPassword: "register-confirm-password",
     },
     validate: validateRegister,
-    successMessage:
-      "Demo account validated locally (no account was created or sent). Welcome to Movie Explorer Community.",
+    successMessage: "Demo account validated locally (no account was created or sent). Welcome to Movie Explorer Community.",
     onSuccess: scheduleHide,
     onInvalid: cancelHide,
   });

@@ -3,180 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Movie Explorer Community — Discover, rate, review, and curate cinema classics and modern releases."
-    />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self';"
-    />
+    <meta name="description" content="Movie Explorer Community — Discover, rate, review, and curate cinema classics and modern releases." />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self';" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <title>
-      Movie Explorer Community — Discover, Rate &amp; Discuss Movies
-    </title>
+    <title>Movie Explorer Community — Discover, Rate &amp; Discuss Movies</title>
     <link rel="stylesheet" href="./dist/output.css" />
     <script type="module" src="./src/js/main.js"></script>
   </head>
-  <body
-    class="min-h-screen bg-cinema-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950"
-  >
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-amber-400 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold text-slate-950"
-    >
+  <body class="min-h-screen bg-cinema-950 text-slate-100 selection:bg-amber-400 selection:text-slate-950">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-amber-400 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold text-slate-950">
       Skip to main content
     </a>
 
     <!-- SECTION A: NAVIGATION HEADER -->
-    <header
-      id="main-header"
-      class="sticky top-0 z-40 border-b border-slate-800/80 bg-cinema-950/90 backdrop-blur-md"
-    >
-      <div
-        class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8"
-      >
-        <a
-          id="brand-logo"
-          href="#search-section"
-          class="group inline-flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-        >
-          <span
-            class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400/15 text-amber-400 ring-1 ring-amber-400/30 transition-colors duration-150 group-hover:bg-amber-400 group-hover:text-slate-950"
-          >
-            <svg
-              class="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              aria-hidden="true"
-            >
+    <header id="main-header" class="sticky top-0 z-40 border-b border-slate-800/80 bg-cinema-950/90 backdrop-blur-md">
+      <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <a id="brand-logo" href="#search-section" class="group inline-flex items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400/15 text-amber-400 ring-1 ring-amber-400/30 transition-colors duration-150 group-hover:bg-amber-400 group-hover:text-slate-950">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <rect x="2" y="4" width="20" height="16" rx="2" />
               <path d="M7 4v16M17 4v16M2 8h5M2 12h20M2 16h5M17 8h5M17 16h5" />
             </svg>
           </span>
           <div>
-            <span class="block text-xl font-extrabold tracking-tight text-white"
-              >Movie Explorer</span
-            >
-            <span class="block text-xs font-medium text-amber-400"
-              >Film archive &amp; club</span
-            >
+            <span class="block text-xl font-extrabold tracking-tight text-white">Movie Explorer</span>
+            <span class="block text-xs font-medium text-amber-400">Film archive &amp; club</span>
           </div>
         </a>
 
-        <nav
-          aria-label="Main Navigation"
-          class="order-3 flex w-full items-center justify-center gap-1 border-t border-slate-800/70 pt-3 sm:order-2 sm:w-auto sm:border-t-0 sm:pt-0 md:gap-2"
-        >
-          <a
-            id="nav-search"
-            href="#search-section"
-            aria-current="location"
-            class="cinema-nav-link bg-amber-400/10 text-amber-400"
-            >Home &amp; Search</a
-          >
-          <a
-            id="nav-details"
-            href="#movie-details-section"
-            class="cinema-nav-link"
-            >Featured Details</a
-          >
-          <a
-            id="nav-community"
-            href="#community-section"
-            class="cinema-nav-link"
-            >Community</a
-          >
-          <a
-            id="nav-favorites"
-            href="#favorites-section"
-            class="cinema-nav-link inline-flex items-center gap-2"
-          >
+        <nav aria-label="Main Navigation" class="order-3 flex w-full items-center justify-center gap-1 border-t border-slate-800/70 pt-3 sm:order-2 sm:w-auto sm:border-t-0 sm:pt-0 md:gap-2">
+          <a id="nav-search" href="#search-section" aria-current="location" class="cinema-nav-link bg-amber-400/10 text-amber-400">Home &amp; Search</a>
+          <a id="nav-details" href="#movie-details-section" class="cinema-nav-link">Featured Details</a>
+          <a id="nav-community" href="#community-section" class="cinema-nav-link">Community</a>
+          <a id="nav-favorites" href="#favorites-section" class="cinema-nav-link inline-flex items-center gap-2">
             <span>Favorites</span>
-            <span
-              id="nav-favorites-count"
-              class="cinema-tabular rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-semibold text-amber-300"
-              >2</span
-            >
+            <span id="nav-favorites-count" class="cinema-tabular rounded-full bg-amber-400/20 px-2 py-0.5 text-xs font-semibold text-amber-300">2</span>
           </a>
         </nav>
 
         <div class="order-2 flex items-center gap-2.5 sm:order-3">
-          <a
-            id="nav-signin-btn"
-            href="#signin-card"
-            class="rounded-xl border border-slate-700 bg-cinema-900 px-4 py-2 text-sm font-medium text-slate-200 transition-colors duration-150 hover:border-slate-500 hover:bg-slate-800 hover:text-white"
-            >Sign In</a
-          >
-          <a
-            id="nav-register-btn"
-            href="#register-card"
-            class="cinema-btn-primary py-2"
-            >Create Account</a
-          >
+          <a id="nav-signin-btn" href="#signin-card" class="rounded-xl border border-slate-700 bg-cinema-900 px-4 py-2 text-sm font-medium text-slate-200 transition-colors duration-150 hover:border-slate-500 hover:bg-slate-800 hover:text-white">Sign In</a>
+          <a id="nav-register-btn" href="#register-card" class="cinema-btn-primary py-2">Create Account</a>
         </div>
       </div>
     </header>
 
-    <main
-      id="main-content"
-      class="mx-auto max-w-7xl space-y-20 px-4 py-10 sm:px-6 lg:px-8"
-    >
+    <main id="main-content" class="mx-auto max-w-7xl space-y-20 px-4 py-10 sm:px-6 lg:px-8">
       <!-- SECTION B: HOME HERO & MOVIE SEARCH -->
-      <section
-        id="search-section"
-        aria-labelledby="hero-heading"
-        class="space-y-12"
-      >
-        <div
-          class="relative overflow-hidden rounded-3xl border border-slate-800/90 bg-gradient-to-b from-cinema-850/95 via-cinema-900/95 to-cinema-950 p-6 shadow-2xl sm:p-10 lg:p-14"
-        >
+      <section id="search-section" aria-labelledby="hero-heading" class="space-y-12">
+        <div class="relative overflow-hidden rounded-3xl border border-slate-800/90 bg-gradient-to-b from-cinema-850/95 via-cinema-900/95 to-cinema-950 p-6 shadow-2xl sm:p-10 lg:p-14">
           <div class="mx-auto max-w-4xl space-y-6 text-center">
-            <h1
-              id="hero-heading"
-              class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
-            >
-              Discover, Rate &amp;
-              <span class="text-amber-400">Discuss Cinema</span>
+            <h1 id="hero-heading" class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Discover, Rate &amp; <span class="text-amber-400">Discuss Cinema</span>
             </h1>
 
-            <p
-              class="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg"
-            >
-              Explore curated releases, filter by genre, rate titles live, and
-              build your personal watchlist.
+            <p class="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+              Explore curated releases, filter by genre, rate titles live, and build your personal watchlist.
             </p>
 
-            <form
-              id="search-form"
-              action="#search-results-section"
-              method="get"
-              class="mt-8 text-left"
-              novalidate
-            >
-              <div
-                class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-cinema-950/90 p-3.5 shadow-lg sm:grid-cols-12"
-              >
+            <form id="search-form" action="#search-results-section" method="get" class="mt-8 text-left" novalidate>
+              <div class="grid grid-cols-1 gap-3 rounded-2xl border border-slate-700/80 bg-cinema-950/90 p-3.5 shadow-lg sm:grid-cols-12">
                 <div class="sm:col-span-7">
-                  <label for="search-input" class="cinema-label"
-                    >Search by movie title, director, or keyword</label
-                  >
-                  <input
-                    id="search-input"
-                    name="query"
-                    type="search"
-                    placeholder="Search Chronicles of the Dune Horizon, Sci-Fi, 2025..."
-                    autocomplete="off"
-                    class="cinema-input"
-                  />
+                  <label for="search-input" class="cinema-label">Search by movie title, director, or keyword</label>
+                  <input id="search-input" name="query" type="search" placeholder="Search Chronicles of the Dune Horizon, Sci-Fi, 2025..." autocomplete="off" class="cinema-input" />
                 </div>
 
                 <div class="sm:col-span-3">
-                  <label for="search-genre" class="cinema-label"
-                    >Filter by genre</label
-                  >
+                  <label for="search-genre" class="cinema-label">Filter by genre</label>
                   <select id="search-genre" name="genre" class="cinema-input">
                     <option value="">All Genres</option>
                     <option value="sci-fi">Science Fiction</option>
@@ -188,13 +81,7 @@
                 </div>
 
                 <div class="flex items-end sm:col-span-2">
-                  <button
-                    id="search-submit-btn"
-                    type="submit"
-                    class="cinema-btn-primary w-full"
-                  >
-                    Search Catalog
-                  </button>
+                  <button id="search-submit-btn" type="submit" class="cinema-btn-primary w-full">Search Catalog</button>
                 </div>
               </div>
             </form>
@@ -204,219 +91,96 @@
         <div id="search-results-section" class="space-y-6">
           <div class="cinema-section-header">
             <div>
-              <h2 class="text-2xl font-bold tracking-tight text-white">
-                Movie Catalog &amp; Search Results
-              </h2>
-              <p
-                id="search-results-summary"
-                aria-live="polite"
-                class="cinema-tabular text-sm text-slate-400"
-              >
+              <h2 class="text-2xl font-bold tracking-tight text-white">Movie Catalog &amp; Search Results</h2>
+              <p id="search-results-summary" aria-live="polite" class="cinema-tabular text-sm text-slate-400">
                 Showing all 4 curated films in the catalog.
               </p>
             </div>
-            <p class="text-xs font-medium text-slate-400">
-              Select any card to inspect details and submit a rating.
-            </p>
+            <p class="text-xs font-medium text-slate-400">Select any card to inspect details and submit a rating.</p>
           </div>
 
-          <div
-            id="search-loading"
-            role="status"
-            aria-live="polite"
-            class="hidden rounded-2xl border border-slate-800 bg-cinema-900/80 p-8 text-center"
-          >
-            <p class="text-base font-semibold text-white">
-              Searching movie database...
-            </p>
-            <p class="mt-1 text-sm text-slate-400">
-              Fetching matching titles, ratings, and poster metadata.
-            </p>
+          <div id="search-loading" role="status" aria-live="polite" class="hidden rounded-2xl border border-slate-800 bg-cinema-900/80 p-8 text-center">
+            <p class="text-base font-semibold text-white">Searching movie database...</p>
+            <p class="mt-1 text-sm text-slate-400">Fetching matching titles, ratings, and poster metadata.</p>
           </div>
 
-          <div
-            id="search-error"
-            role="alert"
-            class="hidden rounded-2xl border border-rose-500/40 bg-rose-950/30 p-5 text-rose-200"
-          >
-            <h3 class="text-sm font-semibold text-rose-200">
-              Unable to load movie search results
-            </h3>
+          <div id="search-error" role="alert" class="hidden rounded-2xl border border-rose-500/40 bg-rose-950/30 p-5 text-rose-200">
+            <h3 class="text-sm font-semibold text-rose-200">Unable to load movie search results</h3>
             <p id="search-error-message" class="mt-1 text-sm text-rose-300/90">
-              A network error occurred while communicating with the movie
-              service. Please check your connection and try again.
+              A network error occurred while communicating with the movie service. Please check your connection and try again.
             </p>
           </div>
 
-          <div
-            id="search-no-results"
-            class="hidden rounded-2xl border border-slate-800 bg-cinema-900/60 p-10 text-center"
-          >
-            <h3 class="text-lg font-semibold text-white">
-              No matching movies found
-            </h3>
+          <div id="search-no-results" class="hidden rounded-2xl border border-slate-800 bg-cinema-900/60 p-10 text-center">
+            <h3 class="text-lg font-semibold text-white">No matching movies found</h3>
             <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">
-              We couldn't find any movies matching your search query. Try
-              broadening your keywords or suggest a missing title below.
+              We couldn't find any movies matching your search query. Try broadening your keywords or suggest a missing title below.
             </p>
           </div>
 
-          <div
-            id="search-results"
-            class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-          >
-            <article
-              data-movie-id="dune-horizon"
-              data-selected="true"
-              class="movie-card cinema-card group flex flex-col overflow-hidden"
-            >
-              <div
-                class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950"
-              >
-                <img
-                  src="./assets/images/poster-dune-horizon.svg"
-                  alt="Poster for Chronicles of the Dune Horizon"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
+          <div id="search-results" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <article data-movie-id="dune-horizon" data-selected="true" class="movie-card cinema-card group flex flex-col overflow-hidden">
+              <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+                <img src="./assets/images/poster-dune-horizon.svg" alt="Poster for Chronicles of the Dune Horizon" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                 <span class="cinema-badge absolute top-3 right-3">★ 8.9</span>
               </div>
               <div class="flex flex-1 flex-col justify-between p-4">
                 <div>
-                  <p class="cinema-tabular text-xs font-medium text-slate-400">
-                    2025 •
-                    <span class="text-slate-300">Sci-Fi / Adventure</span>
-                  </p>
-                  <h3
-                    class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400"
-                  >
-                    Chronicles of the Dune Horizon
-                  </h3>
+                  <p class="cinema-tabular text-xs font-medium text-slate-400">2025 • <span class="text-slate-300">Sci-Fi / Adventure</span></p>
+                  <h3 class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400">Chronicles of the Dune Horizon</h3>
                 </div>
                 <div class="mt-4 border-t border-slate-800/80 pt-3">
-                  <a
-                    href="#movie-details-section"
-                    data-movie-id="dune-horizon"
-                    class="view-details-btn cinema-btn-secondary w-full"
-                    >View Movie Details &rarr;</a
-                  >
+                  <a href="#movie-details-section" data-movie-id="dune-horizon" class="view-details-btn cinema-btn-secondary w-full">View Movie Details &rarr;</a>
                 </div>
               </div>
             </article>
 
-            <article
-              data-movie-id="midnight-sonata"
-              class="movie-card cinema-card group flex flex-col overflow-hidden"
-            >
-              <div
-                class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950"
-              >
-                <img
-                  src="./assets/images/poster-midnight-sonata.svg"
-                  alt="Poster for Midnight Sonata in Vienna"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
+            <article data-movie-id="midnight-sonata" class="movie-card cinema-card group flex flex-col overflow-hidden">
+              <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+                <img src="./assets/images/poster-midnight-sonata.svg" alt="Poster for Midnight Sonata in Vienna" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                 <span class="cinema-badge absolute top-3 right-3">★ 8.4</span>
               </div>
               <div class="flex flex-1 flex-col justify-between p-4">
                 <div>
-                  <p class="cinema-tabular text-xs font-medium text-slate-400">
-                    2024 • <span class="text-slate-300">Mystery / Drama</span>
-                  </p>
-                  <h3
-                    class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400"
-                  >
-                    Midnight Sonata in Vienna
-                  </h3>
+                  <p class="cinema-tabular text-xs font-medium text-slate-400">2024 • <span class="text-slate-300">Mystery / Drama</span></p>
+                  <h3 class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400">Midnight Sonata in Vienna</h3>
                 </div>
                 <div class="mt-4 border-t border-slate-800/80 pt-3">
-                  <a
-                    href="#movie-details-section"
-                    data-movie-id="midnight-sonata"
-                    class="view-details-btn cinema-btn-secondary w-full"
-                    >View Movie Details &rarr;</a
-                  >
+                  <a href="#movie-details-section" data-movie-id="midnight-sonata" class="view-details-btn cinema-btn-secondary w-full">View Movie Details &rarr;</a>
                 </div>
               </div>
             </article>
 
-            <article
-              data-movie-id="neon-odyssey"
-              class="movie-card cinema-card group flex flex-col overflow-hidden"
-            >
-              <div
-                class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950"
-              >
-                <img
-                  src="./assets/images/poster-neon-odyssey.svg"
-                  alt="Poster for Neon Odyssey: Protocol Nine"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
+            <article data-movie-id="neon-odyssey" class="movie-card cinema-card group flex flex-col overflow-hidden">
+              <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+                <img src="./assets/images/poster-neon-odyssey.svg" alt="Poster for Neon Odyssey: Protocol Nine" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                 <span class="cinema-badge absolute top-3 right-3">★ 7.9</span>
               </div>
               <div class="flex flex-1 flex-col justify-between p-4">
                 <div>
-                  <p class="cinema-tabular text-xs font-medium text-slate-400">
-                    2026 • <span class="text-slate-300">Sci-Fi / Thriller</span>
-                  </p>
-                  <h3
-                    class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400"
-                  >
-                    Neon Odyssey: Protocol Nine
-                  </h3>
+                  <p class="cinema-tabular text-xs font-medium text-slate-400">2026 • <span class="text-slate-300">Sci-Fi / Thriller</span></p>
+                  <h3 class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400">Neon Odyssey: Protocol Nine</h3>
                 </div>
                 <div class="mt-4 border-t border-slate-800/80 pt-3">
-                  <a
-                    href="#movie-details-section"
-                    data-movie-id="neon-odyssey"
-                    class="view-details-btn cinema-btn-secondary w-full"
-                    >View Movie Details &rarr;</a
-                  >
+                  <a href="#movie-details-section" data-movie-id="neon-odyssey" class="view-details-btn cinema-btn-secondary w-full">View Movie Details &rarr;</a>
                 </div>
               </div>
             </article>
 
-            <article
-              data-movie-id="glass-labyrinth"
-              class="movie-card cinema-card group flex flex-col overflow-hidden"
-            >
-              <div
-                role="img"
-                aria-label="No poster image available for The Glass Labyrinth"
-                class="relative flex aspect-[2/3] w-full flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-cinema-900 to-cinema-950 p-6 text-center"
-              >
-                <span
-                  class="text-xs font-semibold tracking-widest text-slate-400 uppercase"
-                  >Poster Pending</span
-                >
-                <span class="mt-1 text-sm font-bold text-slate-200"
-                  >The Glass Labyrinth</span
-                >
-                <span class="mt-2 text-xs text-slate-400"
-                  >Archival Restoration</span
-                >
+            <article data-movie-id="glass-labyrinth" class="movie-card cinema-card group flex flex-col overflow-hidden">
+              <div role="img" aria-label="No poster image available for The Glass Labyrinth" class="relative flex aspect-[2/3] w-full flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-cinema-900 to-cinema-950 p-6 text-center">
+                <span class="text-xs font-semibold tracking-widest text-slate-400 uppercase">Poster Pending</span>
+                <span class="mt-1 text-sm font-bold text-slate-200">The Glass Labyrinth</span>
+                <span class="mt-2 text-xs text-slate-400">Archival Restoration</span>
                 <span class="cinema-badge absolute top-3 right-3">★ 8.1</span>
               </div>
               <div class="flex flex-1 flex-col justify-between p-4">
                 <div>
-                  <p class="cinema-tabular text-xs font-medium text-slate-400">
-                    2022 • <span class="text-slate-300">Drama / Thriller</span>
-                  </p>
-                  <h3
-                    class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400"
-                  >
-                    The Glass Labyrinth
-                  </h3>
+                  <p class="cinema-tabular text-xs font-medium text-slate-400">2022 • <span class="text-slate-300">Drama / Thriller</span></p>
+                  <h3 class="mt-2 text-base font-bold text-white transition-colors duration-150 group-hover:text-amber-400">The Glass Labyrinth</h3>
                 </div>
                 <div class="mt-4 border-t border-slate-800/80 pt-3">
-                  <a
-                    href="#movie-details-section"
-                    data-movie-id="glass-labyrinth"
-                    class="view-details-btn cinema-btn-secondary w-full"
-                    >View Movie Details &rarr;</a
-                  >
+                  <a href="#movie-details-section" data-movie-id="glass-labyrinth" class="view-details-btn cinema-btn-secondary w-full">View Movie Details &rarr;</a>
                 </div>
               </div>
             </article>
@@ -425,306 +189,103 @@
       </section>
 
       <!-- SECTION C: MOVIE DETAILS PANEL -->
-      <section
-        id="movie-details-section"
-        aria-labelledby="movie-details-heading"
-        class="space-y-6"
-      >
+      <section id="movie-details-section" aria-labelledby="movie-details-heading" class="space-y-6">
         <div class="cinema-section-header">
-          <div>
-            <h2
-              id="movie-details-heading"
-              class="text-2xl font-bold tracking-tight text-white"
-            >
-              Movie Details &amp; Rating
-            </h2>
-          </div>
-          <p class="text-xs text-slate-400">
-            Select any movie card above to inspect its full synopsis and submit
-            a rating.
-          </p>
+          <div><h2 id="movie-details-heading" class="text-2xl font-bold tracking-tight text-white">Movie Details &amp; Rating</h2></div>
+          <p class="text-xs text-slate-400">Select any movie card above to inspect its full synopsis and submit a rating.</p>
         </div>
 
-        <div
-          id="details-loading"
-          role="status"
-          class="hidden rounded-2xl border border-slate-800 bg-cinema-900 p-8 text-center"
-        >
-          <p class="text-sm font-medium text-slate-300">
-            Loading movie details...
-          </p>
+        <div id="details-loading" role="status" class="hidden rounded-2xl border border-slate-800 bg-cinema-900 p-8 text-center">
+          <p class="text-sm font-medium text-slate-300">Loading movie details...</p>
         </div>
-        <div
-          id="details-error"
-          role="alert"
-          class="cinema-alert-error hidden p-5 text-sm"
-        >
+        <div id="details-error" role="alert" class="cinema-alert-error hidden p-5 text-sm">
           Could not load details for the selected movie. Please try again.
         </div>
 
-        <article
-          id="movie-details"
-          class="cinema-panel overflow-hidden p-6 sm:p-8 lg:p-10"
-        >
+        <article id="movie-details" class="cinema-panel overflow-hidden p-6 sm:p-8 lg:p-10">
           <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
             <div class="lg:col-span-4 xl:col-span-3">
-              <div
-                class="mx-auto max-w-xs overflow-hidden rounded-2xl border border-slate-700/80 bg-cinema-950 shadow-lg"
-              >
-                <img
-                  id="details-poster"
-                  src="./assets/images/poster-dune-horizon.svg"
-                  alt="Poster for Chronicles of the Dune Horizon"
-                  class="aspect-[2/3] w-full object-cover"
-                />
+              <div class="mx-auto max-w-xs overflow-hidden rounded-2xl border border-slate-700/80 bg-cinema-950 shadow-lg">
+                <img id="details-poster" src="./assets/images/poster-dune-horizon.svg" alt="Poster for Chronicles of the Dune Horizon" class="aspect-[2/3] w-full object-cover" />
               </div>
             </div>
 
-            <div
-              class="flex flex-col justify-between space-y-6 lg:col-span-8 xl:col-span-9"
-            >
+            <div class="flex flex-col justify-between space-y-6 lg:col-span-8 xl:col-span-9">
               <div class="space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-4">
-                  <div
-                    class="cinema-tabular flex flex-wrap items-center gap-2 text-xs font-semibold"
-                  >
-                    <span
-                      id="details-year"
-                      class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-amber-300 ring-1 ring-amber-400/30"
-                      >2025</span
-                    >
-                    <span
-                      id="details-genre"
-                      class="rounded-lg bg-slate-800 px-2.5 py-1 text-slate-200"
-                      >Sci-Fi • Adventure</span
-                    >
-                    <span
-                      id="details-runtime"
-                      class="rounded-lg bg-slate-800/70 px-2.5 py-1 text-slate-400"
-                      >154 min</span
-                    >
+                  <div class="cinema-tabular flex flex-wrap items-center gap-2 text-xs font-semibold">
+                    <span id="details-year" class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-amber-300 ring-1 ring-amber-400/30">2025</span>
+                    <span id="details-genre" class="rounded-lg bg-slate-800 px-2.5 py-1 text-slate-200">Sci-Fi • Adventure</span>
+                    <span id="details-runtime" class="rounded-lg bg-slate-800/70 px-2.5 py-1 text-slate-400">154 min</span>
                   </div>
 
-                  <button
-                    id="details-favorite-btn"
-                    type="button"
-                    aria-pressed="true"
-                    class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors duration-150 hover:bg-amber-300 active:translate-y-px focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
-                  >
+                  <button id="details-favorite-btn" type="button" aria-pressed="true" class="cinema-btn-favorite">
                     <span>♥ Saved in Favorites</span>
                   </button>
                 </div>
 
-                <h3
-                  id="details-title"
-                  class="text-2xl font-extrabold tracking-tight text-white sm:text-4xl"
-                >
-                  Chronicles of the Dune Horizon
-                </h3>
+                <h3 id="details-title" class="text-2xl font-extrabold tracking-tight text-white sm:text-4xl">Chronicles of the Dune Horizon</h3>
 
-                <div
-                  id="details-rating"
-                  class="flex flex-wrap items-center gap-6 rounded-2xl border border-slate-800 bg-cinema-950/75 px-4 py-3"
-                >
+                <div id="details-rating" class="flex flex-wrap items-center gap-6 rounded-2xl border border-slate-800 bg-cinema-950/75 px-4 py-3">
                   <div class="flex items-center gap-2.5">
-                    <span
-                      id="details-score-badge"
-                      class="cinema-tabular flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400 text-base font-extrabold text-slate-950"
-                      >8.9</span
-                    >
+                    <span id="details-score-badge" class="cinema-tabular flex h-10 w-10 items-center justify-center rounded-xl bg-amber-400 text-base font-extrabold text-slate-950">8.9</span>
                     <div>
-                      <span class="block text-xs font-semibold text-white"
-                        >Community Rating</span
-                      >
-                      <span
-                        id="details-vote-count"
-                        class="cinema-tabular block text-xs text-slate-400"
-                        >8.9 / 10 from 1,420 ratings</span
-                      >
+                      <span class="block text-xs font-semibold text-white">Community Rating</span>
+                      <span id="details-vote-count" class="cinema-tabular block text-xs text-slate-400">8.9 / 10 from 1,420 ratings</span>
                     </div>
                   </div>
-                  <div
-                    class="hidden h-8 w-px bg-slate-800 sm:block"
-                    aria-hidden="true"
-                  ></div>
+                  <div class="hidden h-8 w-px bg-slate-800 sm:block" aria-hidden="true"></div>
                   <div class="text-xs text-slate-300">
                     <span class="block font-semibold text-white">Director</span>
-                    <span id="details-director" class="text-slate-400"
-                      >Elena Vance-Kovacs</span
-                    >
+                    <span id="details-director" class="text-slate-400">Elena Vance-Kovacs</span>
                   </div>
                 </div>
 
                 <div class="space-y-2">
-                  <h4 class="text-sm font-semibold text-slate-200">
-                    Plot Overview
-                  </h4>
-                  <p
-                    id="details-plot"
-                    class="max-w-[65ch] text-sm leading-relaxed text-slate-300 sm:text-base"
-                  >
-                    Across the scorched meridian of a tidally locked desert
-                    world, cartographer Cassian Vale discovers an ancient
-                    acoustic beacon buried beneath shifting silicate dunes. When
-                    rival orbital syndicates move to silence the transmission,
-                    Vale must unite nomadic horizon-striders to decode a
-                    planetary warning that predates human spaceflight.
+                  <h4 class="text-sm font-semibold text-slate-200">Plot Overview</h4>
+                  <p id="details-plot" class="max-w-[65ch] text-sm leading-relaxed text-slate-300 sm:text-base">
+                    Across the scorched meridian of a tidally locked desert world, cartographer Cassian Vale discovers an ancient acoustic beacon buried beneath shifting silicate dunes. When rival orbital syndicates move to silence the transmission, Vale must unite nomadic horizon-striders to decode a planetary warning that predates human spaceflight.
                   </p>
                 </div>
               </div>
 
-              <div
-                class="grid grid-cols-1 gap-6 border-t border-slate-800 pt-6 xl:grid-cols-12"
-              >
-                <form
-                  id="rating-form"
-                  action="#movie-details-section"
-                  method="post"
-                  class="space-y-3 xl:col-span-7"
-                  novalidate
-                >
+              <div class="grid grid-cols-1 gap-6 border-t border-slate-800 pt-6 xl:grid-cols-12">
+                <form id="rating-form" action="#movie-details-section" method="post" class="space-y-3 xl:col-span-7" novalidate>
                   <fieldset>
                     <legend class="text-sm font-semibold text-white">
-                      Rate This Movie
-                      <span class="text-xs font-normal text-slate-400"
-                        >(Select 1 to 10 stars)</span
-                      >
+                      Rate This Movie <span class="text-xs font-normal text-slate-400">(Select 1 to 10 stars)</span>
                     </legend>
                     <div class="mt-2.5 flex flex-wrap gap-1.5">
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="1"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">1</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="2"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">2</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="3"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">3</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="4"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">4</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="5"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">5</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="6"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">6</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="7"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">7</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="8"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">8</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="9"
-                          checked
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">9</span></label
-                      >
-                      <label class="cursor-pointer"
-                        ><input
-                          type="radio"
-                          name="user-rating"
-                          value="10"
-                          class="peer sr-only"
-                        /><span class="cinema-rating-pill">10</span></label
-                      >
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="1" class="peer sr-only" /><span class="cinema-rating-pill">1</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="2" class="peer sr-only" /><span class="cinema-rating-pill">2</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="3" class="peer sr-only" /><span class="cinema-rating-pill">3</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="4" class="peer sr-only" /><span class="cinema-rating-pill">4</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="5" class="peer sr-only" /><span class="cinema-rating-pill">5</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="6" class="peer sr-only" /><span class="cinema-rating-pill">6</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="7" class="peer sr-only" /><span class="cinema-rating-pill">7</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="8" class="peer sr-only" /><span class="cinema-rating-pill">8</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="9" checked class="peer sr-only" /><span class="cinema-rating-pill">9</span></label>
+                      <label class="cursor-pointer"><input type="radio" name="user-rating" value="10" class="peer sr-only" /><span class="cinema-rating-pill">10</span></label>
                     </div>
                   </fieldset>
 
                   <div class="flex flex-wrap items-center gap-3 pt-1">
-                    <button
-                      id="rating-submit-btn"
-                      type="submit"
-                      class="cinema-btn-primary py-2 text-xs"
-                    >
-                      Submit Rating
-                    </button>
-                    <a
-                      href="#review-form"
-                      class="rounded-xl border border-slate-700 bg-cinema-950 px-4 py-2 text-xs font-medium text-slate-200 transition-colors duration-150 hover:border-slate-500 hover:text-white"
-                      >Write a Full Review Below</a
-                    >
+                    <button id="rating-submit-btn" type="submit" class="cinema-btn-primary py-2 text-xs">Submit Rating</button>
+                    <a href="#review-form" class="rounded-xl border border-slate-700 bg-cinema-950 px-4 py-2 text-xs font-medium text-slate-200 transition-colors duration-150 hover:border-slate-500 hover:text-white">Write a Full Review Below</a>
                   </div>
 
-                  <p
-                    id="rating-feedback"
-                    role="status"
-                    class="hidden text-xs font-medium text-emerald-400"
-                  >
+                  <p id="rating-feedback" role="status" class="hidden text-xs font-medium text-emerald-400">
                     Thank you! Your rating has been recorded.
                   </p>
                 </form>
 
-                <div
-                  class="rounded-2xl border border-slate-800 bg-cinema-950/60 p-4 xl:col-span-5"
-                >
-                  <h4 class="text-xs font-semibold text-amber-400">
-                    Quick Reaction Note
-                  </h4>
-                  <p class="mt-1 text-xs text-slate-400">
-                    Jot down a quick reaction and transfer it directly to the
-                    review form below.
-                  </p>
+                <div class="rounded-2xl border border-slate-800 bg-cinema-950/60 p-4 xl:col-span-5">
+                  <h4 class="text-xs font-semibold text-amber-400">Quick Reaction Note</h4>
+                  <p class="mt-1 text-xs text-slate-400">Jot down a quick reaction and transfer it directly to the review form below.</p>
                   <div class="mt-3 space-y-2.5">
-                    <label for="details-quick-comment" class="sr-only"
-                      >Quick comment on selected movie</label
-                    >
-                    <textarea
-                      id="details-quick-comment"
-                      rows="2"
-                      placeholder="What stood out to you in Chronicles of the Dune Horizon?"
-                      class="cinema-input"
-                    ></textarea>
-                    <a
-                      id="quick-comment-link"
-                      href="#reviews-section"
-                      class="cinema-btn-secondary w-full"
-                      >Post to Discussion Thread</a
-                    >
+                    <label for="details-quick-comment" class="sr-only">Quick comment on selected movie</label>
+                    <textarea id="details-quick-comment" rows="2" placeholder="What stood out to you in Chronicles of the Dune Horizon?" class="cinema-input"></textarea>
+                    <a id="quick-comment-link" href="#reviews-section" class="cinema-btn-secondary w-full">Post to Discussion Thread</a>
                   </div>
                 </div>
               </div>
@@ -734,69 +295,28 @@
       </section>
 
       <!-- SECTION D: REVIEWS AND COMMENTS -->
-      <section
-        id="reviews-section"
-        aria-labelledby="reviews-heading"
-        class="space-y-8"
-      >
+      <section id="reviews-section" aria-labelledby="reviews-heading" class="space-y-8">
         <div class="cinema-section-header">
-          <div>
-            <h2
-              id="reviews-heading"
-              class="text-2xl font-bold tracking-tight text-white"
-            >
-              Reviews &amp; Comments
-            </h2>
-          </div>
-          <p class="text-sm text-slate-400">
-            Read community reviews or publish your own thoughts on the featured
-            film.
-          </p>
+          <div><h2 id="reviews-heading" class="text-2xl font-bold tracking-tight text-white">Reviews &amp; Comments</h2></div>
+          <p class="text-sm text-slate-400">Read community reviews or publish your own thoughts on the featured film.</p>
         </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div class="lg:col-span-5 lg:sticky lg:top-24 lg:self-start">
-            <form
-              id="review-form"
-              action="#reviews-section"
-              method="post"
-              class="cinema-card space-y-4 p-6"
-              novalidate
-            >
-              <h3 class="text-lg font-bold text-white">
-                Leave a Review or Comment
-              </h3>
+            <form id="review-form" action="#reviews-section" method="post" class="cinema-card space-y-4 p-6" novalidate>
+              <h3 class="text-lg font-bold text-white">Leave a Review or Comment</h3>
               <p class="text-xs text-slate-400">
-                Reviewing:
-                <strong id="review-target-movie" class="text-amber-300"
-                  >Chronicles of the Dune Horizon (2025)</strong
-                >
+                Reviewing: <strong id="review-target-movie" class="text-amber-300">Chronicles of the Dune Horizon (2025)</strong>
               </p>
 
               <div>
-                <label for="review-username" class="cinema-label"
-                  >Display Name <span class="text-amber-400">*</span></label
-                >
-                <input
-                  id="review-username"
-                  name="username"
-                  type="text"
-                  required
-                  placeholder="e.g., Alex Rivera"
-                  class="cinema-input"
-                />
+                <label for="review-username" class="cinema-label">Display Name <span class="text-amber-400">*</span></label>
+                <input id="review-username" name="username" type="text" required placeholder="e.g., Alex Rivera" class="cinema-input" />
               </div>
 
               <div>
-                <label for="review-rating" class="cinema-label"
-                  >Your Rating <span class="text-amber-400">*</span></label
-                >
-                <select
-                  id="review-rating"
-                  name="rating"
-                  required
-                  class="cinema-input"
-                >
+                <label for="review-rating" class="cinema-label">Your Rating <span class="text-amber-400">*</span></label>
+                <select id="review-rating" name="rating" required class="cinema-input">
                   <option value="">Select a rating (1-10)</option>
                   <option value="10">10: Masterpiece</option>
                   <option value="9" selected>9: Superb</option>
@@ -812,114 +332,57 @@
               </div>
 
               <div>
-                <label for="review-text" class="cinema-label"
-                  >Your Review <span class="text-amber-400">*</span></label
-                >
-                <textarea
-                  id="review-text"
-                  name="reviewText"
-                  rows="4"
-                  required
-                  placeholder="Share your thoughts on cinematography, pacing, performances, and score..."
-                  class="cinema-input"
-                ></textarea>
+                <label for="review-text" class="cinema-label">Your Review <span class="text-amber-400">*</span></label>
+                <textarea id="review-text" name="reviewText" rows="4" required placeholder="Share your thoughts on cinematography, pacing, performances, and score..." class="cinema-input"></textarea>
               </div>
 
-              <div
-                id="review-error"
-                role="alert"
-                class="cinema-alert-error hidden"
-              >
-                Please fill in your display name, rating, and review text before
-                submitting.
+              <div id="review-error" role="alert" class="cinema-alert-error hidden">
+                Please fill in your display name, rating, and review text before submitting.
               </div>
-              <div
-                id="review-success"
-                role="status"
-                class="cinema-alert-success hidden"
-              >
+              <div id="review-success" role="status" class="cinema-alert-success hidden">
                 Your review has been added to the discussion!
               </div>
 
-              <button
-                id="review-submit-btn"
-                type="submit"
-                class="cinema-btn-primary w-full"
-              >
-                Publish Review
-              </button>
+              <button id="review-submit-btn" type="submit" class="cinema-btn-primary w-full">Publish Review</button>
             </form>
           </div>
 
           <div class="space-y-4 lg:col-span-7">
-            <div
-              id="reviews-empty-state"
-              class="cinema-card hidden p-8 text-center"
-            >
+            <div id="reviews-empty-state" class="cinema-card hidden p-8 text-center">
               <p class="text-base font-semibold text-white">No reviews yet</p>
-              <p class="mt-1 text-sm text-slate-400">
-                Be the first viewer to share a review for this movie.
-              </p>
+              <p class="mt-1 text-sm text-slate-400">Be the first viewer to share a review for this movie.</p>
             </div>
 
             <div id="reviews-list" class="space-y-4">
               <article class="review-item cinema-card space-y-3 p-5">
                 <div class="flex items-center justify-between gap-4">
                   <div class="flex items-center gap-3">
-                    <div
-                      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-300 ring-1 ring-amber-400/40"
-                      aria-hidden="true"
-                    >
-                      MK
-                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/20 text-sm font-bold text-amber-300 ring-1 ring-amber-400/40" aria-hidden="true">MK</div>
                     <div>
-                      <h4 class="text-sm font-bold text-white">
-                        Maya Kowalski
-                      </h4>
-                      <time datetime="2026-10-18" class="text-xs text-slate-400"
-                        >October 18, 2026</time
-                      >
+                      <h4 class="text-sm font-bold text-white">Maya Kowalski</h4>
+                      <time datetime="2026-10-18" class="text-xs text-slate-400">October 18, 2026</time>
                     </div>
                   </div>
-                  <span
-                    class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30"
-                    >★ 9 / 10</span
-                  >
+                  <span class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30">★ 9 / 10</span>
                 </div>
                 <p class="text-sm leading-relaxed text-slate-300">
-                  Stunning sound design and wide-angle desert compositions. The
-                  second-act acoustic canyon sequence builds tension without
-                  relying on cheap exposition.
+                  Stunning sound design and wide-angle desert compositions. The second-act acoustic canyon sequence builds tension without relying on cheap exposition.
                 </p>
               </article>
 
               <article class="review-item cinema-card space-y-3 p-5">
                 <div class="flex items-center justify-between gap-4">
                   <div class="flex items-center gap-3">
-                    <div
-                      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-400/20 text-sm font-bold text-sky-300 ring-1 ring-sky-400/40"
-                      aria-hidden="true"
-                    >
-                      DL
-                    </div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-400/20 text-sm font-bold text-sky-300 ring-1 ring-sky-400/40" aria-hidden="true">DL</div>
                     <div>
-                      <h4 class="text-sm font-bold text-white">
-                        Devon Lindqvist
-                      </h4>
-                      <time datetime="2026-10-12" class="text-xs text-slate-400"
-                        >October 12, 2026</time
-                      >
+                      <h4 class="text-sm font-bold text-white">Devon Lindqvist</h4>
+                      <time datetime="2026-10-12" class="text-xs text-slate-400">October 12, 2026</time>
                     </div>
                   </div>
-                  <span
-                    class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30"
-                    >★ 8 / 10</span
-                  >
+                  <span class="rounded-lg bg-amber-400/15 px-2.5 py-1 text-xs font-bold text-amber-300 ring-1 ring-amber-400/30">★ 8 / 10</span>
                 </div>
                 <p class="text-sm leading-relaxed text-slate-300">
-                  Though the opening twenty minutes take their time establishing
-                  the orbital politics, the payoff in the final third is deeply
-                  rewarding.
+                  Though the opening twenty minutes take their time establishing the orbital politics, the payoff in the final third is deeply rewarding.
                 </p>
               </article>
             </div>
@@ -928,335 +391,146 @@
       </section>
 
       <!-- SECTION E: COMMUNITY SECTION -->
-      <section
-        id="community-section"
-        aria-labelledby="community-heading"
-        class="space-y-10"
-      >
+      <section id="community-section" aria-labelledby="community-heading" class="space-y-10">
         <div class="cinema-section-header">
-          <div>
-            <h2
-              id="community-heading"
-              class="text-2xl font-bold tracking-tight text-white"
-            >
-              Community Contributions
-            </h2>
-          </div>
-          <p class="text-sm text-slate-400">
-            Help expand our cinema database by suggesting missing films or
-            reporting metadata issues.
-          </p>
+          <div><h2 id="community-heading" class="text-2xl font-bold tracking-tight text-white">Community Contributions</h2></div>
+          <p class="text-sm text-slate-400">Help expand our cinema database by suggesting missing films or reporting metadata issues.</p>
         </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div class="cinema-card space-y-5 p-6 sm:p-8">
             <div>
               <h3 class="text-lg font-bold text-white">Suggest a Movie</h3>
-              <p class="text-xs text-slate-400">
-                Recommend an indie gem, international classic, or new release.
-              </p>
+              <p class="text-xs text-slate-400">Recommend an indie gem, international classic, or new release.</p>
             </div>
 
-            <form
-              id="community-suggestion-form"
-              action="#community-section"
-              method="post"
-              class="space-y-4"
-              novalidate
-            >
+            <form id="community-suggestion-form" action="#community-section" method="post" class="space-y-4" novalidate>
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div class="sm:col-span-2">
-                  <label for="suggest-title" class="cinema-label"
-                    >Movie Title <span class="text-amber-400">*</span></label
-                  >
-                  <input
-                    id="suggest-title"
-                    name="movieTitle"
-                    type="text"
-                    required
-                    placeholder="e.g., Afterglow of Sapporo"
-                    class="cinema-input"
-                  />
+                  <label for="suggest-title" class="cinema-label">Movie Title <span class="text-amber-400">*</span></label>
+                  <input id="suggest-title" name="movieTitle" type="text" required placeholder="e.g., Afterglow of Sapporo" class="cinema-input" />
                 </div>
                 <div>
-                  <label for="suggest-year" class="cinema-label"
-                    >Release Year
-                    <span class="text-slate-500">(Optional)</span></label
-                  >
-                  <input
-                    id="suggest-year"
-                    name="releaseYear"
-                    type="number"
-                    min="1888"
-                    max="2035"
-                    placeholder="2024"
-                    class="cinema-input"
-                  />
+                  <label for="suggest-year" class="cinema-label">Release Year <span class="text-slate-500">(Optional)</span></label>
+                  <input id="suggest-year" name="releaseYear" type="number" min="1888" max="2035" placeholder="2024" class="cinema-input" />
                 </div>
               </div>
 
               <div>
-                <label for="suggest-description" class="cinema-label"
-                  >Movie Description / Synopsis
-                  <span class="text-slate-500">(Optional)</span></label
-                >
-                <textarea
-                  id="suggest-description"
-                  name="movieDescription"
-                  rows="2"
-                  placeholder="Brief overview of the plot, director, or genre..."
-                  class="cinema-input"
-                ></textarea>
+                <label for="suggest-description" class="cinema-label">Movie Description / Synopsis <span class="text-slate-500">(Optional)</span></label>
+                <textarea id="suggest-description" name="movieDescription" rows="2" placeholder="Brief overview of the plot, director, or genre..." class="cinema-input"></textarea>
               </div>
 
               <div>
-                <label for="suggest-reason" class="cinema-label"
-                  >Reason for Suggesting
-                  <span class="text-amber-400">*</span></label
-                >
-                <textarea
-                  id="suggest-reason"
-                  name="reason"
-                  rows="3"
-                  required
-                  placeholder="Why should this movie be added to the catalog?"
-                  class="cinema-input"
-                ></textarea>
+                <label for="suggest-reason" class="cinema-label">Reason for Suggesting <span class="text-amber-400">*</span></label>
+                <textarea id="suggest-reason" name="reason" rows="3" required placeholder="Why should this movie be added to the catalog?" class="cinema-input"></textarea>
               </div>
 
-              <div
-                id="suggestion-error"
-                role="alert"
-                class="cinema-alert-error hidden"
-              ></div>
-              <div
-                id="suggestion-feedback"
-                role="status"
-                class="cinema-alert-success hidden"
-              >
-                Movie suggestion submitted! Our community moderators will review
-                it shortly.
+              <div id="suggestion-error" role="alert" class="cinema-alert-error hidden"></div>
+              <div id="suggestion-feedback" role="status" class="cinema-alert-success hidden">
+                Movie suggestion submitted! Our community moderators will review it shortly.
               </div>
 
-              <button
-                id="suggest-submit-btn"
-                type="submit"
-                class="cinema-btn-primary w-full"
-              >
-                Submit Suggestion
-              </button>
+              <button id="suggest-submit-btn" type="submit" class="cinema-btn-primary w-full">Submit Suggestion</button>
             </form>
           </div>
 
           <div class="cinema-card space-y-5 p-6 sm:p-8">
             <div>
               <h3 class="text-lg font-bold text-white">Report a Problem</h3>
-              <p class="text-xs text-slate-400">
-                Flag inaccurate release years, broken posters, or duplicate
-                entries.
-              </p>
+              <p class="text-xs text-slate-400">Flag inaccurate release years, broken posters, or duplicate entries.</p>
             </div>
 
-            <form
-              id="problem-report-form"
-              action="#community-section"
-              method="post"
-              class="space-y-4"
-              novalidate
-            >
+            <form id="problem-report-form" action="#community-section" method="post" class="space-y-4" novalidate>
               <div>
-                <label for="report-movie-title" class="cinema-label"
-                  >Movie Title or Reference ID
-                  <span class="text-amber-400">*</span></label
-                >
-                <input
-                  id="report-movie-title"
-                  name="movieReference"
-                  type="text"
-                  required
-                  placeholder="e.g., The Glass Labyrinth (2022)"
-                  class="cinema-input"
-                />
+                <label for="report-movie-title" class="cinema-label">Movie Title or Reference ID <span class="text-amber-400">*</span></label>
+                <input id="report-movie-title" name="movieReference" type="text" required placeholder="e.g., The Glass Labyrinth (2022)" class="cinema-input" />
               </div>
 
               <div>
-                <label for="report-problem-type" class="cinema-label"
-                  >Problem Type <span class="text-amber-400">*</span></label
-                >
-                <select
-                  id="report-problem-type"
-                  name="problemType"
-                  required
-                  class="cinema-input"
-                >
+                <label for="report-problem-type" class="cinema-label">Problem Type <span class="text-amber-400">*</span></label>
+                <select id="report-problem-type" name="problemType" required class="cinema-input">
                   <option value="">Select issue category...</option>
-                  <option value="incorrect-metadata">
-                    Incorrect Release Year, Cast, or Genre
-                  </option>
-                  <option value="missing-poster">
-                    Missing or Low-Resolution Poster
-                  </option>
-                  <option value="plot-error">
-                    Inaccurate Plot Overview or Spoiler
-                  </option>
-                  <option value="duplicate-entry">
-                    Duplicate Catalog Entry
-                  </option>
+                  <option value="incorrect-metadata">Incorrect Release Year, Cast, or Genre</option>
+                  <option value="missing-poster">Missing or Low-Resolution Poster</option>
+                  <option value="plot-error">Inaccurate Plot Overview or Spoiler</option>
+                  <option value="duplicate-entry">Duplicate Catalog Entry</option>
                   <option value="other">Other Data Issue</option>
                 </select>
               </div>
 
               <div>
-                <label for="report-description" class="cinema-label"
-                  >Issue Description &amp; Correction Details
-                  <span class="text-amber-400">*</span></label
-                >
-                <textarea
-                  id="report-description"
-                  name="problemDescription"
-                  rows="4"
-                  required
-                  placeholder="Describe what needs to be corrected..."
-                  class="cinema-input"
-                ></textarea>
+                <label for="report-description" class="cinema-label">Issue Description &amp; Correction Details <span class="text-amber-400">*</span></label>
+                <textarea id="report-description" name="problemDescription" rows="4" required placeholder="Describe what needs to be corrected..." class="cinema-input"></textarea>
               </div>
 
-              <div
-                id="report-error"
-                role="alert"
-                class="cinema-alert-error hidden"
-              ></div>
-              <div
-                id="report-feedback"
-                role="status"
-                class="cinema-alert-success hidden"
-              >
-                Problem report logged! Thank you for helping keep our catalog
-                accurate.
+              <div id="report-error" role="alert" class="cinema-alert-error hidden"></div>
+              <div id="report-feedback" role="status" class="cinema-alert-success hidden">
+                Problem report logged! Thank you for helping keep our catalog accurate.
               </div>
 
-              <button
-                id="report-submit-btn"
-                type="submit"
-                class="cinema-btn-secondary w-full py-2.5 text-sm"
-              >
-                Submit Report
-              </button>
+              <button id="report-submit-btn" type="submit" class="cinema-btn-secondary w-full py-2.5 text-sm">Submit Report</button>
             </form>
           </div>
         </div>
 
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-bold text-white">
-              Recent Community Submissions
-            </h3>
-            <span class="text-xs text-slate-400"
-              >Showing latest suggestions &amp; data reports</span
-            >
+            <h3 class="text-lg font-bold text-white">Recent Community Submissions</h3>
+            <span class="text-xs text-slate-400">Showing latest suggestions &amp; data reports</span>
           </div>
 
-          <div
-            id="community-empty-state"
-            class="cinema-card hidden p-8 text-center"
-          >
-            <p class="text-sm text-slate-400">
-              No community submissions have been posted yet.
-            </p>
+          <div id="community-empty-state" class="cinema-card hidden p-8 text-center">
+            <p class="text-sm text-slate-400">No community submissions have been posted yet.</p>
           </div>
 
-          <div
-            id="community-submissions-list"
-            class="grid grid-cols-1 gap-4 md:grid-cols-3"
-          >
-            <article
-              class="submission-card cinema-card flex flex-col justify-between space-y-4 p-5"
-            >
+          <div id="community-submissions-list" class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <article class="submission-card cinema-card flex flex-col justify-between space-y-4 p-5">
               <div class="space-y-2.5">
-                <div
-                  class="flex flex-wrap items-center justify-between gap-2 text-xs"
-                >
-                  <span class="font-semibold text-amber-300"
-                    >Movie Suggestion</span
-                  >
-                  <span class="font-medium text-amber-200"
-                    >Status: Pending</span
-                  >
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span class="font-semibold text-amber-300">Movie Suggestion</span>
+                  <span class="font-medium text-amber-200">Status: Pending</span>
                 </div>
-                <h4 class="text-base font-bold text-white">
-                  La Chimera (2023)
-                </h4>
+                <h4 class="text-base font-bold text-white">La Chimera (2023)</h4>
                 <p class="text-xs leading-relaxed text-slate-300">
-                  Suggested by @cine_archivist: Alice Rohrwacher's lyrical
-                  archaeological drama deserves a spot in our international
-                  cinema spotlight.
+                  Suggested by @cine_archivist: Alice Rohrwacher's lyrical archaeological drama deserves a spot in our international cinema spotlight.
                 </p>
               </div>
-              <div
-                class="cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400"
-              >
+              <div class="cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
                 <span>Submitted 2 days ago</span>
                 <span class="font-medium text-slate-300">7 comments</span>
               </div>
             </article>
 
-            <article
-              class="submission-card cinema-card flex flex-col justify-between space-y-4 p-5"
-            >
+            <article class="submission-card cinema-card flex flex-col justify-between space-y-4 p-5">
               <div class="space-y-2.5">
-                <div
-                  class="flex flex-wrap items-center justify-between gap-2 text-xs"
-                >
-                  <span class="font-semibold text-rose-300"
-                    >Problem Report</span
-                  >
-                  <span class="font-medium text-emerald-300"
-                    >Status: Reviewed</span
-                  >
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span class="font-semibold text-rose-300">Problem Report</span>
+                  <span class="font-medium text-emerald-300">Status: Reviewed</span>
                 </div>
-                <h4 class="text-base font-bold text-white">
-                  The Glass Labyrinth: Poster Missing
-                </h4>
+                <h4 class="text-base font-bold text-white">The Glass Labyrinth: Poster Missing</h4>
                 <p class="text-xs leading-relaxed text-slate-300">
-                  Reported by @velvet_reel: The high-resolution theatrical
-                  poster is currently missing and displaying the fallback
-                  placeholder card.
+                  Reported by @velvet_reel: The high-resolution theatrical poster is currently missing and displaying the fallback placeholder card.
                 </p>
               </div>
-              <div
-                class="cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400"
-              >
+              <div class="cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
                 <span>Submitted 5 days ago</span>
                 <span class="font-medium text-slate-300">3 comments</span>
               </div>
             </article>
 
-            <article
-              class="submission-card cinema-card flex flex-col justify-between space-y-4 p-5"
-            >
+            <article class="submission-card cinema-card flex flex-col justify-between space-y-4 p-5">
               <div class="space-y-2.5">
-                <div
-                  class="flex flex-wrap items-center justify-between gap-2 text-xs"
-                >
-                  <span class="font-semibold text-amber-300"
-                    >Movie Suggestion</span
-                  >
-                  <span class="font-medium text-emerald-300"
-                    >Status: Reviewed</span
-                  >
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span class="font-semibold text-amber-300">Movie Suggestion</span>
+                  <span class="font-medium text-emerald-300">Status: Reviewed</span>
                 </div>
-                <h4 class="text-base font-bold text-white">
-                  Echoes of the Silent Star (2023)
-                </h4>
+                <h4 class="text-base font-bold text-white">Echoes of the Silent Star (2023)</h4>
                 <p class="text-xs leading-relaxed text-slate-300">
-                  Suggested by @solaris_fan: Deep-space chamber drama featuring
-                  an acclaimed orchestral score and practical miniature
-                  photography.
+                  Suggested by @solaris_fan: Deep-space chamber drama featuring an acclaimed orchestral score and practical miniature photography.
                 </p>
               </div>
-              <div
-                class="cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400"
-              >
+              <div class="cinema-tabular flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
                 <span>Submitted 1 week ago</span>
                 <span class="font-medium text-slate-300">12 comments</span>
               </div>
@@ -1266,135 +540,53 @@
       </section>
 
       <!-- SECTION F: FAVORITES -->
-      <section
-        id="favorites-section"
-        aria-labelledby="favorites-heading"
-        class="space-y-6"
-      >
+      <section id="favorites-section" aria-labelledby="favorites-heading" class="space-y-6">
         <div class="cinema-section-header">
           <div>
-            <h2
-              id="favorites-heading"
-              class="text-2xl font-bold tracking-tight text-white"
-            >
-              Your Saved Favorites
-            </h2>
+            <h2 id="favorites-heading" class="text-2xl font-bold tracking-tight text-white">Your Saved Favorites</h2>
           </div>
-          <p class="text-sm text-slate-400">
-            Movies you have bookmarked for quick access and rewatch nights.
-          </p>
+          <p class="text-sm text-slate-400">Movies you have bookmarked for quick access and rewatch nights.</p>
         </div>
 
-        <div
-          id="favorites-empty-state"
-          class="hidden rounded-2xl border border-dashed border-slate-700 bg-cinema-900/50 p-10 text-center"
-        >
-          <h3 class="text-lg font-semibold text-white">
-            Your favorites list is currently empty
-          </h3>
+        <div id="favorites-empty-state" class="hidden rounded-2xl border border-dashed border-slate-700 bg-cinema-900/50 p-10 text-center">
+          <h3 class="text-lg font-semibold text-white">Your favorites list is currently empty</h3>
           <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">
-            Explore the movie catalog above and click "Add to Favorites" on any
-            title to build your personal collection.
+            Explore the movie catalog above and click "Add to Favorites" on any title to build your personal collection.
           </p>
-          <a href="#search-section" class="cinema-btn-primary mt-4 text-xs"
-            >Browse Movie Catalog</a
-          >
+          <a href="#search-section" class="cinema-btn-primary mt-4 text-xs">Browse Movie Catalog</a>
         </div>
 
-        <div
-          id="favorites-list"
-          class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-        >
-          <article
-            data-movie-id="dune-horizon"
-            class="favorite-card cinema-card group flex flex-col overflow-hidden"
-          >
-            <div
-              class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950"
-            >
-              <img
-                src="./assets/images/poster-dune-horizon.svg"
-                alt="Poster for Chronicles of the Dune Horizon"
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              <span class="cinema-badge absolute top-3 left-3 text-amber-300"
-                >Saved</span
-              >
+        <div id="favorites-list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <article data-movie-id="dune-horizon" class="favorite-card cinema-card group flex flex-col overflow-hidden">
+            <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+              <img src="./assets/images/poster-dune-horizon.svg" alt="Poster for Chronicles of the Dune Horizon" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+              <span class="cinema-badge absolute top-3 left-3 text-amber-300">Saved</span>
             </div>
             <div class="flex flex-1 flex-col justify-between p-4">
               <div>
-                <p class="cinema-tabular text-xs text-slate-400">
-                  2025 • Sci-Fi / Adventure
-                </p>
-                <h3 class="mt-1 text-base font-bold text-white">
-                  Chronicles of the Dune Horizon
-                </h3>
+                <p class="cinema-tabular text-xs text-slate-400">2025 • Sci-Fi / Adventure</p>
+                <h3 class="mt-1 text-base font-bold text-white">Chronicles of the Dune Horizon</h3>
               </div>
-              <div
-                class="mt-4 flex flex-col gap-2 border-t border-slate-800 pt-3"
-              >
-                <a
-                  href="#movie-details-section"
-                  data-movie-id="dune-horizon"
-                  class="view-details-btn cinema-btn-secondary w-full text-slate-200"
-                  >View Details</a
-                >
-                <button
-                  type="button"
-                  data-movie-id="dune-horizon"
-                  aria-label="Remove Chronicles of the Dune Horizon from favorites"
-                  class="remove-favorite-btn cinema-btn-danger"
-                >
-                  Remove from Favorites
-                </button>
+              <div class="mt-4 flex flex-col gap-2 border-t border-slate-800 pt-3">
+                <a href="#movie-details-section" data-movie-id="dune-horizon" class="view-details-btn cinema-btn-secondary w-full text-slate-200">View Details</a>
+                <button type="button" data-movie-id="dune-horizon" aria-label="Remove Chronicles of the Dune Horizon from favorites" class="remove-favorite-btn cinema-btn-danger">Remove from Favorites</button>
               </div>
             </div>
           </article>
 
-          <article
-            data-movie-id="solaris-echo"
-            class="favorite-card cinema-card group flex flex-col overflow-hidden"
-          >
-            <div
-              class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950"
-            >
-              <img
-                src="./assets/images/poster-solaris-echo.svg"
-                alt="Poster for Echoes of the Silent Star"
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              <span class="cinema-badge absolute top-3 left-3 text-amber-300"
-                >Saved</span
-              >
+          <article data-movie-id="solaris-echo" class="favorite-card cinema-card group flex flex-col overflow-hidden">
+            <div class="relative aspect-[2/3] w-full overflow-hidden bg-cinema-950">
+              <img src="./assets/images/poster-solaris-echo.svg" alt="Poster for Echoes of the Silent Star" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+              <span class="cinema-badge absolute top-3 left-3 text-amber-300">Saved</span>
             </div>
             <div class="flex flex-1 flex-col justify-between p-4">
               <div>
-                <p class="cinema-tabular text-xs text-slate-400">
-                  2023 • Drama / Sci-Fi
-                </p>
-                <h3 class="mt-1 text-base font-bold text-white">
-                  Echoes of the Silent Star
-                </h3>
+                <p class="cinema-tabular text-xs text-slate-400">2023 • Drama / Sci-Fi</p>
+                <h3 class="mt-1 text-base font-bold text-white">Echoes of the Silent Star</h3>
               </div>
-              <div
-                class="mt-4 flex flex-col gap-2 border-t border-slate-800 pt-3"
-              >
-                <a
-                  href="#movie-details-section"
-                  data-movie-id="solaris-echo"
-                  class="view-details-btn cinema-btn-secondary w-full text-slate-200"
-                  >View Details</a
-                >
-                <button
-                  type="button"
-                  data-movie-id="solaris-echo"
-                  aria-label="Remove Echoes of the Silent Star from favorites"
-                  class="remove-favorite-btn cinema-btn-danger"
-                >
-                  Remove from Favorites
-                </button>
+              <div class="mt-4 flex flex-col gap-2 border-t border-slate-800 pt-3">
+                <a href="#movie-details-section" data-movie-id="solaris-echo" class="view-details-btn cinema-btn-secondary w-full text-slate-200">View Details</a>
+                <button type="button" data-movie-id="solaris-echo" aria-label="Remove Echoes of the Silent Star from favorites" class="remove-favorite-btn cinema-btn-danger">Remove from Favorites</button>
               </div>
             </div>
           </article>
@@ -1402,226 +594,88 @@
       </section>
 
       <!-- SECTION G: SIGN IN AND REGISTRATION -->
-      <section
-        id="auth-section"
-        aria-labelledby="auth-heading"
-        class="space-y-8"
-      >
+      <section id="auth-section" aria-labelledby="auth-heading" class="space-y-8">
         <div class="cinema-section-header">
           <div>
-            <h2
-              id="auth-heading"
-              class="text-2xl font-bold tracking-tight text-white"
-            >
-              Sign In or Create an Account
-            </h2>
+            <h2 id="auth-heading" class="text-2xl font-bold tracking-tight text-white">Sign In or Create an Account</h2>
           </div>
-          <p class="text-xs text-slate-400">
-            Local demo forms: do not enter real personal passwords.
-          </p>
+          <p class="text-xs text-slate-400">Local demo forms: do not enter real personal passwords.</p>
         </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <!-- Sign In Card -->
-          <div
-            id="signin-card"
-            class="cinema-card flex flex-col justify-between p-6 sm:p-8"
-          >
+          <div id="signin-card" class="cinema-card flex flex-col justify-between p-6 sm:p-8">
             <div class="space-y-5">
               <div>
                 <h3 class="text-xl font-bold text-white">Welcome Back</h3>
-                <p class="mt-1 text-xs text-slate-400">
-                  Sign in to sync your saved favorites, ratings, and community
-                  submissions.
-                </p>
+                <p class="mt-1 text-xs text-slate-400">Sign in to sync your saved favorites, ratings, and community submissions.</p>
               </div>
 
-              <form
-                id="signin-form"
-                action="#auth-section"
-                method="post"
-                class="space-y-4"
-                novalidate
-              >
+              <form id="signin-form" action="#auth-section" method="post" class="space-y-4" novalidate>
                 <div>
-                  <label for="signin-email" class="cinema-label"
-                    >Email Address <span class="text-amber-400">*</span></label
-                  >
-                  <input
-                    id="signin-email"
-                    name="email"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    placeholder="you@example.com"
-                    class="cinema-input"
-                  />
+                  <label for="signin-email" class="cinema-label">Email Address <span class="text-amber-400">*</span></label>
+                  <input id="signin-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" class="cinema-input" />
                 </div>
 
                 <div>
-                  <label for="signin-password" class="cinema-label"
-                    >Password <span class="text-amber-400">*</span></label
-                  >
-                  <input
-                    id="signin-password"
-                    name="password"
-                    type="password"
-                    autocomplete="current-password"
-                    required
-                    placeholder="••••••••"
-                    class="cinema-input"
-                  />
+                  <label for="signin-password" class="cinema-label">Password <span class="text-amber-400">*</span></label>
+                  <input id="signin-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" class="cinema-input" />
                 </div>
 
-                <div
-                  id="signin-error"
-                  role="alert"
-                  class="cinema-alert-error hidden"
-                ></div>
-                <div
-                  id="signin-success"
-                  role="status"
-                  class="cinema-alert-success hidden"
-                ></div>
+                <div id="signin-error" role="alert" class="cinema-alert-error hidden"></div>
+                <div id="signin-success" role="status" class="cinema-alert-success hidden"></div>
 
-                <button
-                  id="signin-submit-btn"
-                  type="submit"
-                  class="cinema-btn-primary w-full"
-                >
-                  Sign In
-                </button>
+                <button id="signin-submit-btn" type="submit" class="cinema-btn-primary w-full">Sign In</button>
               </form>
             </div>
 
-            <p
-              class="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-400"
-            >
+            <p class="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-400">
               New to Movie Explorer Community?
-              <a
-                id="go-to-register-link"
-                href="#register-card"
-                class="font-semibold text-amber-400 hover:underline"
-                >Create an account</a
-              >
+              <a id="go-to-register-link" href="#register-card" class="font-semibold text-amber-400 hover:underline">Create an account</a>
             </p>
           </div>
 
           <!-- Registration Card -->
-          <div
-            id="register-card"
-            class="cinema-card flex flex-col justify-between p-6 sm:p-8"
-          >
+          <div id="register-card" class="cinema-card flex flex-col justify-between p-6 sm:p-8">
             <div class="space-y-5">
               <div>
                 <h3 class="text-xl font-bold text-white">Create Account</h3>
-                <p class="mt-1 text-xs text-slate-400">
-                  Join our community of film enthusiasts to rate titles, write
-                  reviews, and curate lists.
-                </p>
+                <p class="mt-1 text-xs text-slate-400">Join our community of film enthusiasts to rate titles, write reviews, and curate lists.</p>
               </div>
 
-              <form
-                id="register-form"
-                action="#auth-section"
-                method="post"
-                class="space-y-4"
-                novalidate
-              >
+              <form id="register-form" action="#auth-section" method="post" class="space-y-4" novalidate>
                 <div>
-                  <label for="register-username" class="cinema-label"
-                    >Username <span class="text-amber-400">*</span></label
-                  >
-                  <input
-                    id="register-username"
-                    name="username"
-                    type="text"
-                    autocomplete="username"
-                    required
-                    placeholder="cinephile_alex"
-                    class="cinema-input"
-                  />
+                  <label for="register-username" class="cinema-label">Username <span class="text-amber-400">*</span></label>
+                  <input id="register-username" name="username" type="text" autocomplete="username" required placeholder="cinephile_alex" class="cinema-input" />
                 </div>
 
                 <div>
-                  <label for="register-email" class="cinema-label"
-                    >Email Address <span class="text-amber-400">*</span></label
-                  >
-                  <input
-                    id="register-email"
-                    name="email"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    placeholder="alex@example.com"
-                    class="cinema-input"
-                  />
+                  <label for="register-email" class="cinema-label">Email Address <span class="text-amber-400">*</span></label>
+                  <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="alex@example.com" class="cinema-input" />
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label for="register-password" class="cinema-label"
-                      >Password <span class="text-amber-400">*</span></label
-                    >
-                    <input
-                      id="register-password"
-                      name="password"
-                      type="password"
-                      autocomplete="new-password"
-                      required
-                      placeholder="Min. 8 characters"
-                      class="cinema-input"
-                    />
+                    <label for="register-password" class="cinema-label">Password <span class="text-amber-400">*</span></label>
+                    <input id="register-password" name="password" type="password" autocomplete="new-password" required placeholder="Min. 8 characters" class="cinema-input" />
                   </div>
 
                   <div>
-                    <label for="register-confirm-password" class="cinema-label"
-                      >Confirm Password
-                      <span class="text-amber-400">*</span></label
-                    >
-                    <input
-                      id="register-confirm-password"
-                      name="confirmPassword"
-                      type="password"
-                      autocomplete="new-password"
-                      required
-                      placeholder="Re-enter password"
-                      class="cinema-input"
-                    />
+                    <label for="register-confirm-password" class="cinema-label">Confirm Password <span class="text-amber-400">*</span></label>
+                    <input id="register-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required placeholder="Re-enter password" class="cinema-input" />
                   </div>
                 </div>
 
-                <div
-                  id="register-error"
-                  role="alert"
-                  class="cinema-alert-error hidden"
-                ></div>
-                <div
-                  id="register-success"
-                  role="status"
-                  class="cinema-alert-success hidden"
-                ></div>
+                <div id="register-error" role="alert" class="cinema-alert-error hidden"></div>
+                <div id="register-success" role="status" class="cinema-alert-success hidden"></div>
 
-                <button
-                  id="register-submit-btn"
-                  type="submit"
-                  class="inline-flex w-full cursor-pointer items-center justify-center rounded-xl border border-amber-400 bg-amber-400/15 px-4 py-2.5 text-sm font-semibold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950"
-                >
-                  Create Account
-                </button>
+                <button id="register-submit-btn" type="submit" class="cinema-btn-secondary w-full py-2.5 text-sm">Create Account</button>
               </form>
             </div>
 
-            <p
-              class="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-400"
-            >
+            <p class="mt-6 border-t border-slate-800 pt-4 text-center text-xs text-slate-400">
               Already have a member account?
-              <a
-                id="go-to-signin-link"
-                href="#signin-card"
-                class="font-semibold text-amber-400 hover:underline"
-                >Sign in here</a
-              >
+              <a id="go-to-signin-link" href="#signin-card" class="font-semibold text-amber-400 hover:underline">Sign in here</a>
             </p>
           </div>
         </div>
@@ -1631,52 +685,21 @@
     <!-- SECTION H: FOOTER -->
     <footer class="mt-20 border-t border-slate-800/80 bg-cinema-900/70">
       <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div
-          class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center"
-        >
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div>
-            <span class="text-base font-bold tracking-tight text-white"
-              >Movie Explorer Community</span
-            >
+            <span class="text-base font-bold tracking-tight text-white">Movie Explorer Community</span>
             <p class="mt-1 max-w-md text-xs text-slate-400">
-              A community-driven cinema discovery interface built with semantic
-              HTML5 and Tailwind CSS.
+              A community-driven cinema discovery interface built with semantic HTML5 and Tailwind CSS.
             </p>
           </div>
           <nav aria-label="Footer Navigation">
-            <ul
-              class="flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-slate-300"
-            >
-              <li>
-                <a href="#search-section" class="hover:text-amber-400"
-                  >Home &amp; Search</a
-                >
-              </li>
-              <li>
-                <a href="#movie-details-section" class="hover:text-amber-400"
-                  >Movie Details</a
-                >
-              </li>
-              <li>
-                <a href="#reviews-section" class="hover:text-amber-400"
-                  >Reviews</a
-                >
-              </li>
-              <li>
-                <a href="#community-section" class="hover:text-amber-400"
-                  >Community</a
-                >
-              </li>
-              <li>
-                <a href="#favorites-section" class="hover:text-amber-400"
-                  >Favorites</a
-                >
-              </li>
-              <li>
-                <a href="#auth-section" class="hover:text-amber-400"
-                  >Sign In / Register</a
-                >
-              </li>
+            <ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-slate-300">
+              <li><a href="#search-section" class="hover:text-amber-400">Home &amp; Search</a></li>
+              <li><a href="#movie-details-section" class="hover:text-amber-400">Movie Details</a></li>
+              <li><a href="#reviews-section" class="hover:text-amber-400">Reviews</a></li>
+              <li><a href="#community-section" class="hover:text-amber-400">Community</a></li>
+              <li><a href="#favorites-section" class="hover:text-amber-400">Favorites</a></li>
+              <li><a href="#auth-section" class="hover:text-amber-400">Sign In / Register</a></li>
             </ul>
           </nav>
         </div>
