@@ -18,8 +18,86 @@ const GLASS_LABYRINTH_POSTER = `data:image/svg+xml;charset=utf-8,${encodeURIComp
     "</svg>",
 )}`;
 
+/** Domain entity encapsulating metadata, filtering, and ratings for a catalog movie. */
+export class Movie {
+  /**
+   * @param {{
+   *   id: string,
+   *   title: string,
+   *   year: number,
+   *   genres?: string[],
+   *   genreLabel: string,
+   *   runtime: string,
+   *   director: string,
+   *   rating: number,
+   *   votes: number,
+   *   poster: string,
+   *   plot: string,
+   * }} data
+   */
+  constructor({
+    id,
+    title,
+    year,
+    genres = [],
+    genreLabel,
+    runtime,
+    director,
+    rating,
+    votes,
+    poster,
+    plot,
+  }) {
+    this.id = id;
+    this.title = title;
+    this.year = year;
+    this.genres = [...genres];
+    this.genreLabel = genreLabel;
+    this.runtime = runtime;
+    this.director = director;
+    this.rating = rating;
+    this.votes = votes;
+    this.poster = poster;
+    this.plot = plot;
+  }
+
+  get formattedRating() {
+    return this.rating.toFixed(1);
+  }
+
+  get badgeText() {
+    return `★ ${this.formattedRating}`;
+  }
+
+  get voteSummary() {
+    return `${this.formattedRating} / 10 from ${this.votes.toLocaleString("en-US")} ratings`;
+  }
+
+  get titleWithYear() {
+    return `${this.title} (${this.year})`;
+  }
+
+  matchesFilter(query = "", genre = "") {
+    if (genre && !this.genres.includes(genre)) return false;
+    if (!query) return true;
+    return `${this.title} ${this.director} ${this.genreLabel} ${this.year}`.toLowerCase().includes(query);
+  }
+
+  recordRating(score) {
+    const num = Number(score);
+    if (!Number.isInteger(num) || num < 1 || num > 10) return false;
+    this.rating = Number(((this.rating * this.votes + num) / (this.votes + 1)).toFixed(1));
+    this.votes += 1;
+    return true;
+  }
+
+  clone() {
+    return new Movie(this);
+  }
+}
+
 export const MOVIE_CATALOG = [
-  {
+  new Movie({
     id: "dune-horizon",
     title: "Chronicles of the Dune Horizon",
     year: 2025,
@@ -31,8 +109,8 @@ export const MOVIE_CATALOG = [
     votes: 1420,
     poster: "./assets/images/poster-dune-horizon.svg",
     plot: "Across the scorched meridian of a tidally locked desert world, cartographer Cassian Vale discovers an ancient acoustic beacon buried beneath shifting silicate dunes. When rival orbital syndicates move to silence the transmission, Vale must unite nomadic horizon-striders to decode a planetary warning that predates human spaceflight.",
-  },
-  {
+  }),
+  new Movie({
     id: "midnight-sonata",
     title: "Midnight Sonata in Vienna",
     year: 2024,
@@ -44,8 +122,8 @@ export const MOVIE_CATALOG = [
     votes: 960,
     poster: "./assets/images/poster-midnight-sonata.svg",
     plot: "During a snowbound winter festival in Vienna, a concert violinist discovers a cipher hidden inside a century-old score. Tracking the manuscript across rehearsal halls and archives, she uncovers an unsolved disappearance tied to the conservatory.",
-  },
-  {
+  }),
+  new Movie({
     id: "neon-odyssey",
     title: "Neon Odyssey: Protocol Nine",
     year: 2026,
@@ -57,8 +135,8 @@ export const MOVIE_CATALOG = [
     votes: 1185,
     poster: "./assets/images/poster-neon-odyssey.svg",
     plot: "In a rain-slicked vertical megacity, a transit systems auditor traces a phantom routing command through nine orbital relay towers. With citywide power scheduled to reset at dawn, she must outrun corporate recovery teams to expose the override.",
-  },
-  {
+  }),
+  new Movie({
     id: "glass-labyrinth",
     title: "The Glass Labyrinth",
     year: 2022,
@@ -70,8 +148,8 @@ export const MOVIE_CATALOG = [
     votes: 740,
     poster: GLASS_LABYRINTH_POSTER,
     plot: "When an architectural restorer inherits an abandoned modernist conservatory, every mirrored corridor conceals forged correspondence from the 1970s. Reconstructing the original blueprints forces a reckoning between memory, authorship, and silence.",
-  },
-  {
+  }),
+  new Movie({
     id: "solaris-echo",
     title: "Echoes of the Silent Star",
     year: 2023,
@@ -83,22 +161,62 @@ export const MOVIE_CATALOG = [
     votes: 830,
     poster: "./assets/images/poster-solaris-echo.svg",
     plot: "Aboard a quiet deep-space listening outpost orbiting a dying dwarf star, two telemetry engineers begin receiving harmonic echoes of their own abandoned transmissions, blurring the line between signal distortion and memory.",
-  },
+  }),
 ];
 
-export function createAppState() {
-  const movies = new Map(
-    MOVIE_CATALOG.map((movie) => [
-      movie.id,
-      { ...movie, genres: [...movie.genres] },
-    ]),
-  );
-  return {
-    activeMovieId: "dune-horizon",
-    favorites: new Set(["dune-horizon", "solaris-echo"]),
-    movies,
-  };
+/** Store managing the movie catalog, active spotlight selection, and favorites watchlist. */
+export class AppState {
+  constructor(
+    catalog = MOVIE_CATALOG,
+    initialActiveId = "dune-horizon",
+    initialFavorites = ["dune-horizon", "solaris-echo"],
+  ) {
+    this.movies = new Map(
+      catalog.map((entry) => {
+        const movie = entry instanceof Movie ? entry.clone() : new Movie(entry);
+        return [movie.id, movie];
+      }),
+    );
+    this.activeMovieId = initialActiveId;
+    this.favorites = new Set(initialFavorites);
+  }
+
+  get activeMovie() {
+    return this.movies.get(this.activeMovieId) ?? null;
+  }
+
+  get favoritesCount() {
+    return this.favorites.size;
+  }
+
+  getMovie(movieId) {
+    return this.movies.get(movieId) ?? null;
+  }
+
+  selectMovie(movieId) {
+    const movie = this.getMovie(movieId);
+    if (!movie) return null;
+    this.activeMovieId = movie.id;
+    return movie;
+  }
+
+  isFavorite(movieId = this.activeMovieId) {
+    return this.favorites.has(movieId);
+  }
+
+  addFavorite(movieId = this.activeMovieId) {
+    const movie = this.getMovie(movieId);
+    if (!movie || this.favorites.has(movie.id)) return null;
+    this.favorites.add(movie.id);
+    return movie;
+  }
+
+  removeFavorite(movieId) {
+    return this.favorites.delete(movieId);
+  }
 }
+
+export const createAppState = () => new AppState();
 
 // ---------------------------------------------------------------------------
 // Validation (pure, no DOM)
@@ -318,14 +436,7 @@ export function initNavigation() {
 // ---------------------------------------------------------------------------
 // Catalog Filtering (#search-form + #search-results)
 // ---------------------------------------------------------------------------
-function matchesCatalogFilter(movie, query, genre) {
-  if (!movie) return false;
-  if (genre && !movie.genres.includes(genre)) return false;
-  if (!query) return true;
-  return `${movie.title} ${movie.director} ${movie.genreLabel} ${movie.year}`.toLowerCase().includes(query);
-}
-
-/** @param {ReturnType<typeof createAppState>} state */
+/** @param {AppState} state */
 export function initCatalog(state) {
   const form = document.getElementById("search-form");
   const searchInput = document.getElementById("search-input");
@@ -345,7 +456,7 @@ export function initCatalog(state) {
     let visibleCount = 0;
 
     cards.forEach((card) => {
-      const visible = matchesCatalogFilter(state.movies.get(getMovieId(card)), query, genre);
+      const visible = state.getMovie(getMovieId(card))?.matchesFilter(query, genre) ?? false;
       card.classList.toggle("hidden", !visible);
       if (visible) visibleCount += 1;
     });
@@ -371,9 +482,6 @@ export function initCatalog(state) {
 // ---------------------------------------------------------------------------
 // Movie Details & Live Rating (#movie-details-section)
 // ---------------------------------------------------------------------------
-const formatVoteSummary = (movie) =>
-  `${movie.rating.toFixed(1)} / 10 from ${movie.votes.toLocaleString("en-US")} ratings`;
-
 const DETAIL_TEXT_BINDINGS = {
   "details-title": (m) => m.title,
   "details-year": (m) => String(m.year),
@@ -381,9 +489,9 @@ const DETAIL_TEXT_BINDINGS = {
   "details-runtime": (m) => m.runtime,
   "details-director": (m) => m.director,
   "details-plot": (m) => m.plot,
-  "details-score-badge": (m) => m.rating.toFixed(1),
-  "details-vote-count": formatVoteSummary,
-  "review-target-movie": (m) => `${m.title} (${m.year})`,
+  "details-score-badge": (m) => m.formattedRating,
+  "details-vote-count": (m) => m.voteSummary,
+  "review-target-movie": (m) => m.titleWithYear,
 };
 
 function syncCardSelection(activeId) {
@@ -394,7 +502,7 @@ function syncCardSelection(activeId) {
 
 /**
  * Bind spotlight switching, live 1-10 rating updates, and quick-comment handoff.
- * @param {ReturnType<typeof createAppState>} state
+ * @param {AppState} state
  * @param {{ syncFavoriteButton?: () => void }} [hooks]
  */
 export function initMovieDetails(state, hooks = {}) {
@@ -410,10 +518,9 @@ export function initMovieDetails(state, hooks = {}) {
   );
 
   function renderMovie(movieId) {
-    const movie = state.movies.get(movieId);
+    const movie = state.selectMovie(movieId);
     if (!movie) return;
 
-    state.activeMovieId = movieId;
     if (poster) {
       poster.src = movie.poster;
       poster.alt = `Poster for ${movie.title}`;
@@ -437,16 +544,13 @@ export function initMovieDetails(state, hooks = {}) {
   ratingForm?.addEventListener("submit", (event) => {
     event.preventDefault();
     const score = Number(ratingForm.querySelector?.('input[name="user-rating"]:checked')?.value);
-    const movie = state.movies.get(state.activeMovieId);
-    if (!movie || !Number.isInteger(score) || score < 1 || score > 10) return;
+    const movie = state.activeMovie;
+    if (!movie?.recordRating(score)) return;
 
-    movie.rating = Number(((movie.rating * movie.votes + score) / (movie.votes + 1)).toFixed(1));
-    movie.votes += 1;
-
-    if (scoreBadge) scoreBadge.textContent = movie.rating.toFixed(1);
-    if (voteCount) voteCount.textContent = formatVoteSummary(movie);
+    if (scoreBadge) scoreBadge.textContent = movie.formattedRating;
+    if (voteCount) voteCount.textContent = movie.voteSummary;
     const badge = document.querySelector(`#search-results .movie-card[data-movie-id="${movie.id}"] .cinema-badge`);
-    if (badge) badge.textContent = `★ ${movie.rating.toFixed(1)}`;
+    if (badge) badge.textContent = movie.badgeText;
     if (ratingFeedback) showBanner(ratingFeedback, `Recorded your ${score}/10 rating for ${movie.title}.`);
   });
 
@@ -502,7 +606,7 @@ function createFavoriteCard(movie) {
 
 /**
  * Synchronize favorite toggle button, watchlist cards, empty state, and nav badge.
- * @param {ReturnType<typeof createAppState>} state
+ * @param {AppState} state
  * @param {{ onSelectMovie?: (movieId: string) => void }} [hooks]
  */
 export function initFavorites(state, hooks = {}) {
@@ -513,35 +617,33 @@ export function initFavorites(state, hooks = {}) {
 
   function syncFavoriteButton() {
     if (!favoriteBtn) return;
-    const isSaved = state.favorites.has(state.activeMovieId);
+    const isSaved = state.isFavorite();
     favoriteBtn.setAttribute("aria-pressed", String(isSaved));
     favoriteBtn.textContent = isSaved ? "♥ Saved in Favorites" : "♥ Add to Favorites";
   }
 
   function syncFavoritesMeta() {
     if (countBadge) {
-      countBadge.textContent = String(state.favorites.size);
+      countBadge.textContent = String(state.favoritesCount);
       replayAnimation(countBadge, "cinema-badge-pop");
     }
-    emptyState?.classList.toggle("hidden", state.favorites.size > 0);
+    emptyState?.classList.toggle("hidden", state.favoritesCount > 0);
     syncFavoriteButton();
   }
 
   function removeFavorite(movieId) {
-    if (!state.favorites.has(movieId)) return;
-    state.favorites.delete(movieId);
+    if (!state.removeFavorite(movieId)) return;
     favoritesList?.querySelector?.(`.favorite-card[data-movie-id="${movieId}"]`)?.remove();
     syncFavoritesMeta();
   }
 
   favoriteBtn?.addEventListener("click", () => {
-    const movie = state.movies.get(state.activeMovieId);
-    if (!movie) return;
-    if (state.favorites.has(movie.id)) {
-      removeFavorite(movie.id);
+    if (state.isFavorite()) {
+      removeFavorite(state.activeMovieId);
       return;
     }
-    state.favorites.add(movie.id);
+    const movie = state.addFavorite();
+    if (!movie) return;
     favoritesList?.appendChild(createFavoriteCard(movie));
     syncFavoritesMeta();
   });
@@ -615,9 +717,9 @@ export function initReviews(state = createAppState()) {
     validate: validateReview,
     successMessage: "Your review has been added to the discussion!",
     onSuccess: (payload) => {
-      const movie = state?.movies.get(state.activeMovieId);
+      const movie = state?.activeMovie;
       if (!movie) return;
-      reviewsList?.prepend(createReviewCard({ ...payload, movieTitle: `${movie.title} (${movie.year})` }));
+      reviewsList?.prepend(createReviewCard({ ...payload, movieTitle: movie.titleWithYear }));
       emptyState?.classList.add("hidden");
     },
   });

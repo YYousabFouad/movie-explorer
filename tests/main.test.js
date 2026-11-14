@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { afterEach, describe, it } from "node:test";
 import {
+  AppState,
+  Movie,
   createAppState,
   initAuth,
   initCatalog,
@@ -711,6 +713,8 @@ describe("initCatalog", () => {
 describe("initMovieDetails and initFavorites", () => {
   it("switches spotlight movie, updates rating count, and toggles favorites cleanly", () => {
     const state = createAppState();
+    assert.equal(state instanceof AppState, true);
+    assert.equal(state.activeMovie instanceof Movie, true);
     const viewViennaBtn = el("vienna-btn", {
       classes: ["view-details-btn"],
       attrs: { "data-movie-id": "midnight-sonata" },
