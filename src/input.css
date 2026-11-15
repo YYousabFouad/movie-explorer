@@ -19,7 +19,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 7.5rem;
     color-scheme: dark;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      scroll-padding-top: 5.5rem;
+    }
   }
 
   body {
@@ -27,7 +34,7 @@
     background-image:
       radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.08), transparent 55%),
       radial-gradient(circle at 85% 20%, rgba(38, 51, 82, 0.35), transparent 45%);
-    background-attachment: fixed;
+    background-repeat: no-repeat;
     color: #f1f5f9;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -72,7 +79,7 @@
   }
 
   .cinema-input {
-    @apply w-full rounded-xl border border-slate-700 bg-cinema-950 px-3.5 py-2.5 text-sm text-slate-50 placeholder-slate-500 focus:border-gold-400 focus:ring-2 focus:ring-gold-400/25 focus:outline-none;
+    @apply w-full rounded-xl border border-slate-700 bg-cinema-950 px-3.5 py-2.5 text-sm text-slate-50 placeholder-slate-400 focus:border-gold-400 focus:ring-2 focus:ring-gold-400/25 focus:outline-none;
     transition:
       border-color 160ms var(--ease-cinema),
       box-shadow 160ms var(--ease-cinema),
@@ -122,7 +129,11 @@
   }
 
   .cinema-nav-link {
-    @apply rounded-lg px-3.5 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/70 hover:text-white active:translate-y-px focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none;
+    @apply rounded-lg px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-slate-300 hover:bg-slate-800/70 hover:text-white active:translate-y-px focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none sm:px-3.5 sm:py-2 sm:text-sm;
+  }
+
+  .cinema-link {
+    @apply rounded-sm focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cinema-950 focus-visible:outline-none;
   }
 
   .cinema-section-header {
@@ -143,7 +154,7 @@
   }
 
   .cinema-rating-pill {
-    @apply flex h-9 w-9 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 hover:border-amber-400/60 active:translate-y-px peer-checked:border-gold-400 peer-checked:bg-gold-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-cinema-950;
+    @apply flex h-10 w-10 items-center justify-center rounded-lg border border-slate-700 bg-cinema-950 text-xs font-bold text-slate-300 hover:border-amber-400/60 active:translate-y-px peer-checked:border-gold-400 peer-checked:bg-gold-400 peer-checked:text-slate-950 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-cinema-950 sm:h-9 sm:w-9;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -190,5 +201,11 @@
   .movie-card:hover,
   .favorite-card:hover {
     transform: none;
+  }
+
+  .movie-card:hover img,
+  .favorite-card:hover img {
+    transform: none;
+    transition: none;
   }
 }

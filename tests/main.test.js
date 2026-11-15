@@ -835,3 +835,78 @@ describe("initMovieDetails and initFavorites", () => {
     );
   });
 });
+
+describe("Movie, AppState, and validation security/edge cases", () => {
+  it("normalizes filters, rejects non-integer/boolean ratings, and sanitizes poster URLs", () => {
+    const safeMovie = new Movie({
+      id: "safe-film",
+      title: "Dune Echoes",
+      year: 2025,
+      genres: ["sci-fi"],
+      genreLabel: "Sci-Fi",
+      runtime: "120 min",
+      director: "Ava Chen",
+      rating: 8.0,
+      votes: 10,
+      poster: "./assets/images/poster-dune-horizon.svg",
+      plot: "Test plot",
+    });
+    assert.equal(safeMovie.matchesFilter(" DUNE ", " Sci-Fi "), true);
+    assert.equal(safeMovie.recordRating(true), false);
+    assert.equal(safeMovie.recordRating(""), false);
+    assert.equal(safeMovie.recordRating(11), false);
+    assert.equal(safeMovie.votes, 10);
+
+    const unsafePosterMovie = new Movie({
+      ...safeMovie,
+      poster: "javascript:alert(1)",
+    });
+    assert.equal(unsafePosterMovie.poster, "");
+  });
+
+  it("filters phantom initial favorites and falls back when initialActiveId is unknown", () => {
+    const state = new AppState(undefined, "missing-id", [
+      "dune-horizon",
+      "ghost-id",
+    ]);
+    assert.equal(state.activeMovieId, "dune-horizon");
+    assert.equal(state.favoritesCount, 1);
+    assert.equal(state.isFavorite("ghost-id"), false);
+  });
+
+  it("rejects boolean ratings, out-of-bounds numeric years, and oversized inputs", () => {
+    assert.equal(
+      validateReview({
+        username: "Maya",
+        rating: true,
+        reviewText: "Wide desert frames and stellar pacing.",
+      }).field,
+      "rating",
+    );
+    assert.equal(
+      validateSuggestion({
+        title: "Arrival",
+        year: 1500,
+        reason: "Thoughtful linguistic sci-fi film.",
+      }).field,
+      "year",
+    );
+    assert.equal(
+      validateSuggestion({
+        title: "Arrival",
+        year: 2016,
+        reason: "Thoughtful linguistic sci-fi film.",
+      }).isValid,
+      true,
+    );
+    assert.equal(
+      validateRegister({
+        username: "a".repeat(41),
+        email: "alex@example.com",
+        password: "password123",
+        confirmPassword: "password123",
+      }).field,
+      "username",
+    );
+  });
+});
