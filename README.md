@@ -8,7 +8,7 @@
 A dark, cinema-inspired frontend platform foundation for **Movie Explorer Community**, engineered with semantic **HTML5**, **Tailwind CSS v4**, and a strict **DOM selector contract** designed for modular Vanilla JavaScript integration.
 
 > [!IMPORTANT]
-> **Architectural Scope:** This repository delivers the **Presentation Layer, DOM Contract, and Interactive Client Application** (`index.html`, `src/input.css`, `dist/output.css`, `src/js/main.js`). Catalog search/genre filtering, spotlight switching, live 1–10 rating, reviews, community submissions, favorites management, scroll-spy navigation, and demo authentication validation are all wired locally without a backend API.
+> **Architectural Scope:** This repository delivers the **Presentation Layer, DOM Contract, and Modular OOP Client Application** (`index.html`, `src/input.css`, `dist/output.css`, and `src/js/`). Catalog search/genre filtering, spotlight switching, live 1–10 rating, reviews, community submissions, favorites management, scroll-spy navigation, and demo authentication validation are all wired locally without a backend API.
 
 ---
 
@@ -39,12 +39,12 @@ A dark, cinema-inspired frontend platform foundation for **Movie Explorer Commun
 
 | Domain | Status | Notes |
 | :--- | :--- | :--- |
-| **Navigation & Scroll-Spy** | Implemented | Click highlighting, `aria-current="location"`, and `IntersectionObserver` scroll-spy (`src/js/main.js`). |
-| **Search & Genre Filter** | Implemented (Client) | Live keyword and genre filtering across catalog cards with empty-state and summary updates (`initCatalog`). |
-| **Title Spotlight & Rating** | Implemented (Client) | Card-to-spotlight switching, weighted score/vote recalculation, and quick-comment transfer (`initMovieDetails`). |
-| **Reviews & Community Forms** | Implemented (Client) | Pure validators (`validateReview`, `validateSuggestion`, `validateReport`), `aria-invalid` focus linking, and live DOM card prepending. |
-| **Favorites Watchlist** | Implemented (Client) | Add/remove synchronization between `#details-favorite-btn`, `#favorites-list`, `#favorites-empty-state`, and `#nav-favorites-count` (`initFavorites`). |
-| **Authentication Forms** | Implemented (Demo) | Pure client-side validation, `aria-invalid` / `aria-describedby` focus linking, and auto-hide after success (`src/js/main.js`). No backend requests are sent. |
+| **Navigation & Scroll-Spy** | Implemented | Click highlighting, `aria-current="location"`, and `IntersectionObserver` scroll-spy (`NavigationController` in `src/js/controllers.js`). |
+| **Search & Genre Filter** | Implemented (Client) | Live keyword and genre filtering across catalog cards with empty-state and summary updates (`CatalogController` in `src/js/controllers.js`). |
+| **Title Spotlight & Rating** | Implemented (Client) | Card-to-spotlight switching, weighted score/vote recalculation, and quick-comment transfer (`MovieDetailsController` in `src/js/controllers.js`). |
+| **Reviews & Community Forms** | Implemented (Client) | Declarative `FormValidator` rules (`src/js/validation.js`), domain models (`Review`, `MovieSuggestion`, `ProblemReport`), and live card rendering (`CardViewFactory`). |
+| **Favorites Watchlist** | Implemented (Client) | Event-driven synchronization between `#details-favorite-btn`, `#favorites-list`, `#favorites-empty-state`, and `#nav-favorites-count` (`FavoritesController` + `AppState`). |
+| **Authentication Forms** | Implemented (Demo) | Client-side `FormValidator` verification, `aria-invalid` / `aria-describedby` focus linking, and auto-hide timer (`AuthController`). No backend requests are sent. |
 
 ---
 
@@ -56,7 +56,7 @@ A dark, cinema-inspired frontend platform foundation for **Movie Explorer Commun
 | :--- | :--- | :--- |
 | **Markup & Semantics** | HTML5 | Semantic document landmarks, native form controls, and ARIA live regions |
 | **Styling & Tokens** | Tailwind CSS v4 (`@tailwindcss/cli`) | CSS-first `@theme` configuration, utility classes, calibrated motion keyframes, and custom component primitives |
-| **Application Logic** | Vanilla JavaScript (ES Modules) | Single client entry module (`src/js/main.js`) handling navigation, catalog filtering, spotlight details, reviews, community, favorites, and auth |
+| **Application Logic** | Vanilla JavaScript (OOP ES Modules) | Layered `src/js/` modules (`models.js`, `validation.js`, `dom.js`, `views.js`, `controllers.js`, `app.js`, `main.js`) orchestrated by `MovieExplorerApp` |
 | **Visual Assets** | Custom SVG + Data URI Fallbacks | Vector cinema posters (`2:3` aspect ratio) and archival placeholder artwork |
 
 ### Design Tokens & Component Primitives (`src/input.css`)
@@ -87,7 +87,13 @@ movie-explorer/
 ├── src/
 │   ├── input.css                      # Tailwind CSS v4 entry point, @theme tokens & components
 │   └── js/
-│       └── main.js                    # ES module: validation, navigation scroll-spy, demo auth forms
+│       ├── app.js                     # MovieExplorerApp composition root
+│       ├── controllers.js             # Feature & form controllers (Navigation, Catalog, Details, Favorites, Reviews, Community, Auth)
+│       ├── dom.js                     # DomAdapter, CancellableTimer, and safe DOM manipulation helpers
+│       ├── main.js                    # Browser entry point, public ES module re-exports, and init* compatibility wrappers
+│       ├── models.js                  # Movie, Review, CommunitySubmission hierarchy, and observable AppState
+│       ├── validation.js              # ValidationRule, FormValidator, bounds parsers, and form validator schemas
+│       └── views.js                   # CardViewFactory for safe DOM card rendering
 ├── tests/
 │   └── main.test.js                   # Node test suite (node --test)
 ├── .gitignore                         # Git ignore rules (node_modules, OS/editor artifacts)
@@ -119,9 +125,9 @@ npm install
 | Script | Command | Description |
 | :--- | :--- | :--- |
 | **`npm run build:css`** | `tailwindcss -i ./src/input.css -o ./dist/output.css --minify` | Compiles and minifies `src/input.css` into `dist/output.css` for production. |
-| **`npm run watch:css`** | `tailwindcss -i ./src/input.css -o ./dist/output.css --watch` | Watches `index.html`, `src/input.css`, and `src/js/main.js` for changes and recompiles CSS incrementally. |
+| **`npm run watch:css`** | `tailwindcss -i ./src/input.css -o ./dist/output.css --watch` | Watches `index.html`, `src/input.css`, `src/js/views.js`, and `src/js/controllers.js` for changes and recompiles CSS incrementally. |
 | **`npm run check:css`** | `tailwindcss -i ./src/input.css -o - --minify \| node -e ...` | Rebuilds CSS to stdout and compares it in memory with `dist/output.css`. |
-| **`npm run check:js`** | `node --check src/js/main.js` | Syntax-checks `src/js/main.js`. |
+| **`npm run check:js`** | `node --check src/js/dom.js && ... && node --check src/js/main.js` | Syntax-checks every ES module under `src/js/`. |
 | **`npm test`** | `node --test tests/main.test.js` | Runs the unit and contract test suite using Node's built-in test runner. |
 | **`npm run check`** | `npm run check:js && npm run check:css && npm test` | Runs JS syntax check, CSS freshness check, and the full test suite. |
 
@@ -153,20 +159,20 @@ All dynamic regions in `index.html` expose stable, deterministic IDs and class h
 
 ---
 
-## 6. JavaScript Implementation Roadmap
+## 6. Modular OOP Architecture & Roadmap
 
-When expanding the client-side application in `src/js/main.js`, adhere to a modular, layered architecture:
+The client application under `src/js/` follows a layered, object-oriented ES module architecture aligned with SOLID, Clean Code, and DRY/KISS:
 
-1. **Domain Models & State Management (OOP / ES6 Classes):**
-   - Persist `createAppState()` movies, favorites, and auth state cleanly to `localStorage` or a backend session store as API endpoints are introduced.
-2. **Asynchronous Data & API Service Layer:**
-   - Implement a dedicated API client using `fetch` and `async`/`await` to query movie endpoints, normalize payload schemas, and surface typed network errors.
-3. **Deterministic UI State Transitions:**
-   - Manage mutually exclusive view states (`loading` → `data` | `empty` | `error`) by toggling the Tailwind `hidden` utility class on `#search-loading`, `#search-error`, `#search-no-results`, and `#search-results`.
-4. **Event Delegation & Controller Binding:**
-   - Maintain delegated listeners on parent containers (`#search-results`, `#favorites-list`, `#reviews-list`) to handle dynamically rendered `.view-details-btn` and `.remove-favorite-btn` actions without memory leaks.
-5. **Form Validation & Resilient Error Handling:**
-   - `#signin-form`, `#register-form`, `#review-form`, `#community-suggestion-form`, and `#problem-report-form` share `bindValidatedForm` and pure validators in `src/js/main.js` with `aria-invalid` and `aria-describedby` linking; mirror server validation errors through the same banners once API endpoints exist.
+1. **Domain Models & Observable State (`src/js/models.js`):**
+   - `Movie`, `Review`, `CommunitySubmission` (`MovieSuggestion`, `ProblemReport`), and observable `AppState` encapsulate domain invariants, defensive copies, and `subscribe()` event notifications (`movieSelected`, `movieRated`, `favoritesChanged`).
+2. **Declarative Validation (`src/js/validation.js`):**
+   - `ValidationRule` and `FormValidator` enforce pure schema checks with shared integer-range parsing (`parseIntegerInRange`) and reusable rule factories (`SIGN_IN_VALIDATOR`, `REGISTER_VALIDATOR`, `REVIEW_VALIDATOR`, `SUGGESTION_VALIDATOR`, `REPORT_VALIDATOR`).
+3. **DOM Adapter & Timer Abstraction (`src/js/dom.js`):**
+   - `DomAdapter` and `CancellableTimer` invert direct `document` and timeout dependencies so views and controllers are testable in isolation without global DOM state.
+4. **Presentation Views & Feature Controllers (`src/js/views.js`, `src/js/controllers.js`):**
+   - `CardViewFactory` constructs card DOM trees safely via `textContent`; dedicated controllers (`NavigationController`, `CatalogController`, `MovieDetailsController`, `FavoritesController`, `ReviewsController`, `CommunityController`, `AuthController`, and `ValidatedFormController`) coordinate user interactions and `AppState` subscriptions with `aria-invalid` / `aria-describedby` error linking.
+5. **Composition Root & Public Facade (`src/js/app.js`, `src/js/main.js`):**
+   - `MovieExplorerApp` wires dependencies cleanly without circular hooks; `src/js/main.js` re-exports all classes and backward-compatible `init*` helpers and mounts automatically in browser environments.
 
 ---
 

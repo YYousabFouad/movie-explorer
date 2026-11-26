@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../index.html";
-@source "./js/main.js";
+@source "./js/views.js";
+@source "./js/controllers.js";
 
 @theme {
   --color-cinema-950: #070a12;

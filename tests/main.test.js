@@ -3,7 +3,17 @@ import fs from "node:fs";
 import { afterEach, describe, it } from "node:test";
 import {
   AppState,
+  CancellableTimer,
+  CardViewFactory,
+  CommunitySubmission,
+  DomAdapter,
+  FormValidator,
   Movie,
+  MovieExplorerApp,
+  MovieSuggestion,
+  ProblemReport,
+  Review,
+  ValidationRule,
   createAppState,
   initAuth,
   initCatalog,
@@ -908,5 +918,333 @@ describe("Movie, AppState, and validation security/edge cases", () => {
       }).field,
       "username",
     );
+  });
+});
+
+describe("CancellableTimer and DomAdapter", () => {
+  it("schedules, reschedules, and cancels pending timeouts cleanly", (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const timer = new CancellableTimer();
+    let total = 0;
+
+    assert.equal(timer.isPending, false);
+    timer.schedule(() => {
+      total += 1;
+    }, 500);
+    assert.equal(timer.isPending, true);
+
+    timer.schedule(() => {
+      total += 10;
+    }, 500);
+    t.mock.timers.tick(500);
+    assert.equal(total, 10);
+    assert.equal(timer.isPending, false);
+
+    timer.schedule(() => {
+      total += 100;
+    }, 500);
+    timer.cancel();
+    assert.equal(timer.isPending, false);
+    t.mock.timers.tick(500);
+    assert.equal(total, 10);
+  });
+
+  it("operates on an injected document without touching globalThis.document", () => {
+    assert.equal(globalThis.document, undefined);
+    const titleNode = el("details-title");
+    const navLink = el("nav-search", { classes: ["cinema-nav-link"] });
+    const mockDoc = createMockDocument({ "details-title": titleNode }, [navLink]);
+    const dom = new DomAdapter(mockDoc);
+
+    assert.equal(dom.isAvailable, true);
+    assert.equal(dom.byId("details-title"), titleNode);
+    assert.deepEqual(dom.queryAll(".cinema-nav-link"), [navLink]);
+
+    const paragraph = dom.createElement(
+      "p",
+      "text-sm text-slate-300",
+      "<script>alert(1)</script>",
+      { "data-movie-id": "dune-horizon" },
+    );
+    assert.equal(paragraph.textContent, "<script>alert(1)</script>");
+    assert.equal(paragraph.className, "text-sm text-slate-300");
+    assert.equal(paragraph.getAttribute("data-movie-id"), "dune-horizon");
+
+    const disconnected = new DomAdapter(null);
+    assert.equal(disconnected.isAvailable, false);
+    assert.throws(() => disconnected.createElement("div"), /Document is required/);
+  });
+});
+
+describe("OOP domain entities (Movie, Review, CommunitySubmission hierarchy)", () => {
+  it("freezes Movie.genres while keeping spread compatibility", () => {
+    const state = createAppState();
+    const movie = state.getMovie("dune-horizon");
+
+    assert.equal(Object.isFrozen(movie.genres), true);
+    assert.throws(() => movie.genres.push("comedy"), TypeError);
+
+    const clonedWithUnsafePoster = new Movie({
+      ...movie,
+      poster: "javascript:alert(1)",
+    });
+    assert.equal(clonedWithUnsafePoster.poster, "");
+    assert.match(clonedWithUnsafePoster.posterOrFallback, /^data:image\/svg\+xml;charset=utf-8,/);
+  });
+
+  it("formats Review initials, dates, and rating badges cleanly", () => {
+    const review = new Review({
+      username: "  Maya Kowalski ",
+      rating: "9",
+      reviewText: "  Wide-angle desert cinematography. ",
+      movieTitle: "Chronicles of the Dune Horizon (2025)",
+      createdAt: new Date("2026-10-18T12:00:00Z"),
+    });
+
+    assert.equal(review.username, "Maya Kowalski");
+    assert.equal(review.reviewText, "Wide-angle desert cinematography.");
+    assert.equal(review.initials, "MK");
+    assert.equal(review.ratingBadgeText, "★ 9 / 10");
+    assert.equal(review.isoDate, "2026-10-18");
+
+    const blankUserReview = new Review({
+      username: "   ",
+      rating: 7,
+      reviewText: "Solid score.",
+      movieTitle: "Test (2026)",
+    });
+    assert.equal(blankUserReview.initials, "ME");
+  });
+
+  it("normalizes numeric years and omitted descriptions in MovieSuggestion and supports polymorphic card rendering", () => {
+    const suggestion = new MovieSuggestion({
+      title: "  Arrival ",
+      year: 2016,
+      description: undefined,
+      reason: "  Seminal linguistic sci-fi drama. ",
+    });
+    const report = new ProblemReport({
+      movieTitle: " The Glass Labyrinth ",
+      problemType: "unknown-code",
+      description: "  Missing archival poster image. ",
+    });
+
+    assert.equal(suggestion instanceof CommunitySubmission, true);
+    assert.equal(report instanceof CommunitySubmission, true);
+    assert.equal(suggestion.title, "Arrival (2016)");
+    assert.equal(suggestion.detailLabel, "");
+    assert.equal(suggestion.summaryText, "Reason: Seminal linguistic sci-fi drama.");
+    assert.equal(report.detailLabel, "Other Data Issue");
+
+    const views = new CardViewFactory(new DomAdapter(createMockDocument({})));
+    const suggestionCard = views.createSubmissionCard(suggestion);
+    const reportCard = views.createSubmissionCard(report);
+    assert.equal(suggestionCard.children[0].children[1].textContent, "Arrival (2016)");
+    assert.equal(reportCard.children[0].children[2].textContent, "Other Data Issue");
+  });
+});
+
+describe("FormValidator, ValidationRule, and suggestion description length", () => {
+  it("evaluates rules in order and enforces max 500 characters on optional suggestion descriptions", () => {
+    const customValidator = new FormValidator([
+      new ValidationRule("code", (value) => typeof value === "string" && value.length > 0, "Missing code."),
+      new ValidationRule("code", (value) => value === "OK", "Code must equal OK."),
+    ]);
+
+    assert.deepEqual(customValidator.validate(null), {
+      isValid: false,
+      message: "Missing code.",
+      field: "code",
+    });
+    assert.deepEqual(customValidator.validate({ code: "BAD" }), {
+      isValid: false,
+      message: "Code must equal OK.",
+      field: "code",
+    });
+    assert.deepEqual(customValidator.validate({ code: "OK" }), {
+      isValid: true,
+      message: "",
+      field: null,
+    });
+
+    assert.equal(
+      validateSuggestion({
+        title: "Arrival",
+        year: "2016",
+        description: "x".repeat(500),
+        reason: "Thoughtful linguistic sci-fi film.",
+      }).isValid,
+      true,
+    );
+    assert.equal(
+      validateSuggestion({
+        title: "Arrival",
+        year: "2016",
+        description: "x".repeat(501),
+        reason: "Thoughtful linguistic sci-fi film.",
+      }).field,
+      "description",
+    );
+  });
+});
+
+describe("AppState encapsulation, observer events, and queries", () => {
+  it("returns defensive copies for movies and favorites while emitting state events", () => {
+    const state = createAppState();
+    state.movies.clear();
+    state.favorites.add("midnight-sonata");
+
+    assert.notEqual(state.getMovie("dune-horizon"), null);
+    assert.equal(state.favoritesCount, 2);
+    assert.equal(state.isFavorite("midnight-sonata"), false);
+
+    const events = [];
+    const unsubscribe = state.subscribe((event) => events.push(event.type));
+
+    assert.equal(state.selectMovie("midnight-sonata").id, "midnight-sonata");
+    assert.deepEqual(state.toggleFavorite(), {
+      isFavorite: true,
+      movie: state.activeMovie,
+    });
+    assert.deepEqual(state.toggleFavorite(), {
+      isFavorite: false,
+      movie: state.activeMovie,
+    });
+    assert.equal(state.rateActiveMovie(10), true);
+    assert.equal(state.rateActiveMovie(0), false);
+    assert.deepEqual(events, [
+      "movieSelected",
+      "favoritesChanged",
+      "favoritesChanged",
+      "movieRated",
+    ]);
+
+    unsubscribe();
+    state.selectMovie("dune-horizon");
+    assert.equal(events.length, 4);
+
+    const matches = state.filterMovies("vienna", "mystery");
+    assert.deepEqual(
+      matches.map((movie) => movie.id),
+      ["midnight-sonata"],
+    );
+  });
+});
+
+describe("MovieExplorerApp composition and DOM contract integration", () => {
+  it("mounts all controllers via injected document and synchronizes cross-controller state without hooks", () => {
+    const html = fs.readFileSync(
+      new URL("../index.html", import.meta.url),
+      "utf8",
+    );
+    const idSet = new Set(
+      [...html.matchAll(/(?:^|\s)id="([^"]+)"/g)].map((match) => match[1]),
+    );
+
+    const viewViennaBtn = el("vienna-btn", {
+      classes: ["view-details-btn"],
+      attrs: { "data-movie-id": "midnight-sonata" },
+    });
+    const cardDune = el("card-dune", {
+      classes: ["movie-card"],
+      attrs: { "data-movie-id": "dune-horizon", "data-selected": "true" },
+    });
+    const cardSolaris = el("card-solaris", {
+      classes: ["movie-card"],
+      attrs: { "data-movie-id": "solaris-echo", "data-selected": "false" },
+    });
+    const favViewSolarisBtn = el("fav-view-solaris", {
+      classes: ["view-details-btn"],
+      attrs: { "data-movie-id": "solaris-echo" },
+    });
+    const favSolaris = el("fav-solaris", {
+      classes: ["favorite-card"],
+      attrs: { "data-movie-id": "solaris-echo" },
+      children: [favViewSolarisBtn],
+    });
+    const favDune = el("fav-dune", {
+      classes: ["favorite-card"],
+      attrs: { "data-movie-id": "dune-horizon" },
+    });
+
+    const elements = {
+      ...createAuthDom(),
+      ...mockFields({
+        "search-form": {},
+        "search-input": {},
+        "search-genre": {},
+        "search-results": { children: [cardDune, cardSolaris, viewViennaBtn] },
+        "search-results-summary": {},
+        "search-no-results": { classes: ["hidden"] },
+        "movie-details": {},
+        "details-poster": {},
+        "details-title": {},
+        "details-year": {},
+        "details-genre": {},
+        "details-runtime": {},
+        "details-director": {},
+        "details-plot": {},
+        "details-score-badge": {},
+        "details-vote-count": {},
+        "rating-form": {},
+        "rating-feedback": { classes: ["hidden"] },
+        "details-quick-comment": {},
+        "quick-comment-link": {},
+        "review-target-movie": {},
+        "review-form": {},
+        "review-error": { classes: ["hidden"] },
+        "review-success": { classes: ["hidden"] },
+        "review-username": {},
+        "review-rating": "9",
+        "review-text": {},
+        "reviews-list": {},
+        "reviews-empty-state": { classes: ["hidden"] },
+        "community-suggestion-form": {},
+        "suggestion-error": { classes: ["hidden"] },
+        "suggestion-feedback": { classes: ["hidden"] },
+        "suggest-title": {},
+        "suggest-year": {},
+        "suggest-description": {},
+        "suggest-reason": {},
+        "problem-report-form": {},
+        "report-error": { classes: ["hidden"] },
+        "report-feedback": { classes: ["hidden"] },
+        "report-movie-title": {},
+        "report-problem-type": {},
+        "report-description": {},
+        "community-submissions-list": {},
+        "community-empty-state": { classes: ["hidden"] },
+        "details-favorite-btn": {},
+        "favorites-list": { children: [favDune, favSolaris] },
+        "favorites-empty-state": { classes: ["hidden"] },
+        "nav-favorites-count": {},
+        "nav-signin-btn": {},
+        "nav-register-btn": {},
+        "go-to-register-link": {},
+        "go-to-signin-link": {},
+      }),
+    };
+
+    const lookedUpIds = new Set();
+    const mockDoc = createMockDocument(elements, [], lookedUpIds);
+    const app = new MovieExplorerApp({ doc: mockDoc }).mount();
+
+    assert.ok(lookedUpIds.size > 0);
+    for (const id of lookedUpIds) {
+      assert.ok(idSet.has(id), `MovieExplorerApp looked up missing HTML ID: #${id}`);
+    }
+
+    // Select Echoes of the Silent Star from #favorites-list without manual callback hooks.
+    elements["favorites-list"].dispatchEvent("click", favViewSolarisBtn);
+    assert.equal(app.state.activeMovieId, "solaris-echo");
+    assert.equal(elements["details-title"].textContent, "Echoes of the Silent Star");
+    assert.equal(elements["review-target-movie"].textContent, "Echoes of the Silent Star (2023)");
+    assert.equal(elements["details-favorite-btn"].getAttribute("aria-pressed"), "true");
+
+    // Toggle favorite off on the spotlight button and verify watchlist synchronization.
+    elements["details-favorite-btn"].dispatchEvent("click");
+    assert.equal(app.state.favoritesCount, 1);
+    assert.equal(elements["nav-favorites-count"].textContent, "1");
+    assert.equal(elements["details-favorite-btn"].getAttribute("aria-pressed"), "false");
   });
 });
